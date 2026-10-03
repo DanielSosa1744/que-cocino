@@ -2,14 +2,10 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useInventory } from '../../hooks/useInventory'
 import { useVaciarNevera, useRecipes } from '../../hooks/useRecipes'
-import { estimateItemValueARS, scoreRecipe } from '../../lib/ingredientParser'
-import type { RecipeWithScore } from '../../types/app.types'
+import { estimateItemValueARS } from '../../lib/ingredientParser'
+import { matchCravingRecipes, type RecipeWithCost } from '../../lib/cravingMatcher'
 
 type CategoryChoice = 'ready' | 'one_missing' | 'special' | 'craving'
-
-interface RecipeWithCost extends RecipeWithScore {
-  additionalCostARS: number
-}
 
 const CRAVING_SUGGESTIONS = ['Pizza', 'Hamburguesa', 'Pasta', 'Empanadas', 'Sushi']
 
@@ -72,48 +68,9 @@ export default function VaciarNeveraPage() {
     }
   }, [scoredRecipes])
 
-  // Categoría 4: Tengo un antojo
-  const cravingRecipes = useMemo(() => {
-    if (!cravingQuery.trim()) return []
-
-    const query = cravingQuery.toLowerCase().trim()
-    const matchedRaw = allRawRecipes.filter(r => {
-      const nameMatch = r.name.toLowerCase().includes(query)
-      const descMatch = r.description ? r.description.toLowerCase().includes(query) : false
-      const ingMatch = (r.recipe_ingredients || []).some(ri =>
-        ri.ingredient_name.toLowerCase().includes(query)
-      )
-      return nameMatch || descMatch || ingMatch
-    })
-
-    const scoredCraving: RecipeWithCost[] = matchedRaw.map(recipe => {
-      const recipeIngredientNames = (recipe.recipe_ingredients || []).map(ri => ri.ingredient_name)
-      const { score, urgentUsed, totalUsed, priority, matched, missing } = scoreRecipe(
-        recipeIngredientNames,
-        inventory.map(i => ({ name: i.name, urgency: i.urgency }))
-      )
-      const additionalCostARS = missing.reduce((sum, ing) => sum + estimateItemValueARS(ing, 1), 0)
-
-      return {
-        id: recipe.id,
-        name: recipe.name,
-        description: recipe.description,
-        difficulty: recipe.difficulty || 'Fácil',
-        prep_time: recipe.prep_time || 15,
-        instructions: recipe.instructions,
-        servings: recipe.servings || 2,
-        score,
-        urgentIngredientsUsed: urgentUsed,
-        totalIngredientsUsed: totalUsed,
-        matchPercentage: recipeIngredientNames.length > 0 ? Math.round((matched.length / recipeIngredientNames.length) * 100) : 0,
-        priority,
-        matchedIngredients: matched,
-        missingIngredients: missing,
-        additionalCostARS,
-      }
-    })
-
-    return scoredCraving.sort(sortPriority)
+  // Categoría 4: Tengo un antojo con búsqueda multinivel y alternativas garantizadas
+  const cravingResult = useMemo(() => {
+    return matchCravingRecipes(cravingQuery, allRawRecipes, inventory)
   }, [cravingQuery, allRawRecipes, inventory])
 
   // Si no hay recetas con 0 faltantes al inicio, sugerir suavemente "Con algo más"
@@ -128,8 +85,8 @@ export default function VaciarNeveraPage() {
     if (activeChoice === 'ready') return readyRecipes
     if (activeChoice === 'one_missing') return oneMissingRecipes
     if (activeChoice === 'special') return specialRecipes
-    return cravingRecipes
-  }, [activeChoice, readyRecipes, oneMissingRecipes, specialRecipes, cravingRecipes])
+    return cravingResult.recipes
+  }, [activeChoice, readyRecipes, oneMissingRecipes, specialRecipes, cravingResult.recipes])
 
   // Máximo 4 mejores recetas visibles para evitar fatiga de decisión
   const visibleRecipes = currentCategoryRecipes.slice(0, 4)
@@ -309,46 +266,52 @@ export default function VaciarNeveraPage() {
               Ir a Inicio
             </button>
           </div>
-        ) : activeChoice === 'craving' && !cravingQuery.trim() ? (
-          <div className="py-16 text-center space-y-2 px-4">
-            <p className="text-sm text-[#2F2A26] font-medium">
-              ¿Qué comida se te antoja hoy?
-            </p>
-            <p className="text-xs text-[#766153] max-w-xs mx-auto leading-relaxed">
-              Escribe lo que quieres comer o toca una de las sugerencias arriba para compararla con lo que tienes en tu despensa.
-            </p>
-          </div>
-        ) : currentCategoryRecipes.length === 0 ? (
-          <div className="py-16 text-center space-y-2.5 px-4">
-            <p className="text-sm text-[#2F2A26] font-medium">
-              {activeChoice === 'craving'
-                ? `No encontramos recetas para "${cravingQuery}".`
-                : activeChoice === 'ready'
-                ? 'No hay recetas con todos los ingredientes listos.'
-                : activeChoice === 'one_missing'
-                ? 'No hay recetas donde falte un solo ingrediente.'
-                : 'No hay recetas en esta categoría.'}
-            </p>
-            <p className="text-xs text-[#766153] max-w-xs mx-auto leading-relaxed">
-              {activeChoice === 'craving'
-                ? 'Prueba buscando con otra palabra clave como pasta, pizza o pollo.'
-                : activeChoice === 'ready' && oneMissingRecipes.length > 0
-                ? 'Puedes tocar "Con algo más" para ver qué plato preparar con solo 1 compra rápida.'
-                : 'Añade más ingredientes desde Inicio para descubrir nuevas recetas.'}
-            </p>
-            {activeChoice === 'ready' && oneMissingRecipes.length > 0 && (
-              <button
-                type="button"
-                onClick={() => setActiveChoice('one_missing')}
-                className="mt-2 text-xs text-[#5D7A56] underline underline-offset-4 hover:text-[#2F2A26] transition cursor-pointer font-medium"
-              >
-                Ver recetas "Con algo más" ({oneMissingRecipes.length})
-              </button>
-            )}
-          </div>
         ) : (
           <div className="space-y-1">
-            {visibleRecipes.map((recipe) => (
+            {/* Aviso sereno cuando se muestran alternativas inspiradas para un antojo */}
+            {activeChoice === 'craving' && cravingResult.isAlternative && cravingResult.notice && (
+              <div className="pt-2 pb-1">
+                <div className="p-3.5 rounded-2xl bg-[#FCFAF7] border border-[#A68A64]/30 shadow-[0_2px_8px_rgba(166,138,100,0.06)] text-left">
+                  <p className="text-xs sm:text-sm font-semibold text-[#2F2A26] leading-snug">
+                    {cravingResult.notice.title}
+                  </p>
+                  <p className="text-xs text-[#766153] mt-1 leading-relaxed">
+                    {cravingResult.notice.subtitle}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Encabezado suave para antojos cuando aún no se ha escrito nada */}
+            {activeChoice === 'craving' && !cravingQuery.trim() && (
+              <div className="pt-2 pb-1 text-left">
+                <p className="text-xs text-[#766153]">
+                  Ideas para inspirarte con lo que tienes en casa:
+                </p>
+              </div>
+            )}
+
+            {visibleRecipes.length === 0 ? (
+              <div className="py-16 text-center space-y-2.5 px-4">
+                <p className="text-sm text-[#2F2A26] font-medium">
+                  {activeChoice === 'ready'
+                    ? 'Aún no hay recetas con todos los ingredientes listos.'
+                    : activeChoice === 'one_missing'
+                    ? 'No hay recetas donde falte un solo ingrediente.'
+                    : 'Prueba agregando más ingredientes desde Inicio.'}
+                </p>
+                {activeChoice === 'ready' && oneMissingRecipes.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveChoice('one_missing')}
+                    className="mt-2 text-xs text-[#5D7A56] underline underline-offset-4 hover:text-[#2F2A26] transition cursor-pointer font-medium"
+                  >
+                    Ver recetas "Con algo más" ({oneMissingRecipes.length})
+                  </button>
+                )}
+              </div>
+            ) : (
+              visibleRecipes.map((recipe) => (
               <article
                 key={recipe.id}
                 onClick={() => navigate(`/recipe/${recipe.id}`, { state: { recipe } })}
@@ -402,7 +365,7 @@ export default function VaciarNeveraPage() {
                   </span>
                 </div>
               </article>
-            ))}
+            )))}
           </div>
         )}
       </div>

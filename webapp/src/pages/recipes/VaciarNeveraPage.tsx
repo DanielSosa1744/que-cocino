@@ -5,7 +5,7 @@ import { useVaciarNevera } from '../../hooks/useRecipes'
 import { estimateItemValueARS } from '../../lib/ingredientParser'
 import type { RecipeWithScore } from '../../types/app.types'
 
-type CategoryTab = 'ready' | 'one_missing' | 'special'
+type CategoryChoice = 'ready' | 'one_missing' | 'special'
 
 interface RecipeWithCost extends RecipeWithScore {
   additionalCostARS: number
@@ -17,10 +17,9 @@ export default function VaciarNeveraPage() {
   const { data: scoredRecipes = [], isLoading: loadingScored } = useVaciarNevera(inventory)
 
   const isLoading = loadingInventory || loadingScored
-  const [activeTab, setActiveTab] = useState<CategoryTab>('ready')
-  const [expanded, setExpanded] = useState(false)
+  const [activeChoice, setActiveChoice] = useState<CategoryChoice>('ready')
 
-  // Calcular coste adicional en ARS y ordenar recetas
+  // Calcular coste adicional en ARS y ordenar recetas por prioridad
   const { readyRecipes, oneMissingRecipes, specialRecipes } = useMemo(() => {
     const withCost: RecipeWithCost[] = scoredRecipes.map(recipe => {
       const additionalCostARS = recipe.missingIngredients.reduce((sum, ing) => {
@@ -32,10 +31,10 @@ export default function VaciarNeveraPage() {
       }
     })
 
-    // Función de ordenación según los 4 criterios de prioridad:
+    // Criterios de prioridad requeridos:
     // 1. Mayor cantidad de ingredientes disponibles
-    // 2. Mayor aprovechamiento de ingredientes próximos al vencimiento
-    // 3. Menor coste adicional
+    // 2. Mayor aprovechamiento de ingredientes próximos a vencer
+    // 3. Menor coste adicional en ARS
     // 4. Menor tiempo de preparación
     const sortPriority = (a: RecipeWithCost, b: RecipeWithCost) => {
       if (b.totalIngredientsUsed !== a.totalIngredientsUsed) {
@@ -69,86 +68,126 @@ export default function VaciarNeveraPage() {
     }
   }, [scoredRecipes])
 
-  // Si no hay recetas con 0 faltantes, sugerir automáticamente la pestaña de 1 faltante
+  // Si no hay recetas con 0 faltantes, sugerir automáticamente "Con algo más"
   useEffect(() => {
-    if (readyRecipes.length === 0 && oneMissingRecipes.length > 0 && activeTab === 'ready') {
-      setActiveTab('one_missing')
+    if (readyRecipes.length === 0 && oneMissingRecipes.length > 0 && activeChoice === 'ready') {
+      setActiveChoice('one_missing')
     }
-  }, [readyRecipes.length, oneMissingRecipes.length, activeTab])
+  }, [readyRecipes.length, oneMissingRecipes.length, activeChoice])
 
-  // Obtener lista actual según categoría
+  // Obtener lista actual según la categoría elegida
   const currentCategoryRecipes = useMemo(() => {
-    if (activeTab === 'ready') return readyRecipes
-    if (activeTab === 'one_missing') return oneMissingRecipes
+    if (activeChoice === 'ready') return readyRecipes
+    if (activeChoice === 'one_missing') return oneMissingRecipes
     return specialRecipes
-  }, [activeTab, readyRecipes, oneMissingRecipes, specialRecipes])
+  }, [activeChoice, readyRecipes, oneMissingRecipes, specialRecipes])
 
-  // Limitar inicialmente a máximo 4 recetas visibles para evitar fatiga de decisión
-  const visibleRecipes = expanded
-    ? currentCategoryRecipes
-    : currentCategoryRecipes.slice(0, 4)
-
-  const handleTabChange = (tab: CategoryTab) => {
-    setActiveTab(tab)
-    setExpanded(false)
-  }
+  // Mostrar ÚNICAMENTE las 4 mejores recetas de esa categoría para evitar listas largas y fatiga de decisión
+  const visibleRecipes = currentCategoryRecipes.slice(0, 4)
 
   return (
     <div className="h-full max-h-full bg-transparent flex flex-col overflow-hidden animate-fade-in">
-      {/* Encabezado editorial */}
-      <div className="px-5 pt-safe pb-2.5 border-b border-stone-200/50 flex-shrink-0 bg-transparent">
+      {/* Encabezado sereno tipo Journal */}
+      <div className="px-5 pt-safe pb-2 flex-shrink-0 bg-transparent">
         <h1 className="text-xl font-semibold text-stone-900 tracking-tight">
-          Recetas
+          ¿Qué te apetece preparar?
         </h1>
         <p className="text-xs text-stone-500 mt-0.5">
-          Opciones recomendadas para decidir en segundos
+          Elige una opción para ver las 4 mejores alternativas
         </p>
 
-        {/* 3 Botones / Pestañas horizontales */}
-        <div className="flex gap-2 overflow-x-auto no-scrollbar pt-3 pb-1">
-          <button
-            type="button"
-            onClick={() => handleTabChange('ready')}
-            className={`px-3.5 py-1.5 rounded-full text-xs transition tap-subtle whitespace-nowrap cursor-pointer ${
-              activeTab === 'ready'
-                ? 'bg-stone-900 text-white font-medium shadow-2xs'
-                : 'bg-white/80 border border-stone-200/80 text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            Cocinar ahora {readyRecipes.length > 0 && `(${readyRecipes.length})`}
-          </button>
+        {/* Selector Orgánico de Tres Botones Flotantes (Apple Journal / Headspace / Calm) */}
+        <div className="pt-3 pb-2">
+          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+            {/* Botón 1: Cocinar ya */}
+            <button
+              type="button"
+              onClick={() => setActiveChoice('ready')}
+              className={`animate-float-btn-1 relative px-4 py-2.5 sm:py-3 rounded-2xl transition-all duration-300 tap-subtle hover-lift cursor-pointer select-none flex items-center gap-2 ${
+                activeChoice === 'ready'
+                  ? 'bg-[#f4f6f0] border-2 border-[#526639] text-[#2c381d] shadow-[0_4px_16px_rgba(82,102,57,0.15)] font-semibold scale-[1.02]'
+                  : 'bg-[#fdfcf9] border border-stone-200/80 text-stone-700 hover:border-stone-300 hover:bg-white shadow-[0_2px_10px_rgba(40,30,20,0.04)] font-medium'
+              }`}
+            >
+              <span className="text-xs sm:text-sm">Cocinar ya</span>
+              {readyRecipes.length > 0 && (
+                <span
+                  className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full ${
+                    activeChoice === 'ready'
+                      ? 'bg-[#526639]/15 text-[#3b4b27]'
+                      : 'bg-stone-100 text-stone-500'
+                  }`}
+                >
+                  {readyRecipes.length}
+                </span>
+              )}
+              {activeChoice === 'ready' && (
+                <span className="w-1.5 h-1.5 rounded-full bg-[#526639] animate-pulse" />
+              )}
+            </button>
 
-          <button
-            type="button"
-            onClick={() => handleTabChange('one_missing')}
-            className={`px-3.5 py-1.5 rounded-full text-xs transition tap-subtle whitespace-nowrap cursor-pointer ${
-              activeTab === 'one_missing'
-                ? 'bg-stone-900 text-white font-medium shadow-2xs'
-                : 'bg-white/80 border border-stone-200/80 text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            Me falta 1 ingrediente {oneMissingRecipes.length > 0 && `(${oneMissingRecipes.length})`}
-          </button>
+            {/* Botón 2: Con algo más */}
+            <button
+              type="button"
+              onClick={() => setActiveChoice('one_missing')}
+              className={`animate-float-btn-2 relative px-4 py-2.5 sm:py-3 rounded-2xl transition-all duration-300 tap-subtle hover-lift cursor-pointer select-none flex items-center gap-2 ${
+                activeChoice === 'one_missing'
+                  ? 'bg-[#f4f6f0] border-2 border-[#526639] text-[#2c381d] shadow-[0_4px_16px_rgba(82,102,57,0.15)] font-semibold scale-[1.02]'
+                  : 'bg-[#fdfcf9] border border-stone-200/80 text-stone-700 hover:border-stone-300 hover:bg-white shadow-[0_2px_10px_rgba(40,30,20,0.04)] font-medium'
+              }`}
+            >
+              <span className="text-xs sm:text-sm">Con algo más</span>
+              {oneMissingRecipes.length > 0 && (
+                <span
+                  className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full ${
+                    activeChoice === 'one_missing'
+                      ? 'bg-[#526639]/15 text-[#3b4b27]'
+                      : 'bg-stone-100 text-stone-500'
+                  }`}
+                >
+                  {oneMissingRecipes.length}
+                </span>
+              )}
+              {activeChoice === 'one_missing' && (
+                <span className="w-1.5 h-1.5 rounded-full bg-[#526639] animate-pulse" />
+              )}
+            </button>
 
-          <button
-            type="button"
-            onClick={() => handleTabChange('special')}
-            className={`px-3.5 py-1.5 rounded-full text-xs transition tap-subtle whitespace-nowrap cursor-pointer ${
-              activeTab === 'special'
-                ? 'bg-stone-900 text-white font-medium shadow-2xs'
-                : 'bg-white/80 border border-stone-200/80 text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            Algo especial {specialRecipes.length > 0 && `(${specialRecipes.length})`}
-          </button>
+            {/* Botón 3: Plato especial */}
+            <button
+              type="button"
+              onClick={() => setActiveChoice('special')}
+              className={`animate-float-btn-3 relative px-4 py-2.5 sm:py-3 rounded-2xl transition-all duration-300 tap-subtle hover-lift cursor-pointer select-none flex items-center gap-2 ${
+                activeChoice === 'special'
+                  ? 'bg-[#f4f6f0] border-2 border-[#526639] text-[#2c381d] shadow-[0_4px_16px_rgba(82,102,57,0.15)] font-semibold scale-[1.02]'
+                  : 'bg-[#fdfcf9] border border-stone-200/80 text-stone-700 hover:border-stone-300 hover:bg-white shadow-[0_2px_10px_rgba(40,30,20,0.04)] font-medium'
+              }`}
+            >
+              <span className="text-xs sm:text-sm">Plato especial</span>
+              {specialRecipes.length > 0 && (
+                <span
+                  className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full ${
+                    activeChoice === 'special'
+                      ? 'bg-[#526639]/15 text-[#3b4b27]'
+                      : 'bg-stone-100 text-stone-500'
+                  }`}
+                >
+                  {specialRecipes.length}
+                </span>
+              )}
+              {activeChoice === 'special' && (
+                <span className="w-1.5 h-1.5 rounded-full bg-[#526639] animate-pulse" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Lista de resultados limitada y priorizada */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-5 divide-y divide-stone-200/60 pb-6">
+      {/* Lista editorial limitada estrictamente a las 4 mejores recetas */}
+      <div className="flex-1 min-h-0 overflow-y-auto px-5 divide-y divide-stone-200/60 pb-8">
         {isLoading ? (
           <div className="py-16 text-center text-xs text-stone-400 font-mono">
-            Analizando despensa...
+            Buscando combinaciones en tu cocina...
           </div>
         ) : inventory.length === 0 ? (
           <div className="py-20 text-center space-y-3 px-4">
@@ -165,29 +204,29 @@ export default function VaciarNeveraPage() {
         ) : currentCategoryRecipes.length === 0 ? (
           <div className="py-16 text-center space-y-2.5 px-4">
             <p className="text-sm text-stone-700 font-medium">
-              {activeTab === 'ready'
-                ? 'No hay recetas con el 100% de ingredientes disponibles.'
-                : activeTab === 'one_missing'
+              {activeChoice === 'ready'
+                ? 'No hay recetas con todos los ingredientes listos.'
+                : activeChoice === 'one_missing'
                 ? 'No hay recetas donde falte un solo ingrediente.'
                 : 'No hay recetas en esta categoría.'}
             </p>
             <p className="text-xs text-stone-400 max-w-xs mx-auto leading-relaxed">
-              {activeTab === 'ready' && oneMissingRecipes.length > 0
-                ? 'Puedes revisar la pestaña "Me falta 1 ingrediente" para cocinar con una compra mínima.'
-                : 'Prueba añadiendo otros alimentos desde Inicio para descubrir más platos.'}
+              {activeChoice === 'ready' && oneMissingRecipes.length > 0
+                ? 'Puedes tocar "Con algo más" para ver qué plato preparar con solo 1 compra rápida.'
+                : 'Añade más ingredientes desde Inicio para descubrir nuevas recetas.'}
             </p>
-            {activeTab === 'ready' && oneMissingRecipes.length > 0 && (
+            {activeChoice === 'ready' && oneMissingRecipes.length > 0 && (
               <button
                 type="button"
-                onClick={() => handleTabChange('one_missing')}
-                className="mt-2 text-xs text-stone-800 underline underline-offset-4 hover:text-black transition cursor-pointer"
+                onClick={() => setActiveChoice('one_missing')}
+                className="mt-2 text-xs text-[#526639] underline underline-offset-4 hover:text-[#334221] transition cursor-pointer font-medium"
               >
-                Ver opciones con 1 ingrediente faltante ({oneMissingRecipes.length})
+                Ver recetas "Con algo más" ({oneMissingRecipes.length})
               </button>
             )}
           </div>
         ) : (
-          <>
+          <div className="space-y-1">
             {visibleRecipes.map((recipe) => (
               <article
                 key={recipe.id}
@@ -203,7 +242,7 @@ export default function VaciarNeveraPage() {
                   </span>
                 </div>
 
-                {/* Ingredientes disponibles que utiliza */}
+                {/* Ingredientes que utiliza */}
                 <div className="mt-2 text-xs leading-relaxed">
                   <p className="text-stone-400 font-medium mb-0.5">
                     Utiliza:
@@ -223,7 +262,7 @@ export default function VaciarNeveraPage() {
                     <span className="text-stone-400 font-medium">
                       {recipe.missingIngredients.length === 1 ? 'Falta: ' : 'Faltan: '}
                     </span>
-                    <span className="text-stone-800 font-medium capitalize">
+                    <span className="text-[#3b4b27] font-medium capitalize">
                       {recipe.missingIngredients.join(', ')}
                     </span>
                     <span className="text-stone-400 font-mono ml-1.5">
@@ -239,20 +278,7 @@ export default function VaciarNeveraPage() {
                 </div>
               </article>
             ))}
-
-            {/* Si existen más de 4 resultados, botón para ver más */}
-            {!expanded && currentCategoryRecipes.length > 4 && (
-              <div className="py-4 text-center">
-                <button
-                  type="button"
-                  onClick={() => setExpanded(true)}
-                  className="text-xs text-stone-600 hover:text-stone-900 underline underline-offset-4 transition tap-subtle cursor-pointer font-medium"
-                >
-                  Ver más recetas ({currentCategoryRecipes.length - 4} restantes)
-                </button>
-              </div>
-            )}
-          </>
+          </div>
         )}
       </div>
     </div>

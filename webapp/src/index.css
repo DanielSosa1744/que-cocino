@@ -120,6 +120,46 @@
   animation: floatGentle 4.8s ease-in-out infinite;
 }
 
+/* Floating organic buttons with subtle vertical micro-movements (Apple Journal / Calm) */
+@keyframes floatBtn1 {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes floatBtn2 {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes floatBtn3 {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-3.5px);
+  }
+}
+
+.animate-float-btn-1 {
+  animation: floatBtn1 4.6s ease-in-out infinite;
+}
+
+.animate-float-btn-2 {
+  animation: floatBtn2 5.2s ease-in-out 1.2s infinite;
+}
+
+.animate-float-btn-3 {
+  animation: floatBtn3 4.9s ease-in-out 2.3s infinite;
+}
+
 /* Pulsing organic halo */
 @keyframes haloWarmOuter {
   0%, 100% {

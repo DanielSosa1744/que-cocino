@@ -44,7 +44,7 @@ export default function RegisterPage() {
     return (
       <div className="min-h-app bg-white flex items-center justify-center px-6">
         <div className="text-center">
-          <div className="text-5xl mb-4">🎉</div>
+          <div className="text-5xl mb-4"><span className="material-symbols-rounded align-middle text-[1.2em] mb-0.5 inline-block">celebration</span></div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">¡Cuenta creada!</h2>
           <p className="text-gray-500">Redirigiendo a la app...</p>
         </div>

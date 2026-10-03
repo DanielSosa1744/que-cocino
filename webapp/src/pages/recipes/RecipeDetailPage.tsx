@@ -134,7 +134,7 @@ export default function RecipeDetailPage() {
         {/* Resumen de impacto de esta preparación */}
         <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-3 text-white shadow-xs">
           <p className="text-[10px] font-bold text-green-100 uppercase tracking-wide mb-1.5 flex items-center gap-1">
-            🌱 Impacto al cocinar esta receta
+            <span className="material-symbols-rounded align-middle text-[1.2em] mb-0.5 inline-block">eco</span> Impacto al cocinar esta receta
           </p>
           <div className="grid grid-cols-3 gap-1.5 text-center">
             <div className="bg-white/10 rounded-xl p-1.5 backdrop-blur-xs">

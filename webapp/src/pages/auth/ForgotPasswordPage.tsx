@@ -43,7 +43,7 @@ export default function ForgotPasswordPage() {
 
         {sent ? (
           <div className="text-center bg-green-50 rounded-2xl p-6">
-            <div className="text-3xl mb-2">📧</div>
+            <div className="text-3xl mb-2"><span className="material-symbols-rounded align-middle text-[1.2em] mb-0.5 inline-block">mail</span></div>
             <h3 className="font-semibold text-gray-900 mb-1 text-sm">Email enviado</h3>
             <p className="text-gray-500 text-xs">
               Revisa tu bandeja de entrada y sigue las instrucciones.

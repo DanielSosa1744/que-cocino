@@ -3,32 +3,53 @@
 :root {
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --tabbar-h: 4rem;
+  --tabbar-h: 3.75rem;
 }
 
 @layer base {
   * {
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
   }
 
   html, body, #root {
     height: 100%;
+    width: 100%;
     margin: 0;
     padding: 0;
     overflow: hidden;
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #f8fafc;
-    color: #0f172a;
+    background-color: #fafaf9;
+    color: #18181b;
   }
 
   input, textarea, button, select {
     font-family: inherit;
   }
+}
+
+.material-symbols-rounded {
+  font-family: 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
 }
 
 @layer utilities {
@@ -43,7 +64,7 @@
   }
 
   .pt-safe {
-    padding-top: calc(var(--safe-top) + 0.75rem);
+    padding-top: calc(var(--safe-top) + 0.5rem);
   }
 
   .pb-safe {
@@ -61,65 +82,93 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+}
 
-  .safe-bottom {
-    padding-bottom: env(safe-area-inset-bottom, 16px);
+/* Micro-interactions */
+.tap-subtle {
+  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.15s ease, opacity 0.15s ease;
+}
+.tap-subtle:active {
+  transform: scale(0.97);
+}
+
+.hover-lift {
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-1px);
+}
+.hover-lift:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Tab swipe slide transitions */
+.tab-slide-left {
+  animation: tabSlideLeft 0.28s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.tab-slide-right {
+  animation: tabSlideRight 0.28s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes tabSlideLeft {
+  from {
+    opacity: 0.6;
+    transform: translate3d(36px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
   }
 }
 
-/* Mic pulse animation */
-@keyframes pulse-ring {
-  0% { transform: scale(1); opacity: 0.6; }
-  100% { transform: scale(1.6); opacity: 0; }
+@keyframes tabSlideRight {
+  from {
+    opacity: 0.6;
+    transform: translate3d(-36px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
-.mic-pulse::before,
-.mic-pulse::after {
-  content: '';
-  position: absolute;
-  inset: -8px;
-  border-radius: 50%;
-  background: rgba(74, 222, 128, 0.3);
-  animation: pulse-ring 1.2s ease-out infinite;
+/* Login to App reveal animation */
+@keyframes loginRevealScale {
+  0% {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
-.mic-pulse::after {
-  animation-delay: 0.4s;
-  inset: -16px;
+@keyframes loginCurtainDissolve {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  80% {
+    opacity: 0.95;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+  }
 }
 
-/* Smooth page transitions */
-.page-enter {
-  animation: slideInRight 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+.animate-login-reveal {
+  animation: loginRevealScale 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-.page-exit {
-  animation: slideOutLeft 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-@keyframes slideInRight {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes slideOutLeft {
-  from { transform: translateX(0); opacity: 1; }
-  to { transform: translateX(-100%); opacity: 0; }
-}
-
-/* Urgency indicator */
-.urgency-critical {
-  background-color: #fee2e2;
-  border-left: 3px solid #ef4444;
-  color: #dc2626;
-}
-.urgency-warning {
-  background-color: #fff7ed;
-  border-left: 3px solid #f97316;
-  color: #ea580c;
-}
-.urgency-ok {
-  background-color: #f0fdf4;
-  border-left: 3px solid #22c55e;
-  color: #16a34a;
+.animate-curtain-exit {
+  animation: loginCurtainDissolve 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }

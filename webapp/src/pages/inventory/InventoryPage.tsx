@@ -13,9 +13,9 @@ import {
   defaultExpiryDate,
 } from '../../lib/ingredientParser'
 import UrgencyBadge from '../../components/UrgencyBadge'
+import GoogleIcon from '../../components/GoogleIcon'
 import {
   ArrowLeft,
-  Mic,
   Search,
   X,
   Trash2,
@@ -66,7 +66,7 @@ export default function InventoryPage() {
   // MANEJO DE ACCIONES DE UN SOLO TOQUE
   // ==========================================
 
-  // 1. ➕ Aumentar cantidad (1 toque)
+  // 1. <span className="material-symbols-rounded align-middle text-[1.2em] mb-0.5 inline-block">add</span> Aumentar cantidad (1 toque)
   const handleIncrease = (item: InventoryItem) => {
     const currentQty = Number(item.quantity) || 0
     const newQty = currentQty + 1
@@ -80,7 +80,7 @@ export default function InventoryPage() {
     })
   }
 
-  // 2. ➖ Restar cantidad (1 toque o confirmación si llega a 0)
+  // 2. <span className="material-symbols-rounded align-middle text-[1.2em] mb-0.5 inline-block">remove</span> Restar cantidad (1 toque o confirmación si llega a 0)
   const handleDecrease = (item: InventoryItem) => {
     const currentQty = Number(item.quantity) || 1
     if (currentQty <= 1) {
@@ -244,45 +244,45 @@ export default function InventoryPage() {
         <div className="flex gap-1.5 mt-2 overflow-x-auto no-scrollbar py-0.5">
           <button
             onClick={() => setFilter('all')}
-            className={`flex-shrink-0 text-[11px] px-2.5 py-1 rounded-full font-medium transition ${
+            className={`flex-shrink-0 text-[11px] px-2.5 py-1 rounded-full font-medium transition cursor-pointer tap-subtle ${
               filter === 'all'
-                ? 'bg-gray-900 text-white font-bold'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ? 'bg-stone-900 text-white font-bold'
+                : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
             }`}
           >
             Todos ({inventory.length})
           </button>
           <button
             onClick={() => setFilter('critical')}
-            className={`flex-shrink-0 text-[11px] px-2.5 py-1 rounded-full font-bold transition flex items-center gap-1 ${
+            className={`flex-shrink-0 text-[11px] px-2.5 py-1 rounded-full font-bold transition flex items-center gap-1 cursor-pointer tap-subtle ${
               filter === 'critical'
-                ? 'bg-[#F44336] text-white'
-                : 'bg-red-50 text-red-700 hover:bg-red-100'
+                ? 'bg-rose-700 text-white'
+                : 'bg-rose-50 text-rose-800 border border-rose-200/60 hover:bg-rose-100'
             }`}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
             ≤2 días ({criticalCount})
           </button>
           <button
             onClick={() => setFilter('warning')}
-            className={`flex-shrink-0 text-[11px] px-2.5 py-1 rounded-full font-bold transition flex items-center gap-1 ${
+            className={`flex-shrink-0 text-[11px] px-2.5 py-1 rounded-full font-bold transition flex items-center gap-1 cursor-pointer tap-subtle ${
               filter === 'warning'
-                ? 'bg-[#FF9800] text-white'
-                : 'bg-orange-50 text-orange-700 hover:bg-orange-100'
+                ? 'bg-amber-600 text-white'
+                : 'bg-amber-50 text-amber-800 border border-amber-200/60 hover:bg-amber-100'
             }`}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
             ≤7 días ({warningCount})
           </button>
           <button
             onClick={() => setFilter('ok')}
-            className={`flex-shrink-0 text-[11px] px-2.5 py-1 rounded-full font-bold transition flex items-center gap-1 ${
+            className={`flex-shrink-0 text-[11px] px-2.5 py-1 rounded-full font-bold transition flex items-center gap-1 cursor-pointer tap-subtle ${
               filter === 'ok'
-                ? 'bg-[#4CAF50] text-white'
-                : 'bg-green-50 text-green-700 hover:bg-green-100'
+                ? 'bg-emerald-800 text-white'
+                : 'bg-emerald-50 text-emerald-800 border border-emerald-200/60 hover:bg-emerald-100'
             }`}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
             Bien ({okCount})
           </button>
         </div>
@@ -290,54 +290,56 @@ export default function InventoryPage() {
 
       {/* Contenido principal scrolleable */}
       <div className="flex-1 min-h-0 overflow-y-auto px-3 py-2 space-y-2">
-        {/* BANNER PROTAGONISTA: AÑADIR POR VOZ */}
-        <div className="bg-gradient-to-r from-emerald-500 to-green-600 rounded-2xl p-3 text-white shadow-xs flex items-center justify-between gap-2.5">
+        {/* BANNER PROTAGONISTA: AÑADIR POR VOZ (Paleta refinada) */}
+        <div className="bg-stone-900 rounded-2xl p-3 text-white shadow-xs flex items-center justify-between gap-2.5 border border-stone-800">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5 mb-0.5">
-              <span className="text-sm">🎙️</span>
-              <h2 className="text-xs sm:text-sm font-black tracking-tight leading-none">
+              <GoogleIcon name="mic" className="text-emerald-400 text-base" />
+              <h2 className="text-xs sm:text-sm font-bold tracking-tight leading-none text-white">
                 Añadir alimentos por voz
               </h2>
             </div>
-            <p className="text-[11px] text-emerald-100 italic leading-snug line-clamp-1">
+            <p className="text-[11px] text-stone-300 italic leading-snug line-clamp-1 font-normal">
               "Tengo cuatro tomates y dos yogures."
             </p>
           </div>
           <button
             onClick={() => navigate('/voice')}
-            className="flex-shrink-0 px-3.5 py-1.5 bg-white hover:bg-emerald-50 text-emerald-700 font-extrabold text-xs rounded-xl shadow-xs transition active:scale-95 flex items-center gap-1.5"
+            className="flex-shrink-0 px-3.5 py-1.5 bg-white hover:bg-stone-100 text-stone-900 font-bold text-xs rounded-xl shadow-xs transition active:scale-95 flex items-center gap-1.5 tap-subtle cursor-pointer"
           >
-            <Mic className="w-3.5 h-3.5 text-emerald-600" />
+            <GoogleIcon name="mic" className="text-emerald-700 text-sm" />
             <span>Hablar</span>
           </button>
         </div>
 
         {/* Loading state */}
         {isLoading && (
-          <div className="flex flex-col items-center justify-center py-20 gap-2 text-gray-400 text-xs">
-            <div className="w-7 h-7 border-3 border-green-500 border-t-transparent rounded-full animate-spin" />
+          <div className="flex flex-col items-center justify-center py-20 gap-2 text-stone-400 text-xs">
+            <div className="w-7 h-7 border-2 border-emerald-700 border-t-transparent rounded-full animate-spin" />
             <span>Actualizando despensa...</span>
           </div>
         )}
 
         {/* Estado vacío */}
         {!isLoading && inventory.length === 0 && (
-          <div className="bg-white rounded-3xl p-6 text-center border border-gray-100 shadow-2xs mt-2">
-            <p className="text-4xl mb-2">🧺</p>
-            <h3 className="font-extrabold text-gray-900 text-base">Tu despensa está vacía</h3>
-            <p className="text-gray-400 text-xs mt-1 mb-4 max-w-xs mx-auto">
+          <div className="bg-white rounded-3xl p-6 text-center border border-stone-200/70 shadow-2xs mt-2">
+            <div className="w-12 h-12 bg-stone-100 rounded-2xl flex items-center justify-center mx-auto mb-2 text-stone-400">
+              <GoogleIcon name="shopping_basket" className="text-2xl text-stone-500" />
+            </div>
+            <h3 className="font-extrabold text-stone-900 text-base">Tu despensa está vacía</h3>
+            <p className="text-stone-400 text-xs mt-1 mb-4 max-w-xs mx-auto">
               Mantén tu inventario al día dictando por voz o añadiendo alimentos manualmente.
             </p>
             <div className="flex flex-col gap-2 max-w-xs mx-auto">
               <button
                 onClick={() => navigate('/voice')}
-                className="w-full py-2.5 bg-green-500 hover:bg-green-600 text-white font-extrabold rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs transition active:scale-95"
+                className="w-full py-2.5 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs transition active:scale-95 tap-subtle cursor-pointer"
               >
-                <Mic className="w-4 h-4" /> Dictar por voz
+                <GoogleIcon name="mic" className="text-emerald-400 text-sm" /> Dictar por voz
               </button>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs transition active:scale-95"
+                className="w-full py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl text-xs transition active:scale-95 tap-subtle cursor-pointer"
               >
                 + Añadir manualmente
               </button>
@@ -472,7 +474,7 @@ export default function InventoryPage() {
                     <div className="flex items-center gap-2 flex-shrink-0">
                       {/* BOTONES DE CANTIDAD: [-] Cantidad [+] */}
                       <div className="flex items-center bg-gray-50 border border-gray-200 rounded-xl p-0.5 shadow-2xs">
-                        {/* ➖ Restar cantidad */}
+                        {/* <span className="material-symbols-rounded align-middle text-[1.2em] mb-0.5 inline-block">remove</span> Restar cantidad */}
                         <button
                           onClick={() => handleDecrease(item)}
                           className="w-7 h-7 rounded-lg bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 flex items-center justify-center font-bold transition active:scale-90"
@@ -492,7 +494,7 @@ export default function InventoryPage() {
                           </span>
                         </div>
 
-                        {/* ➕ Aumentar cantidad */}
+                        {/* <span className="material-symbols-rounded align-middle text-[1.2em] mb-0.5 inline-block">add</span> Aumentar cantidad */}
                         <button
                           onClick={() => handleIncrease(item)}
                           className="w-7 h-7 rounded-lg bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 flex items-center justify-center font-bold transition active:scale-90"
@@ -512,7 +514,7 @@ export default function InventoryPage() {
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
 
-                      {/* 🗑 Botón Eliminar con papelera */}
+                      {/* <span className="material-symbols-rounded align-middle text-[1.2em] mb-0.5 inline-block">delete</span> Botón Eliminar con papelera */}
                       <button
                         onClick={() => setDeleteConfirmItem(item)}
                         className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition active:scale-95"
@@ -530,7 +532,7 @@ export default function InventoryPage() {
         </div>
       </div>
 
-      {/* BOTÓN FLOTANTE: ➕ Añadir ingrediente */}
+      {/* BOTÓN FLOTANTE: <span className="material-symbols-rounded align-middle text-[1.2em] mb-0.5 inline-block">add</span> Añadir ingrediente */}
       <div className="fixed bottom-20 right-4 z-40">
         <button
           onClick={() => setShowAddModal(true)}
@@ -793,7 +795,7 @@ export default function InventoryPage() {
                               : 'bg-red-100 text-red-700'
                           }`}
                         >
-                          {isAdd ? '+' : isDecrease ? '-' : '🗑'}
+                          {isAdd ? '+' : isDecrease ? '-' : <GoogleIcon name="delete" className="text-xs" />}
                         </span>
                         <div className="truncate">
                           <span className="font-extrabold text-gray-900 block truncate">

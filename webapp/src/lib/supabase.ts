@@ -13,7 +13,7 @@ export const isSupabaseConfigured = Boolean(
 
 if (!isSupabaseConfigured) {
   console.info(
-    'ℹ️ ¿Qué Cocino? funcionando en Modo Local/Demostración sin Supabase. ' +
+    '<span className="material-symbols-rounded align-middle text-[1.2em] mb-0.5 inline-block">info</span>️ ¿Qué Cocino? funcionando en Modo Local/Demostración sin Supabase. ' +
     'Para conectar con PostgreSQL en la nube, añade VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY en tu .env'
   )
 }

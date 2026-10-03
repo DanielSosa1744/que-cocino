@@ -16,7 +16,9 @@ export default function SwipeContainer({ children }: SwipeContainerProps) {
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | 'none'>('none')
   const prevTabIndex = useRef<number>(-1)
 
-  const currentTabIndex = MAIN_TABS.findIndex(t => t.path === location.pathname)
+  const currentTabIndex = MAIN_TABS.findIndex(
+    t => t.path === location.pathname || (t.path === '/recetas' && location.pathname === '/vaciar-nevera')
+  )
   const isMainTab = currentTabIndex !== -1
 
   useEffect(() => {

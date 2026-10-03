@@ -78,8 +78,8 @@ export default function ConfirmIngredientsPage() {
     }))
 
     await addIngredients(items)
-    // Mostrar el inventario actualizado
-    navigate('/inventory', { replace: true })
+    // Mostrar directamente las recetas compatibles
+    navigate('/recetas', { replace: true })
   }
 
   return (

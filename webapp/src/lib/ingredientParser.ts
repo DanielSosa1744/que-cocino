@@ -259,6 +259,46 @@ export function estimateItemValue(name: string, quantity: number = 1, unit?: str
   return +(1.20 * qty).toFixed(2)
 }
 
+export function estimateItemValueARS(name: string, quantity: number = 1, unit?: string | null): number {
+  const norm = singularize(name)
+  const qty = Number(quantity) || 1
+  const ARS_PRICES: Record<string, number> = {
+    tomate: 450,
+    huevo: 350,
+    leche: 1800,
+    queso: 2500,
+    lechuga: 1200,
+    cebolla: 400,
+    pollo: 3200,
+    arroz: 1400,
+    pasta: 1300,
+    yogur: 900,
+    patata: 500,
+    papa: 500,
+    zanahoria: 450,
+    pan: 900,
+    atun: 1900,
+    limon: 350,
+    ajo: 350,
+    aceite: 3500,
+    carne: 4500,
+    espinaca: 1200,
+    manzana: 650,
+    platano: 550,
+    banana: 550,
+    lenteja: 1400,
+    garbanzo: 1400,
+  }
+  for (const [key, price] of Object.entries(ARS_PRICES)) {
+    if (norm.includes(key) || key.includes(norm)) {
+      if (unit === 'kg') return Math.round(price * 2.5 * qty)
+      if (unit === 'g') return Math.round((price * 2.5 * qty) / 1000)
+      return Math.round(price * qty)
+    }
+  }
+  return Math.round(1200 * qty)
+}
+
 export function estimateItemWeightKg(name: string, quantity: number = 1, unit?: string | null): number {
   const norm = singularize(name)
   const qty = Number(quantity) || 1

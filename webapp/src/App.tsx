@@ -14,7 +14,6 @@ import ResetPasswordPage from './pages/auth/ResetPasswordPage'
 import HomePage from './pages/HomePage'
 import VoicePage from './pages/voice/VoicePage'
 import ConfirmIngredientsPage from './pages/voice/ConfirmIngredientsPage'
-import DashboardPage from './pages/dashboard/DashboardPage'
 import InventoryPage from './pages/inventory/InventoryPage'
 import VaciarNeveraPage from './pages/recipes/VaciarNeveraPage'
 import RecipeDetailPage from './pages/recipes/RecipeDetailPage'
@@ -45,13 +44,12 @@ function AppContent() {
               <ProtectedRoute><ConfirmIngredientsPage /></ProtectedRoute>
             } />
 
-            <Route path="/dashboard" element={
-              <ProtectedRoute><DashboardPage /></ProtectedRoute>
-            } />
-
-            <Route path="/vaciar-nevera" element={
+            <Route path="/recetas" element={
               <ProtectedRoute><VaciarNeveraPage /></ProtectedRoute>
             } />
+
+            <Route path="/vaciar-nevera" element={<Navigate to="/recetas" replace />} />
+            <Route path="/dashboard" element={<Navigate to="/recetas" replace />} />
 
             <Route path="/recipe/:id" element={
               <ProtectedRoute><RecipeDetailPage /></ProtectedRoute>

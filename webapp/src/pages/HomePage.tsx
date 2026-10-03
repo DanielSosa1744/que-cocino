@@ -1,191 +1,130 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useInventory } from '../hooks/useInventory'
-import {
-  Mic,
-  Package,
-  ChevronRight,
-  Leaf,
-  Trash2,
-  TrendingDown,
-  LayoutDashboard
-} from 'lucide-react'
-import UrgencyBadge from '../components/UrgencyBadge'
+import { Mic, LogOut } from 'lucide-react'
 
 export default function HomePage() {
-  const { user, signOut } = useAuth()
+  const { signOut } = useAuth()
   const navigate = useNavigate()
   const { data: inventory = [] } = useInventory()
 
-  const criticalItems = inventory.filter(i => i.urgency === 'critical')
-  const totalItems = inventory.length
-
-  // Ordenar alimentos por caducidad (los más urgentes primero)
-  const sortedInventory = [...inventory].sort((a, b) => {
-    const daysA = a.days_until_expiry ?? 999
-    const daysB = b.days_until_expiry ?? 999
-    return daysA - daysB
-  })
-
-  const firstName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'amigo'
+  const urgentCount = inventory.filter(i => i.urgency === 'critical' || i.urgency === 'warning').length
 
   return (
-    <div className="h-full max-h-full bg-gray-50 flex flex-col justify-between overflow-hidden">
-      {/* Header superior compacto */}
-      <div className="bg-white border-b border-gray-100 px-3.5 pt-safe pb-2 flex-shrink-0">
+    <div className="h-full max-h-full bg-gradient-to-b from-emerald-50/40 via-white to-gray-50/30 flex flex-col justify-between overflow-hidden px-5 py-3.5 select-none">
+      {/* 1. Header superior minimalista: Saludo & Alerta discreta */}
+      <div className="flex-shrink-0 pt-safe">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <div className="w-7 h-7 rounded-lg bg-green-50 flex items-center justify-center border border-green-100">
-              <Leaf className="w-3.5 h-3.5 text-[#4CAF50]" />
-            </div>
-            <div>
-              <span className="font-extrabold text-gray-900 text-xs block leading-tight">¿Qué Cocino?</span>
-              <p className="text-[10px] text-gray-400 font-medium">Hola, {firstName} 👋</p>
-            </div>
+          <div>
+            <p className="text-xs sm:text-sm font-semibold text-gray-700 tracking-tight">
+              Hola, Chef Sostenible 👋
+            </p>
           </div>
           <button
             onClick={signOut}
-            className="text-[11px] text-gray-400 hover:text-gray-600 transition"
+            title="Cerrar sesión"
+            className="p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition"
           >
-            Cerrar sesión
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
-      </div>
 
-      <div className="px-3 py-1.5 flex-1 flex flex-col justify-evenly gap-1.5 overflow-hidden">
-        {/* Alerta de alimentos críticos si existen */}
-        {criticalItems.length > 0 && (
-          <div className="bg-red-50 border border-red-100 rounded-xl p-2 flex items-center justify-between flex-shrink-0 shadow-2xs">
-            <div className="flex items-center gap-2 overflow-hidden pr-2">
-              <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0 animate-ping" />
-              <div className="truncate">
-                <span className="text-[11px] font-bold text-red-700 block truncate">
-                  {criticalItems.length} urgente(s): {criticalItems.map(i => i.name).join(', ')}
-                </span>
-                <span className="text-[9px] text-red-500 font-medium block">Vencen en ≤2 días</span>
-              </div>
-            </div>
+        {/* Alerta discreta: solo cápsula si hay alimentos urgentes */}
+        {urgentCount > 0 && (
+          <div className="mt-2 flex justify-center">
             <button
               onClick={() => navigate('/vaciar-nevera')}
-              className="text-[11px] bg-red-500 hover:bg-red-600 text-white font-bold px-2.5 py-1 rounded-lg whitespace-nowrap flex items-center gap-0.5 flex-shrink-0 shadow-xs"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 hover:bg-red-100 border border-red-200/70 text-red-700 text-[11px] font-semibold shadow-2xs transition active:scale-95"
             >
-              Cocinar <ChevronRight className="w-3 h-3" />
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
+              <span>
+                {urgentCount} {urgentCount === 1 ? 'alimento necesita' : 'alimentos necesitan'} atención
+              </span>
             </button>
           </div>
         )}
+      </div>
 
-        {/* SECCIÓN PRINCIPAL: BOTÓN CENTRAL DE MICRÓFONO */}
-        <div className="bg-white rounded-2xl p-2.5 text-center shadow-xs border border-gray-100 flex flex-col items-center justify-center flex-1 max-h-[190px]">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-green-600">
-            Entrada Rápida por Voz
+      {/* 2 & 3. Centro de captura: Pregunta principal + Botón protagonista de voz */}
+      <div className="flex-1 flex flex-col items-center justify-center my-auto text-center gap-4 sm:gap-5 px-2">
+        {/* Pregunta principal */}
+        <div className="space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+            ¿Qué tienes hoy en casa?
+          </h1>
+          <p className="text-xs text-gray-400 font-medium">
+            Dilo con tu voz y cocinemos sin desperdiciar
           </p>
-          <p className="text-gray-500 text-[11px] mt-0.5 mb-1.5">
-            Dicta tus ingredientes para no tirar comida
-          </p>
+        </div>
 
+        {/* Botón de voz protagonista (30% - 40% de la atención visual) */}
+        <div className="flex flex-col items-center my-1">
+          <div className="relative flex items-center justify-center">
+            {/* Ondas concéntricas sutiles estilo Apple Voice Memos / Siri */}
+            <div className="absolute w-44 h-44 sm:w-52 sm:h-52 rounded-full bg-[#4CAF50]/10 animate-ping opacity-25 pointer-events-none" />
+            <div className="absolute w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-[#4CAF50]/15 pointer-events-none transition-transform duration-700" />
+
+            <button
+              onClick={() => navigate('/voice')}
+              className="relative z-10 w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-[#4CAF50] hover:bg-[#43A047] text-white shadow-xl shadow-green-500/25 flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+              aria-label="Toca para hablar"
+            >
+              <Mic className="w-12 h-12 text-white stroke-[2.2]" />
+            </button>
+          </div>
+
+          {/* Texto de acción */}
           <button
             onClick={() => navigate('/voice')}
-            className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#4CAF50] hover:bg-green-600 text-white shadow-md shadow-green-200 transition-all hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer my-0.5"
-            aria-label="Iniciar reconocimiento de voz"
+            className="mt-3.5 text-sm sm:text-base font-extrabold text-gray-800 hover:text-green-600 transition flex items-center justify-center gap-1.5"
           >
-            <Mic className="w-7 h-7 sm:w-8 sm:h-8" />
+            <span>🎙️</span>
+            <span>Toca para hablar</span>
           </button>
-
-          <p className="text-gray-800 font-extrabold text-xs mt-1">
-            Pulsa para hablar
-          </p>
-          <p className="text-[10px] text-gray-400 italic mt-0.5 truncate max-w-[280px]">
-            "Tengo tomates, huevos y media cebolla"
-          </p>
         </div>
 
-        {/* ACCESOS DIRECTOS DEL FLUJO PRINCIPAL */}
-        <div className="grid grid-cols-2 gap-1.5 flex-shrink-0">
-          {/* Dashboard */}
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="bg-white rounded-xl p-2 border border-gray-100 shadow-2xs text-left hover:border-gray-200 transition flex items-center gap-2 active:scale-98"
-          >
-            <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-              <LayoutDashboard className="w-3.5 h-3.5 text-blue-500" />
-            </div>
-            <div className="truncate">
-              <p className="text-[10px] text-gray-400 leading-tight">Panel</p>
-              <p className="text-xs font-bold text-gray-900 leading-tight">Dashboard</p>
-            </div>
-          </button>
+        {/* 4. Ejemplo conversacional limpio y amigable */}
+        <div
+          onClick={() => navigate('/voice')}
+          className="bg-white/95 backdrop-blur-xs border border-gray-100 rounded-2xl px-4 py-3 shadow-2xs max-w-xs text-center cursor-pointer hover:border-green-200 transition"
+        >
+          <p className="text-[10px] font-bold uppercase tracking-wider text-green-600 mb-1">
+            Prueba diciendo:
+          </p>
+          <p className="text-xs text-gray-600 italic leading-relaxed">
+            "Tengo dos yogures que vencen mañana,<br />
+            cuatro tomates y media lechuga."
+          </p>
+        </div>
+      </div>
 
-          {/* Modo Vaciar Nevera */}
-          <button
-            onClick={() => navigate('/vaciar-nevera')}
-            className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl p-2 text-white shadow-2xs text-left transition flex items-center gap-2 active:scale-98"
-          >
-            <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
-              <Trash2 className="w-3.5 h-3.5 text-white" />
-            </div>
-            <div className="truncate">
-              <p className="text-[10px] text-orange-100 leading-tight">Cocinar hoy</p>
-              <p className="text-xs font-black text-white leading-tight">Vaciar Nevera</p>
-            </div>
-          </button>
-
-          {/* Inventario */}
+      {/* 5. Accesos secundarios compactos (sin tarjetas grandes, sin estadísticas) */}
+      <div className="flex-shrink-0 pt-2 pb-1">
+        <div className="flex items-center justify-center gap-2.5">
           <button
             onClick={() => navigate('/inventory')}
-            className="bg-white rounded-xl p-2 border border-gray-100 shadow-2xs text-left hover:border-gray-200 transition flex items-center gap-2 active:scale-98"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-gray-200/80 hover:bg-gray-50 text-gray-700 text-xs font-semibold shadow-2xs transition active:scale-95"
           >
-            <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-              <Package className="w-3.5 h-3.5 text-gray-700" />
-            </div>
-            <div className="truncate">
-              <p className="text-[10px] text-gray-400 leading-tight">{totalItems} ítems</p>
-              <p className="text-xs font-bold text-gray-900 leading-tight">Inventario</p>
-            </div>
+            <span>📦</span>
+            <span>Inventario</span>
           </button>
 
-          {/* Impacto */}
+          <button
+            onClick={() => navigate('/vaciar-nevera')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-gray-200/80 hover:bg-gray-50 text-gray-700 text-xs font-semibold shadow-2xs transition active:scale-95"
+          >
+            <span>🥫</span>
+            <span>Plan</span>
+          </button>
+
           <button
             onClick={() => navigate('/impact')}
-            className="bg-white rounded-xl p-2 border border-gray-100 shadow-2xs text-left hover:border-gray-200 transition flex items-center gap-2 active:scale-98"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-gray-200/80 hover:bg-gray-50 text-gray-700 text-xs font-semibold shadow-2xs transition active:scale-95"
           >
-            <div className="w-7 h-7 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
-              <TrendingDown className="w-3.5 h-3.5 text-green-600" />
-            </div>
-            <div className="truncate">
-              <p className="text-[10px] text-gray-400 leading-tight">Ahorro</p>
-              <p className="text-xs font-bold text-green-700 leading-tight">Mi Impacto</p>
-            </div>
+            <span>📈</span>
+            <span>Impacto</span>
           </button>
         </div>
-
-        {/* Resumen rápido de despensa si hay alimentos */}
-        {totalItems > 0 && (
-          <div className="bg-white rounded-xl p-2 border border-gray-100 shadow-2xs flex-shrink-0">
-            <div className="flex items-center justify-between mb-1">
-              <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-wide">
-                Prioridad de Vencimiento ({totalItems})
-              </h3>
-              <button
-                onClick={() => navigate('/inventory')}
-                className="text-[10px] text-green-600 font-semibold hover:underline"
-              >
-                Ver todos
-              </button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-1.5">
-              {sortedInventory.slice(0, 2).map(item => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between px-2 py-1 rounded-lg bg-gray-50 text-[11px]"
-                >
-                  <span className="font-semibold text-gray-800 capitalize truncate pr-1">{item.name}</span>
-                  <UrgencyBadge item={item} />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )

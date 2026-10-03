@@ -8,8 +8,11 @@ import {
   Sparkles,
   ArrowRight,
   Flame,
-  CheckCircle2
+  CheckCircle2,
+  Euro,
 } from 'lucide-react'
+import { estimateItemValue, isIngredientMatch } from '../../lib/ingredientParser'
+import type { RecipeWithScore } from '../../types/app.types'
 
 function PriorityBadge({ priority }: { priority: 'Alta' | 'Media' | 'Baja' }) {
   if (priority === 'Alta') {
@@ -45,6 +48,13 @@ export default function VaciarNeveraPage() {
 
   const topRecipe = recipes.length > 0 ? recipes[0] : null
   const otherRecipes = recipes.length > 1 ? recipes.slice(1) : []
+
+  const getRecipeSavings = (rec: RecipeWithScore) => {
+    return rec.matchedIngredients.reduce((sum, ingName) => {
+      const invItem = inventory.find(i => isIngredientMatch(i.name, ingName))
+      return sum + estimateItemValue(ingName, invItem?.quantity ?? 1, invItem?.unit)
+    }, 0)
+  }
 
   return (
     <div className="h-full max-h-full bg-gray-50 flex flex-col overflow-hidden">
@@ -204,6 +214,14 @@ export default function VaciarNeveraPage() {
               </div>
             </div>
 
+            {/* Ahorro económico estimado */}
+            {getRecipeSavings(topRecipe) > 0 && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
+                <Euro className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+                <span>Salvas ≈ {getRecipeSavings(topRecipe).toFixed(2)}€ aprovechando estos alimentos</span>
+              </div>
+            )}
+
             {/* Ingredientes aprovechados */}
             <div>
               <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1 flex items-center gap-1">
@@ -292,12 +310,17 @@ export default function VaciarNeveraPage() {
                     ))}
                   </div>
 
-                  <div className="mt-2.5 pt-2 border-t border-gray-50 flex items-center justify-between text-xs text-gray-400">
-                    <span>
-                      Aprovecha <strong>{recipe.totalIngredientsUsed}</strong> alimento{recipe.totalIngredientsUsed > 1 ? 's' : ''}
-                      {recipe.urgentIngredientsUsed > 0 ? ` (${recipe.urgentIngredientsUsed} urgente${recipe.urgentIngredientsUsed > 1 ? 's' : ''})` : ''}
+                  <div className="mt-2.5 pt-2 border-t border-gray-50 flex items-center justify-between text-xs text-gray-500">
+                    <span className="flex items-center gap-1 flex-wrap">
+                      <span>
+                        Aprovecha <strong>{recipe.totalIngredientsUsed}</strong> alimento{recipe.totalIngredientsUsed > 1 ? 's' : ''}
+                        {recipe.urgentIngredientsUsed > 0 ? ` (${recipe.urgentIngredientsUsed} urgente${recipe.urgentIngredientsUsed > 1 ? 's' : ''})` : ''}
+                      </span>
+                      {getRecipeSavings(recipe) > 0 && (
+                        <span className="text-emerald-700 font-bold ml-1">· Salvas ≈ {getRecipeSavings(recipe).toFixed(2)}€</span>
+                      )}
                     </span>
-                    <span className="text-orange-500 font-semibold flex items-center gap-0.5">
+                    <span className="text-orange-500 font-semibold flex items-center gap-0.5 flex-shrink-0">
                       Ver receta <ArrowRight className="w-3 h-3" />
                     </span>
                   </div>

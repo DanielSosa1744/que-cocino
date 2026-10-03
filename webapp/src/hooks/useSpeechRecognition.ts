@@ -86,6 +86,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
   const isListeningRef = useRef(false)
   const userStoppedRef = useRef(false)
   const accumulatedFinalRef = useRef('')
+  const latestInterimRef = useRef('')
   const retryCountRef = useRef(0)
   const simulationTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const restartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -128,6 +129,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
     setError(null)
     setErrorCode(null)
     setInterimTranscript('')
+    latestInterimRef.current = ''
     userStoppedRef.current = false
     isListeningRef.current = true
     setIsListening(true)
@@ -182,6 +184,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
             }
           }
 
+          latestInterimRef.current = interim
           const combined = (accumulatedFinalRef.current ? accumulatedFinalRef.current + ' ' : '') + sessionFinalText
           const cleanText = collapseRepeats(combined.trim())
           if (cleanText) {
@@ -225,6 +228,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
           if (sessionFinalText.trim()) {
             const currentCombined = (accumulatedFinalRef.current ? accumulatedFinalRef.current + ' ' : '') + sessionFinalText
             accumulatedFinalRef.current = collapseRepeats(currentCombined.trim())
+            setTranscript(accumulatedFinalRef.current)
           }
 
           // REGLA CLAVE: Solo el usuario puede detener el micrófono.
@@ -272,6 +276,15 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
       simulationTimerRef.current = null
     }
 
+    // Si había texto en interim pendiente cuando el usuario pulsó detener, acumularlo
+    if (latestInterimRef.current.trim()) {
+      const combined = (accumulatedFinalRef.current ? accumulatedFinalRef.current + ' ' : '') + latestInterimRef.current.trim()
+      const clean = collapseRepeats(combined.trim())
+      accumulatedFinalRef.current = clean
+      setTranscript(clean)
+      latestInterimRef.current = ''
+    }
+
     if (recognitionRef.current) {
       try {
         recognitionRef.current.stop()
@@ -284,6 +297,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
 
   const resetTranscript = useCallback(() => {
     accumulatedFinalRef.current = ''
+    latestInterimRef.current = ''
     setTranscript('')
     setInterimTranscript('')
     setError(null)

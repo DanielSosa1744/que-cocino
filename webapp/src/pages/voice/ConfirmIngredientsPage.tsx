@@ -226,7 +226,7 @@ export default function ConfirmIngredientsPage() {
           ) : (
             <>
               <CheckCircle className="w-4 h-4" />
-              Guardar e ir al Dashboard
+              Guardar en el inventario
             </>
           )}
         </button>

@@ -4,7 +4,7 @@ import { ArrowLeft, Clock, Users, CheckCircle, Sparkles, ChefHat } from 'lucide-
 import { useSaveCooked, useVaciarNevera } from '../../hooks/useRecipes'
 import { useDeleteIngredient } from '../../hooks/useInventory'
 import { useInventory } from '../../hooks/useInventory'
-import { isIngredientMatch } from '../../lib/ingredientParser'
+import { isIngredientMatch, estimateItemValue, estimateItemWeightKg } from '../../lib/ingredientParser'
 import type { RecipeWithScore } from '../../types/app.types'
 
 export default function RecipeDetailPage() {
@@ -37,26 +37,33 @@ export default function RecipeDetailPage() {
     )
   }
 
-  const handleCooked = async () => {
-    const ingredientCount = recipe.matchedIngredients.length
-    const wasteAvoidedKg = ingredientCount * 0.18 // ~180g por ingrediente rescatado
-    const moneySavedEur = ingredientCount * 1.10   // ~1.10€ por ingrediente rescatado
-    const co2AvoidedKg = wasteAvoidedKg * 2.5     // Factor estándar de huella CO2 evitados
+  // Pre-calcular impacto real para esta receta
+  const matchedInventoryItems = inventory.filter(item =>
+    recipe.matchedIngredients.some(ing => isIngredientMatch(item.name, ing))
+  )
 
+  let calculatedMoney = 0
+  let calculatedWeightKg = 0
+  matchedInventoryItems.forEach(item => {
+    calculatedMoney += estimateItemValue(item.name, item.quantity ?? 1, item.unit)
+    calculatedWeightKg += estimateItemWeightKg(item.name, item.quantity ?? 1, item.unit)
+  })
+
+  const moneySavedPreview = calculatedMoney > 0 ? calculatedMoney : recipe.matchedIngredients.length * 1.10
+  const wasteAvoidedKgPreview = calculatedWeightKg > 0 ? calculatedWeightKg : recipe.matchedIngredients.length * 0.18
+  const co2AvoidedKgPreview = +(wasteAvoidedKgPreview * 2.5).toFixed(2)
+
+  const handleCooked = async () => {
     await saveCooked({
       recipeName: recipe.name,
       recipeId: recipe.id,
       ingredientsUsed: recipe.matchedIngredients,
-      wasteAvoidedKg,
-      moneySavedEur,
-      co2AvoidedKg,
+      wasteAvoidedKg: wasteAvoidedKgPreview,
+      moneySavedEur: moneySavedPreview,
+      co2AvoidedKg: co2AvoidedKgPreview,
     })
 
-    // Marcar ingredientes consumidos del inventario de forma precisa usando isIngredientMatch
-    const matchedInventoryItems = inventory.filter(item =>
-      recipe.matchedIngredients.some(ing => isIngredientMatch(item.name, ing))
-    )
-
+    // Marcar ingredientes consumidos del inventario
     matchedInventoryItems.forEach(item => deleteItem(item.id))
 
     setCooked(true)
@@ -132,19 +139,19 @@ export default function RecipeDetailPage() {
           <div className="grid grid-cols-3 gap-1.5 text-center">
             <div className="bg-white/10 rounded-xl p-1.5 backdrop-blur-xs">
               <p className="text-sm font-black">
-                {(recipe.matchedIngredients.length * 0.18).toFixed(2)} kg
+                {wasteAvoidedKgPreview.toFixed(2)} kg
               </p>
               <p className="text-[9px] text-green-100 mt-0.5">Comida salvada</p>
             </div>
             <div className="bg-white/10 rounded-xl p-1.5 backdrop-blur-xs">
               <p className="text-sm font-black">
-                {(recipe.matchedIngredients.length * 1.1).toFixed(2)}€
+                {moneySavedPreview.toFixed(2)}€
               </p>
               <p className="text-[9px] text-green-100 mt-0.5">Ahorro est.</p>
             </div>
             <div className="bg-white/10 rounded-xl p-1.5 backdrop-blur-xs">
               <p className="text-sm font-black">
-                {(recipe.matchedIngredients.length * 0.45).toFixed(2)} kg
+                {co2AvoidedKgPreview.toFixed(2)} kg
               </p>
               <p className="text-[9px] text-green-100 mt-0.5">CO₂ evitado</p>
             </div>

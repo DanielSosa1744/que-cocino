@@ -210,17 +210,122 @@ export function guessShelfLife(name: string): number {
   return 7 // Default 7 days
 }
 
+// Catálogo de precios y pesos de referencia para cuantificación económica y huella (Motor de Ahorro)
+export const INGREDIENT_PRICE_REF: Record<string, { pricePerUnit: number; defaultWeightKg: number }> = {
+  tomate: { pricePerUnit: 0.45, defaultWeightKg: 0.15 },
+  lechuga: { pricePerUnit: 1.10, defaultWeightKg: 0.25 },
+  yogur: { pricePerUnit: 0.65, defaultWeightKg: 0.125 },
+  huevo: { pricePerUnit: 0.28, defaultWeightKg: 0.06 },
+  pollo: { pricePerUnit: 3.50, defaultWeightKg: 0.40 },
+  carne: { pricePerUnit: 4.80, defaultWeightKg: 0.35 },
+  ternera: { pricePerUnit: 5.20, defaultWeightKg: 0.35 },
+  cerdo: { pricePerUnit: 3.80, defaultWeightKg: 0.35 },
+  pescado: { pricePerUnit: 4.20, defaultWeightKg: 0.30 },
+  salmon: { pricePerUnit: 5.50, defaultWeightKg: 0.25 },
+  merluza: { pricePerUnit: 3.90, defaultWeightKg: 0.30 },
+  atun: { pricePerUnit: 1.30, defaultWeightKg: 0.15 },
+  queso: { pricePerUnit: 2.20, defaultWeightKg: 0.20 },
+  leche: { pricePerUnit: 1.05, defaultWeightKg: 1.0 },
+  arroz: { pricePerUnit: 1.30, defaultWeightKg: 0.5 },
+  pasta: { pricePerUnit: 1.15, defaultWeightKg: 0.5 },
+  pan: { pricePerUnit: 0.90, defaultWeightKg: 0.25 },
+  cebolla: { pricePerUnit: 0.40, defaultWeightKg: 0.15 },
+  ajo: { pricePerUnit: 0.25, defaultWeightKg: 0.05 },
+  patata: { pricePerUnit: 0.40, defaultWeightKg: 0.20 },
+  papa: { pricePerUnit: 0.40, defaultWeightKg: 0.20 },
+  zanahoria: { pricePerUnit: 0.30, defaultWeightKg: 0.10 },
+  pimiento: { pricePerUnit: 0.60, defaultWeightKg: 0.18 },
+  calabacin: { pricePerUnit: 0.70, defaultWeightKg: 0.25 },
+  berenjena: { pricePerUnit: 0.80, defaultWeightKg: 0.30 },
+  champinon: { pricePerUnit: 1.50, defaultWeightKg: 0.25 },
+  manzana: { pricePerUnit: 0.45, defaultWeightKg: 0.18 },
+  platano: { pricePerUnit: 0.35, defaultWeightKg: 0.15 },
+  naranja: { pricePerUnit: 0.40, defaultWeightKg: 0.20 },
+  limon: { pricePerUnit: 0.35, defaultWeightKg: 0.12 },
+  lentejas: { pricePerUnit: 1.20, defaultWeightKg: 0.5 },
+  garbanzos: { pricePerUnit: 1.20, defaultWeightKg: 0.5 },
+}
+
+export function estimateItemValue(name: string, quantity: number = 1, unit?: string | null): number {
+  const norm = singularize(name)
+  const qty = Number(quantity) || 1
+  for (const [key, ref] of Object.entries(INGREDIENT_PRICE_REF)) {
+    if (norm.includes(key) || key.includes(norm)) {
+      if (unit === 'kg') return +(ref.pricePerUnit * (1 / (ref.defaultWeightKg || 0.2)) * qty).toFixed(2)
+      if (unit === 'g') return +((ref.pricePerUnit / ((ref.defaultWeightKg || 0.2) * 1000)) * qty).toFixed(2)
+      return +(ref.pricePerUnit * qty).toFixed(2)
+    }
+  }
+  return +(1.20 * qty).toFixed(2)
+}
+
+export function estimateItemWeightKg(name: string, quantity: number = 1, unit?: string | null): number {
+  const norm = singularize(name)
+  const qty = Number(quantity) || 1
+  if (unit === 'kg') return qty
+  if (unit === 'g') return +(qty / 1000).toFixed(3)
+  for (const [key, ref] of Object.entries(INGREDIENT_PRICE_REF)) {
+    if (norm.includes(key) || key.includes(norm)) {
+      return +(ref.defaultWeightKg * qty).toFixed(3)
+    }
+  }
+  return +(0.18 * qty).toFixed(3)
+}
+
+export function calculateInventoryEconomicRisk(
+  items: Array<{ name: string; quantity?: number | null; unit?: string | null; urgency: string }>
+): {
+  totalValue: number
+  riskValue: number
+  riskWeightKg: number
+} {
+  let totalValue = 0
+  let riskValue = 0
+  let riskWeightKg = 0
+
+  for (const item of items) {
+    const val = estimateItemValue(item.name, item.quantity ?? 1, item.unit)
+    const weight = estimateItemWeightKg(item.name, item.quantity ?? 1, item.unit)
+    totalValue += val
+    if (item.urgency === 'critical' || item.urgency === 'warning') {
+      riskValue += val
+      riskWeightKg += weight
+    }
+  }
+
+  return {
+    totalValue: +totalValue.toFixed(2),
+    riskValue: +riskValue.toFixed(2),
+    riskWeightKg: +riskWeightKg.toFixed(2),
+  }
+}
+
+function extractClauseExpiryDays(clause: string): number | null {
+  const lower = clause.toLowerCase()
+  if (/\b(hoy|vence hoy|vencen hoy|caduca hoy|caducan hoy)\b/.test(lower)) return 0
+  if (/\b(mañana|manana|vence mañana|vencen mañana|caduca mañana|caducan mañana)\b/.test(lower)) return 1
+  if (/\b(pasado mañana|pasado manana)\b/.test(lower)) return 2
+  const inDaysMatch = lower.match(/\ben\s+(\d+|un|una|dos|tres|cuatro|cinco|seis|siete)\s+d[ií]as?\b/)
+  if (inDaysMatch) {
+    const n = parseNumber(inDaysMatch[1]) ?? parseInt(inDaysMatch[1], 10)
+    if (!isNaN(n)) return n
+  }
+  if (/\b(esta semana)\b/.test(lower)) return 3
+  if (/\b(la semana que viene|la proxima semana|la próxima semana)\b/.test(lower)) return 7
+  return null
+}
+
 /**
  * Extract ingredients and quantities from spoken or typed Spanish text.
- * Incluye deduplicación inteligente y fusión de cantidades de un mismo ingrediente.
+ * Incluye extracción precisa de caducidad por cláusula, deduplicación inteligente
+ * y fusión de cantidades de un mismo ingrediente.
  */
 export function extractIngredients(text: string): ParsedIngredient[] {
   const rawList: ParsedIngredient[] = []
   const cleanText = collapseRepeats(text)
   
-  // Normalizar separadores y cláusulas
+  // Normalizar separadores manteniendo la asociación de fechas a cada ingrediente
   const sentences = cleanText
-    .replace(/\b(que vencen|que vence|que caducan|que caduca|vence|vencen)\s+(hoy|manana|el proximo [a-z]+|en \d+ dias?)\b/gi, '')
     .replace(/ y /gi, ', ')
     .replace(/ e /gi, ', ')
     .replace(/ más /gi, ', ')
@@ -232,7 +337,16 @@ export function extractIngredients(text: string): ParsedIngredient[] {
     .filter(Boolean)
 
   for (const sentence of sentences) {
-    const tokens = sentence.toLowerCase().split(/\s+/)
+    // 1. Detectar si esta cláusula contiene una fecha de caducidad explícita
+    const explicitExpiry = extractClauseExpiryDays(sentence)
+
+    // 2. Limpiar términos de caducidad para no ensuciar el nombre del ingrediente
+    const cleanedSentence = sentence
+      .replace(/\b(que vencen|que vence|que caducan|que caduca|vence|vencen|caduca|caducan)\s+(hoy|mañana|manana|pasado mañana|pasado manana|esta semana|la semana que viene|la proxima semana|la próxima semana|en \d+ d[ií]as?|en [a-z]+ d[ií]as?)\b/gi, '')
+      .replace(/\b(que vencen|que vence|vence|vencen|caduca|caducan)\b/gi, '')
+      .trim()
+
+    const tokens = cleanedSentence.toLowerCase().split(/\s+/)
     let quantity: number | null = null
     let unit: string | null = null
     const ingredientTokens: string[] = []
@@ -261,12 +375,13 @@ export function extractIngredients(text: string): ParsedIngredient[] {
 
     const ingredientName = ingredientTokens.join(' ').trim()
     if (ingredientName.length > 1) {
+      const expiryDays = explicitExpiry !== null ? explicitExpiry : guessShelfLife(ingredientName)
       rawList.push({
         name: ingredientName,
         quantity: quantity ?? 1,
         unit: unit ?? 'ud',
         category: guessCategory(ingredientName),
-        expiryDays: guessShelfLife(ingredientName),
+        expiryDays,
       })
     }
   }

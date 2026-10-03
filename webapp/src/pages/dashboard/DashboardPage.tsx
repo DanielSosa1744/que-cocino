@@ -12,6 +12,7 @@ import {
   Sparkles
 } from 'lucide-react'
 import UrgencyBadge from '../../components/UrgencyBadge'
+import { calculateInventoryEconomicRisk } from '../../lib/ingredientParser'
 
 export default function DashboardPage() {
   const navigate = useNavigate()
@@ -24,11 +25,8 @@ export default function DashboardPage() {
   const okItems = inventory.filter(i => i.urgency === 'ok')
   const totalUrgents = criticalItems.length + warningItems.length
 
-  // Categorías de inventario
-  const categoriesCount = inventory.reduce((acc, item) => {
-    acc[item.category] = (acc[item.category] || 0) + 1
-    return acc
-  }, {} as Record<string, number>)
+  // Métricas económicas de desperdicio
+  const { totalValue, riskValue, riskWeightKg } = calculateInventoryEconomicRisk(inventory)
 
   // Tarjeta 3: Riesgo de desperdicio (Alto / Medio / Bajo)
   let wasteRiskLevel: 'Alto' | 'Medio' | 'Bajo' = 'Bajo'
@@ -90,7 +88,9 @@ export default function DashboardPage() {
 
           <h2 className="text-base font-black mb-0.5">Modo Vaciar Nevera</h2>
           <p className="text-orange-100 text-[11px] leading-tight mb-2.5">
-            Cocina primero los ingredientes de mayor riesgo para no tirar comida.
+            {riskValue > 0
+              ? `Cocina primero para salvar ${riskValue.toFixed(2)}€ y ${(riskWeightKg * 1000).toFixed(0)}g de comida en riesgo.`
+              : 'Cocina primero los ingredientes de mayor riesgo para no tirar comida.'}
           </p>
 
           <button
@@ -115,7 +115,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <p className="text-xl font-black text-gray-900 leading-none">{totalRegistered}</p>
-            <p className="text-[10px] text-gray-400 mt-0.5">{categoriesCount['verdura'] || 0} verd. · {categoriesCount['proteína'] || 0} prot.</p>
+            <p className="text-[10px] text-gray-400 mt-0.5">≈ {totalValue.toFixed(2)}€ en despensa</p>
           </div>
 
           {/* TARJETA 2: Ingredientes urgentes */}
@@ -129,7 +129,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <p className="text-xl font-black text-red-500 leading-none">{criticalItems.length}</p>
-            <p className="text-[10px] text-gray-400 mt-0.5">+{warningItems.length} esta sem.</p>
+            <p className="text-[10px] text-red-500 font-bold mt-0.5">{riskValue > 0 ? `≈ ${riskValue.toFixed(2)}€ en riesgo` : '+0 esta sem.'}</p>
           </div>
 
           {/* TARJETA 3: Riesgo de desperdicio */}

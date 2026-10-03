@@ -1,4 +1,4 @@
-﻿import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useInventory } from '../hooks/useInventory'
 import {
@@ -20,6 +20,13 @@ export default function HomePage() {
 
   const criticalItems = inventory.filter(i => i.urgency === 'critical')
   const totalItems = inventory.length
+
+  // Ordenar alimentos por caducidad (los más urgentes primero)
+  const sortedInventory = [...inventory].sort((a, b) => {
+    const daysA = a.days_until_expiry ?? 999
+    const daysB = b.days_until_expiry ?? 999
+    return daysA - daysB
+  })
 
   const firstName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'amigo'
 
@@ -189,7 +196,7 @@ export default function HomePage() {
             </div>
 
             <div className="space-y-1.5">
-              {inventory.slice(0, 3).map(item => (
+              {sortedInventory.slice(0, 4).map(item => (
                 <div
                   key={item.id}
                   className="flex items-center justify-between px-3 py-2 rounded-xl bg-gray-50 text-xs"

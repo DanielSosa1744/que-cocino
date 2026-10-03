@@ -93,12 +93,12 @@ export default function RecipeDetailPage() {
       ]
 
   return (
-    <div className="h-full max-h-full bg-transparent flex flex-col justify-between overflow-hidden animate-fade-in">
+    <div className="h-full max-h-full bg-transparent flex flex-col justify-between overflow-hidden animate-fade-in text-[#2F2A26]">
       {/* Botón volver discreto */}
       <div className="px-5 pt-safe pb-2 flex-shrink-0">
         <button
           onClick={() => navigate(-1)}
-          className="text-xs text-stone-400 hover:text-stone-800 transition cursor-pointer"
+          className="text-xs text-[#766153] hover:text-[#2F2A26] transition cursor-pointer font-medium"
         >
           ← Volver
         </button>
@@ -108,20 +108,20 @@ export default function RecipeDetailPage() {
       <div className="flex-1 min-h-0 overflow-y-auto px-5 py-2 space-y-7">
         {/* Encabezado: Título y tiempo */}
         <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold text-stone-900 tracking-tight leading-snug">
+          <h1 className="text-2xl sm:text-3xl font-semibold text-[#2F2A26] tracking-tight leading-snug">
             {rawRecipe.name}
           </h1>
-          <p className="text-sm text-stone-500 font-normal mt-1">
+          <p className="text-sm text-[#766153] font-normal mt-1">
             {rawRecipe.prep_time || 15} minutos
           </p>
         </div>
 
         {/* Ingredientes */}
         <section className="space-y-2.5">
-          <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wider">
+          <h2 className="text-xs font-semibold text-[#766153] uppercase tracking-wider">
             Ingredientes
           </h2>
-          <ul className="text-sm text-stone-800 leading-relaxed space-y-1">
+          <ul className="text-sm text-[#2F2A26] leading-relaxed space-y-1">
             {allIngredients.length > 0 ? (
               allIngredients.map((ing: string, i: number) => (
                 <li key={i} className="capitalize">
@@ -129,22 +129,22 @@ export default function RecipeDetailPage() {
                 </li>
               ))
             ) : (
-              <li className="text-stone-400 italic">Ingredientes generales</li>
+              <li className="text-[#766153] italic">Ingredientes generales</li>
             )}
           </ul>
         </section>
 
         {/* Pasos */}
         <section className="space-y-2.5">
-          <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wider">
+          <h2 className="text-xs font-semibold text-[#766153] uppercase tracking-wider">
             Pasos
           </h2>
-          <ol className="text-sm text-stone-800 leading-relaxed space-y-2">
+          <ol className="text-sm text-[#2F2A26] leading-relaxed space-y-2">
             {steps.map((step, i) => {
               const cleanStep = step.replace(/^\d+[\.\)]\s*/, '')
               return (
                 <li key={i} className="flex gap-2">
-                  <span className="font-mono text-stone-400 text-xs flex-shrink-0 pt-0.5">
+                  <span className="font-mono text-[#A68A64] text-xs flex-shrink-0 pt-0.5">
                     {i + 1}.
                   </span>
                   <span>{cleanStep}</span>
@@ -156,11 +156,11 @@ export default function RecipeDetailPage() {
       </div>
 
       {/* Botón discreto inferior */}
-      <div className="px-5 py-3 border-t border-stone-200/50 flex-shrink-0 bg-transparent pb-safe">
+      <div className="px-5 py-3 border-t border-[#766153]/15 flex-shrink-0 bg-transparent pb-safe">
         <button
           onClick={handleCooked}
           disabled={isPending || hasCooked}
-          className="w-full py-2.5 px-4 bg-stone-900 hover:bg-black text-white text-xs font-medium rounded-xl transition disabled:opacity-40 disabled:cursor-not-allowed tap-subtle cursor-pointer text-center"
+          className="w-full py-2.5 px-4 bg-[#2F2A26] hover:bg-black text-[#F7F3EC] text-xs font-medium rounded-xl transition disabled:opacity-40 disabled:cursor-not-allowed tap-subtle cursor-pointer text-center"
         >
           {hasCooked
             ? 'Registrado en tu actividad'

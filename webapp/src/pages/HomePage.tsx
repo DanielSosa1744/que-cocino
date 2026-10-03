@@ -77,33 +77,33 @@ export default function HomePage() {
   }
 
   return (
-    <div className="h-full max-h-full bg-transparent flex flex-col justify-center items-center px-6 py-8 overflow-y-auto select-none animate-fade-in">
+    <div className="h-full max-h-full bg-transparent flex flex-col justify-center items-center px-6 py-8 overflow-y-auto select-none animate-fade-in text-[#2F2A26]">
       <div className="w-full max-w-sm mx-auto text-center">
         {/* Título principal */}
-        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-stone-900 mb-2">
+        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[#2F2A26] mb-2">
           ¿Qué Cocino?
         </h1>
 
         {/* Subtítulo limpio */}
-        <p className="text-sm text-stone-500 max-w-xs mx-auto leading-relaxed mb-6 font-normal">
+        <p className="text-sm text-[#766153] max-w-xs mx-auto leading-relaxed mb-6 font-normal">
           Introduce los ingredientes que tienes disponibles y te mostraremos qué recetas puedes preparar.
         </p>
 
         {/* Micrófono flotante con animación vertical lenta y halo pulsante (Apple Voice Memos / Calm) */}
         <div className="relative my-6 flex items-center justify-center">
-          {/* Halos orgánicos suaves */}
+          {/* Halos orgánicos suaves en tono tierra y caramelo */}
           <div
             className={`absolute w-32 h-32 rounded-full pointer-events-none transition-all duration-700 ${
               isListening
-                ? 'bg-stone-400/25 blur-xl scale-125'
-                : 'bg-stone-300/30 blur-xl animate-halo-warm'
+                ? 'bg-[#766153]/25 blur-xl scale-125'
+                : 'bg-[#A68A64]/20 blur-xl animate-halo-warm'
             }`}
           />
           <div
             className={`absolute w-24 h-24 rounded-full pointer-events-none transition-all duration-500 ${
               isListening
-                ? 'bg-stone-300/40 animate-pulse'
-                : 'bg-stone-200/50 animate-halo-warm-inner'
+                ? 'bg-[#766153]/35 animate-pulse'
+                : 'bg-[#766153]/15 animate-halo-warm-inner'
             }`}
           />
 
@@ -112,16 +112,16 @@ export default function HomePage() {
             type="button"
             onClick={handleStartVoice}
             aria-label={isListening ? 'Detener escucha' : 'Hablar'}
-            className={`animate-float-slow relative z-10 w-20 h-20 rounded-full flex items-center justify-center shadow-sm border border-stone-200/80 transition-all duration-300 tap-subtle cursor-pointer ${
+            className={`animate-float-slow relative z-10 w-20 h-20 rounded-full flex items-center justify-center shadow-sm border border-[#766153]/25 transition-all duration-300 tap-subtle cursor-pointer ${
               isListening
-                ? 'bg-stone-900 text-white scale-105 shadow-md shadow-stone-900/10'
-                : 'bg-white hover:bg-stone-50 text-stone-800'
+                ? 'bg-[#2F2A26] text-[#F7F3EC] scale-105 shadow-md shadow-[#2F2A26]/10'
+                : 'bg-[#FCFAF7] hover:bg-[#FAF7F2] text-[#2F2A26]'
             }`}
           >
             <GoogleIcon
               name={isListening ? 'graphic_eq' : 'mic'}
               size={28}
-              className={isListening ? 'text-white' : 'text-stone-700'}
+              className={isListening ? 'text-[#F7F3EC]' : 'text-[#2F2A26]'}
             />
           </button>
         </div>
@@ -129,15 +129,15 @@ export default function HomePage() {
         {/* Estado activo de voz si está escuchando */}
         {isListening ? (
           <div className="py-4 space-y-3 transition-all duration-300">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 border border-stone-200/60 text-stone-700 text-xs font-mono shadow-2xs">
-              <span className="w-2 h-2 rounded-full bg-stone-900 animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FCFAF7] border border-[#766153]/25 text-[#2F2A26] text-xs font-mono shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-[#5D7A56] animate-pulse" />
               <span>{currentVoiceText || 'Escuchando... habla a tu ritmo'}</span>
             </div>
             <div>
               <button
                 type="button"
                 onClick={handleStartVoice}
-                className="px-5 py-2.5 bg-stone-900 text-white text-xs font-medium rounded-xl hover:bg-black transition tap-subtle cursor-pointer"
+                className="px-5 py-2.5 bg-[#2F2A26] text-[#F7F3EC] text-xs font-medium rounded-xl hover:bg-black transition tap-subtle cursor-pointer"
               >
                 Listo, ver recetas
               </button>
@@ -152,7 +152,7 @@ export default function HomePage() {
                 value={inputText}
                 onChange={e => setInputText(e.target.value)}
                 placeholder="Escribe tus ingredientes..."
-                className="w-full px-4 py-3 bg-white/80 border border-stone-200/80 focus:border-stone-800 focus:bg-white rounded-xl text-sm text-stone-900 placeholder:text-stone-400 outline-none transition shadow-2xs"
+                className="w-full px-4 py-3 bg-[#FCFAF7] border border-[#766153]/25 focus:border-[#5D7A56] focus:bg-white rounded-xl text-sm text-[#2F2A26] placeholder:text-[#766153]/60 outline-none transition shadow-2xs"
               />
             </div>
 
@@ -161,7 +161,7 @@ export default function HomePage() {
               <button
                 type="button"
                 onClick={handleStartVoice}
-                className="flex-1 py-2.5 px-4 bg-white/90 border border-stone-200 hover:bg-stone-50 text-stone-800 text-xs font-medium rounded-xl transition flex items-center justify-center gap-1.5 tap-subtle cursor-pointer shadow-2xs"
+                className="flex-1 py-2.5 px-4 bg-[#FCFAF7] border border-[#766153]/25 hover:bg-[#FAF7F2] text-[#2F2A26] text-xs font-medium rounded-xl transition flex items-center justify-center gap-1.5 tap-subtle cursor-pointer shadow-2xs"
               >
                 <GoogleIcon name="mic" size={16} />
                 Hablar
@@ -170,7 +170,7 @@ export default function HomePage() {
               <button
                 type="submit"
                 disabled={!inputText.trim() || isProcessing}
-                className="flex-1 py-2.5 px-4 bg-stone-900 hover:bg-black text-white text-xs font-medium rounded-xl transition disabled:opacity-30 disabled:cursor-not-allowed tap-subtle cursor-pointer shadow-2xs"
+                className="flex-1 py-2.5 px-4 bg-[#2F2A26] hover:bg-black text-[#F7F3EC] text-xs font-medium rounded-xl transition disabled:opacity-30 disabled:cursor-not-allowed tap-subtle cursor-pointer shadow-2xs"
               >
                 {isProcessing ? 'Buscando...' : 'Ver recetas'}
               </button>
@@ -179,14 +179,14 @@ export default function HomePage() {
         )}
 
         {/* Ejemplo sugerido */}
-        <div className="mt-8 pt-4 border-t border-stone-200/50 text-xs text-stone-400">
+        <div className="mt-8 pt-4 border-t border-[#766153]/15 text-xs text-[#766153]">
           <span>Ejemplo: </span>
           <button
             type="button"
             onClick={() => {
               setInputText('Tomates, huevos, queso y cebolla')
             }}
-            className="text-stone-600 hover:text-stone-900 underline underline-offset-2 transition cursor-pointer"
+            className="text-[#2F2A26] hover:underline underline-offset-2 transition cursor-pointer font-medium"
           >
             Tomates, huevos, queso y cebolla.
           </button>

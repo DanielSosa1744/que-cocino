@@ -1,0 +1,19 @@
+{
+  "appId": "com.quecocino.app",
+  "appName": "¿Qué Cocino?",
+  "webDir": "android/app/src/main/assets/www",
+  "bundledWebRuntime": false,
+  "plugins": {
+    "Camera": {
+      "permissions": ["camera", "photos"]
+    }
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": true
+  },
+  "ios": {
+    "contentInset": "always"
+  }
+}

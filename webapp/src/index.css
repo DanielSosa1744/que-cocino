@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #f8fafc;
+    color: #0f172a;
+  }
+
+  input, textarea, button, select {
+    font-family: inherit;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+  }
+}
+
+/* Mic pulse animation */
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.mic-pulse::before,
+.mic-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: rgba(74, 222, 128, 0.3);
+  animation: pulse-ring 1.2s ease-out infinite;
+}
+
+.mic-pulse::after {
+  animation-delay: 0.4s;
+  inset: -16px;
+}
+
+/* Smooth page transitions */
+.page-enter {
+  animation: slideInRight 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.page-exit {
+  animation: slideOutLeft 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOutLeft {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(-100%); opacity: 0; }
+}
+
+/* Urgency indicator */
+.urgency-critical {
+  background-color: #fee2e2;
+  border-left: 3px solid #ef4444;
+  color: #dc2626;
+}
+.urgency-warning {
+  background-color: #fff7ed;
+  border-left: 3px solid #f97316;
+  color: #ea580c;
+}
+.urgency-ok {
+  background-color: #f0fdf4;
+  border-left: 3px solid #22c55e;
+  color: #16a34a;
+}

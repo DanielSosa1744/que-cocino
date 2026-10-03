@@ -1,0 +1,21 @@
+node_modules/
+.env
+.env.local
+*.log
+
+# Webapp build & dependencies
+webapp/node_modules/
+webapp/dist/
+webapp/dist-ssr/
+webapp/.env
+webapp/.env.local
+webapp/*.log
+
+# Android build & cache
+android/.gradle/
+android/.idea/
+android/app/build/
+android/build/
+android/local.properties
+*.keystore
+*.jks

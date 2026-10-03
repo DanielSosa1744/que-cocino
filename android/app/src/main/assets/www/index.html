@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¿Qué Cocino? - Prioridad por Vencimientos</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Inter & SF Pro stack -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Segoe UI', 'Roboto', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              green: '#4CAF50',
+              'green-dark': '#388E3C',
+              'green-light': '#E8F5E9',
+              orange: '#FF9800',
+              'orange-light': '#FFF3E0',
+              red: '#F44336',
+              'red-light': '#FFEBEE',
+              gray: '#71717A',
+              bg: '#FAFAFA'
+            }
+          },
+          borderRadius: {
+            '2xl': '20px',
+            '3xl': '24px',
+            '4xl': '28px'
+          },
+          boxShadow: {
+            'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02)',
+            'card': '0 2px 14px 0 rgba(0, 0, 0, 0.03)',
+            'float': '0 12px 32px 0 rgba(0, 0, 0, 0.06)'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background-color: #0F172A;
+      color: #F8FAFC;
+    }
+    
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Mobile Native Screen Slide & Fade Transitions */
+    .screen-slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      background-color: #ffffff;
+      transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1), transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: opacity, transform;
+    }
+    
+    .screen-active {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+      z-index: 10;
+      display: flex;
+    }
+
+    .screen-hidden {
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
+      display: none !important;
+    }
+
+    .screen-exit-left {
+      opacity: 0;
+      transform: translateX(-24px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .screen-exit-right {
+      opacity: 0;
+      transform: translateX(24px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .screen-enter-right {
+      opacity: 0;
+      transform: translateX(24px);
+      pointer-events: none;
+      z-index: 10;
+      display: flex;
+    }
+
+    .screen-enter-left {
+      opacity: 0;
+      transform: translateX(-24px);
+      pointer-events: none;
+      z-index: 10;
+      display: flex;
+    }
+
+    @keyframes soundWave {
+      0%, 100% { height: 12px; }
+      50% { height: 48px; }
+    }
+
+    .animate-wave-1 { animation: soundWave 1.2s ease-in-out infinite; }
+    .animate-wave-2 { animation: soundWave 0.8s ease-in-out infinite 0.2s; }
+    .animate-wave-3 { animation: soundWave 1.4s ease-in-out infinite 0.4s; }
+    .animate-wave-4 { animation: soundWave 0.9s ease-in-out infinite 0.1s; }
+    .animate-wave-5 { animation: soundWave 1.1s ease-in-out infinite 0.3s; }
+
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.15); opacity: 0.7; }
+    }
+
+    .animate-mic-glow {
+      animation: pulseGlow 2.5s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen p-2 md:p-4 flex flex-col items-center justify-center bg-slate-950 text-white overflow-hidden select-none">
+
+  <!-- Mobile Frame Mockup Container (iPhone 16 Pro shell) -->
+  <div class="w-full max-w-[400px] h-[830px] max-h-[96vh] bg-white rounded-[44px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] border-[10px] border-slate-900 relative overflow-hidden flex flex-col mx-auto my-auto">
+    
+    <!-- iPhone Dynamic Island Status Bar -->
+    <div class="w-full bg-white pt-3 pb-1 px-7 flex items-center justify-between z-50 select-none border-b border-gray-50">
+      <span class="text-xs font-semibold text-gray-900 tracking-tight">9:41</span>
+      <div class="w-24 h-4 bg-black rounded-full flex items-center justify-end px-2 gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+      </div>
+      <div class="flex items-center gap-1.5 text-gray-900">
+        <i data-lucide="signal" class="w-3.5 h-3.5"></i>
+        <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+        <i data-lucide="battery" class="w-4 h-4"></i>
+      </div>
+    </div>
+
+    <!-- App Viewport -->
+    <div id="app-container" class="flex-1 relative overflow-hidden bg-white text-gray-900">
+
+      <!-- ========================================== -->
+      <!-- PANTALLA 1: BIENVENIDA -->
+      <!-- ========================================== -->
+      <div id="screen-1" class="screen-slide screen-active flex flex-col justify-between p-6 bg-white">
+        <div class="pt-4 text-center">
+          <div class="inline-flex items-center justify-center w-16 h-16 bg-brand-green-light rounded-2xl mb-3 shadow-xs">
+            <i data-lucide="clock text-brand-green" class="w-9 h-9"></i>
+          </div>
+          <h1 class="text-3xl font-extrabold tracking-tight text-gray-900">¿Qué Cocino?</h1>
+          <div class="h-1 w-12 bg-brand-green rounded-full mx-auto mt-2"></div>
+        </div>
+
+        <div class="my-auto py-4 flex flex-col items-center text-center">
+          <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight mb-2">Dime qué tienes en casa.</h2>
+          <p class="text-base font-medium text-gray-600 px-3 leading-snug">
+            "Priorizamos tus alimentos por fecha de vencimiento para que no se echen a perder."
+          </p>
+
+          <!-- Illustration -->
+          <div class="relative w-60 h-60 my-6 flex items-center justify-center">
+            <div class="absolute inset-0 bg-gradient-to-tr from-brand-green-light to-brand-orange-light rounded-full animate-glow blur-xl opacity-60"></div>
+            
+            <svg class="w-full h-full relative z-10 drop-shadow-md" viewBox="0 0 240 240" fill="none">
+              <rect x="55" y="25" width="130" height="190" rx="20" fill="#FFFFFF" stroke="#E4E4E7" stroke-width="4"/>
+              <line x1="55" y1="105" x2="185" y2="105" stroke="#E4E4E7" stroke-width="4"/>
+              <rect x="70" y="80" width="6" height="20" rx="3" fill="#A1A1AA"/>
+              <rect x="70" y="115" width="6" height="30" rx="3" fill="#A1A1AA"/>
+              <rect x="68" y="38" width="104" height="56" rx="12" fill="#E8F5E9" opacity="0.8"/>
+              <rect x="68" y="118" width="104" height="84" rx="12" fill="#FFF3E0" opacity="0.7"/>
+
+              <circle cx="100" cy="66" r="12" fill="#F44336"/>
+              <ellipse cx="140" cy="65" rx="11" ry="14" fill="#4CAF50"/>
+              <circle cx="140" cy="68" r="6" fill="#795548"/>
+              <path d="M90 150 L108 175 L82 170 Z" fill="#FF9800"/>
+              <rect x="125" y="140" width="18" height="32" rx="4" fill="#64B5F6"/>
+              <circle cx="155" cy="155" r="10" fill="#81C784"/>
+            </svg>
+          </div>
+
+          <div class="inline-flex items-center gap-2 bg-gray-50 border border-gray-100 px-3.5 py-1.5 rounded-full text-xs font-semibold text-gray-600">
+            <span class="w-2 h-2 rounded-full bg-brand-green"></span>
+            <span>Gestión por Orden de Caducidad</span>
+          </div>
+        </div>
+
+        <div class="pb-4 space-y-2">
+          <button onclick="switchInputTab('voice'); switchScreen(2);" class="w-full bg-brand-green hover:bg-brand-green-dark text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wider active:scale-[0.98]">
+            <i data-lucide="mic" class="w-5 h-5"></i>
+            <span>ESCANEAR POR VOZ</span>
+          </button>
+          <button onclick="switchInputTab('camera'); switchScreen(2);" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wider active:scale-[0.98]">
+            <i data-lucide="camera" class="w-5 h-5 text-brand-green"></i>
+            <span>ESCANEAR CON CÁMARA (IA)</span>
+          </button>
+        </div>
+      </div>
+
+
+      <!-- ========================================== -->
+      <!-- PANTALLA 2: ENTRADA POR VOZ O CÁMARA IA -->
+      <!-- ========================================== -->
+      <div id="screen-2" class="screen-slide screen-hidden flex flex-col justify-between p-5 bg-white relative">
+        <div id="screen-2-header" class="flex items-center justify-between mb-3 transition-all">
+          <button onclick="switchScreen(1)" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-all">
+            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+          </button>
+          
+          <!-- Dual Input Switcher Tabs -->
+          <div class="flex items-center bg-gray-100 p-1 rounded-full text-xs font-bold shadow-inner">
+            <button onclick="switchInputTab('voice')" id="tab-btn-voice" class="px-3 py-1.5 rounded-full bg-brand-green text-white shadow-xs transition-all flex items-center gap-1">
+              <i data-lucide="mic" class="w-3.5 h-3.5"></i>
+              <span>Voz</span>
+            </button>
+            <button onclick="switchInputTab('camera')" id="tab-btn-camera" class="px-3 py-1.5 rounded-full text-gray-600 hover:text-gray-900 transition-all flex items-center gap-1">
+              <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+              <span>Cámara IA</span>
+            </button>
+          </div>
+
+          <div class="w-9"></div>
+        </div>
+
+        <!-- VOICE MODE CONTAINER -->
+        <div id="input-mode-voice" class="transition-all flex-1 flex flex-col justify-between">
+          <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight text-center">Cuéntame qué tienes disponible.</h2>
+          <p class="text-xs text-gray-500 text-center mt-1">Indica tus alimentos y si conoces sus fechas de vencimiento.</p>
+          
+          <div class="my-auto py-4 flex flex-col items-center text-center">
+            <div class="relative mb-6 flex items-center justify-center">
+              <div id="mic-glow-ring" class="absolute w-36 h-36 bg-brand-green rounded-full opacity-20 animate-mic-glow"></div>
+              <button onclick="toggleVoiceRecording()" id="big-mic-btn" class="relative z-10 w-24 h-24 rounded-full bg-brand-green hover:bg-brand-green-dark text-white flex items-center justify-center shadow-2xl transition-all active:scale-95">
+                <i data-lucide="mic" class="w-10 h-10" id="mic-icon-inside"></i>
+              </button>
+            </div>
+
+            <div id="sound-wave-container" class="hidden flex items-center justify-center gap-1.5 h-10 mb-3">
+              <span class="w-1.5 bg-brand-green rounded-full animate-wave-1"></span>
+              <span class="w-1.5 bg-brand-green rounded-full animate-wave-2"></span>
+              <span class="w-1.5 bg-brand-green rounded-full animate-wave-3"></span>
+              <span class="w-1.5 bg-brand-green rounded-full animate-wave-4"></span>
+              <span class="w-1.5 bg-brand-green rounded-full animate-wave-5"></span>
+            </div>
+
+            <div class="w-full bg-gray-50 border border-gray-100 rounded-2xl p-3 text-xs text-gray-700 min-h-[75px] flex items-center justify-center text-center shadow-xs">
+              <p id="speech-live-text" class="italic">
+                "Tengo cuatro tomates, media cebolla, seis huevos y dos yogures que vencen mañana."
+              </p>
+            </div>
+
+            <div class="mt-3 w-full">
+              <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Frases de prueba:</span>
+              <div class="flex flex-col gap-1 text-left">
+                <button onclick="setSamplePhrase(1)" class="p-2 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-[11px] text-gray-700 flex items-center gap-2">
+                  <span>💬</span>
+                  <span>"Tengo cuatro tomates, media cebolla, seis huevos y dos yogures que vencen mañana."</span>
+                </button>
+                <button onclick="setSamplePhrase(2)" class="p-2 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-[11px] text-gray-700 flex items-center gap-2">
+                  <span>💬</span>
+                  <span>"Tengo arroz, leche que vence el viernes, queso y una lechuga."</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="pb-2">
+            <button onclick="processVoiceAndNext()" id="btn-voice-action" class="w-full bg-brand-green hover:bg-brand-green-dark text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider active:scale-[0.98]">
+              <span>COMENZAR A HABLAR</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- CAMERA IA MODE CONTAINER (FULL SCREEN VIEWPORT) -->
+        <div id="input-mode-camera" class="hidden absolute inset-0 w-full h-full bg-slate-950 flex flex-col justify-between z-20 overflow-hidden">
+          
+          <!-- Camera Viewfinder / Video Stream (Fills 100% of the screen) -->
+          <div class="absolute inset-0 w-full h-full bg-slate-950 flex items-center justify-center overflow-hidden">
+            <!-- Real Video Stream -->
+            <video id="camera-video" autoplay playsinline class="hidden w-full h-full object-cover"></video>
+
+            <!-- Captured Image Preview -->
+            <img id="camera-preview-img" class="hidden w-full h-full object-cover" src="" alt="Vista previa">
+
+            <!-- AI Scanning laser effect -->
+            <div id="ai-scan-laser" class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-brand-green to-transparent shadow-[0_0_15px_#4CAF50] animate-bounce z-20"></div>
+
+            <!-- Camera Off / Placeholder State -->
+            <div id="camera-placeholder" class="flex flex-col items-center justify-center text-slate-400 p-6 text-center z-10">
+              <div class="w-20 h-20 rounded-full bg-slate-900/80 border border-slate-700 flex items-center justify-center mb-3 shadow-2xl backdrop-blur-md">
+                <i data-lucide="aperture" class="w-10 h-10 text-brand-green animate-spin-slow"></i>
+              </div>
+              <span class="text-sm font-bold text-white tracking-wide">Cámara en pantalla completa</span>
+              <span class="text-xs text-slate-400 mt-1 max-w-[240px]">Escanea tu nevera o despensa sin distracciones</span>
+            </div>
+          </div>
+
+          <!-- Top Floating Header Bar inside Camera Mode -->
+          <div class="relative z-30 pt-4 px-4 flex items-center justify-between bg-gradient-to-b from-black/80 via-black/40 to-transparent pb-8">
+            <button onclick="switchScreen(1)" class="w-9 h-9 rounded-full bg-black/60 backdrop-blur-md text-white border border-white/20 flex items-center justify-center shadow-lg active:scale-95">
+              <i data-lucide="chevron-left" class="w-5 h-5"></i>
+            </button>
+            
+            <!-- Dual Input Switcher Tabs over camera background -->
+            <div class="flex items-center bg-black/60 backdrop-blur-md border border-white/20 p-1 rounded-full text-xs font-bold shadow-lg">
+              <button onclick="switchInputTab('voice')" class="px-3 py-1.5 rounded-full text-slate-300 hover:text-white transition-all flex items-center gap-1">
+                <i data-lucide="mic" class="w-3.5 h-3.5"></i>
+                <span>Voz</span>
+              </button>
+              <button onclick="switchInputTab('camera')" class="px-3 py-1.5 rounded-full bg-brand-green text-white shadow-sm transition-all flex items-center gap-1 font-bold">
+                <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+                <span>Cámara IA</span>
+              </button>
+            </div>
+
+            <div class="w-9"></div>
+          </div>
+
+          <!-- Bottom Floating Action Controls Bar inside Camera Mode -->
+          <div class="relative z-30 p-4 pb-6 bg-gradient-to-t from-black/90 via-black/60 to-transparent flex flex-col gap-2.5">
+            <!-- Auxiliary action buttons -->
+            <div class="flex items-center gap-2">
+              <button onclick="startRealCamera()" class="flex-1 bg-slate-900/90 hover:bg-slate-800 text-white py-2.5 px-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all border border-slate-700/80 shadow-md backdrop-blur-md active:scale-95">
+                <i data-lucide="video" class="w-4 h-4 text-brand-green"></i>
+                <span>Activar Cámara Real</span>
+              </button>
+              
+              <label class="flex-1 bg-slate-900/90 hover:bg-slate-800 text-white py-2.5 px-3 rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-all border border-slate-700/80 shadow-md backdrop-blur-md active:scale-95">
+                <i data-lucide="upload-cloud" class="w-4 h-4 text-brand-green"></i>
+                <span>Subir Foto</span>
+                <input type="file" id="camera-file-input" accept="image/*" capture="environment" onchange="handleImageUpload(event)" class="hidden">
+              </label>
+            </div>
+
+            <!-- Main action button -->
+            <button onclick="processCameraScanAndNext()" class="w-full bg-brand-green hover:bg-brand-green-dark text-white font-bold py-3.5 px-6 rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider active:scale-[0.98]">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              <span>RECONOCER CON IA & CONTINUAR</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ========================================== -->
+      <!-- PANTALLA 3: TRANSCRIPCIÓN & CLASIFICACIÓN -->
+      <!-- ========================================== -->
+      <div id="screen-3" class="screen-slide screen-hidden flex flex-col justify-between p-5 bg-white">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <button onclick="switchScreen(2)" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            </button>
+            <span class="text-xs font-bold text-brand-green bg-brand-green-light px-2.5 py-1 rounded-full">
+              Orden por Vencimiento
+            </span>
+            <div class="w-8"></div>
+          </div>
+
+          <h2 class="text-xl font-extrabold text-gray-900 tracking-tight">He detectado lo siguiente</h2>
+          <p class="text-xs text-gray-500 mt-0.5">Clasificados automáticamente según su fecha estimada.</p>
+        </div>
+
+        <div class="my-3 space-y-2 max-h-[440px] overflow-y-auto no-scrollbar pr-0.5">
+          <div class="bg-white border border-gray-200 rounded-2xl p-3 shadow-card flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="w-2.5 h-2.5 rounded-full bg-brand-red"></span>
+              <div>
+                <span class="text-xs font-bold text-gray-900">2 yogures naturales</span>
+                <span class="text-[10px] text-brand-red font-semibold block">🔴 Vence mañana</span>
+              </div>
+            </div>
+            <button class="text-xs text-gray-400 font-medium">Editar</button>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-2xl p-3 shadow-card flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="w-2.5 h-2.5 rounded-full bg-brand-red"></span>
+              <div>
+                <span class="text-xs font-bold text-gray-900">4 tomates maduros</span>
+                <span class="text-[10px] text-brand-red font-semibold block">🔴 Vence en 1-2 días</span>
+              </div>
+            </div>
+            <button class="text-xs text-gray-400 font-medium">Editar</button>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-2xl p-3 shadow-card flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="w-2.5 h-2.5 rounded-full bg-brand-orange"></span>
+              <div>
+                <span class="text-xs font-bold text-gray-900">1 litro de leche</span>
+                <span class="text-[10px] text-amber-800 font-semibold block">🟠 Vence esta semana</span>
+              </div>
+            </div>
+            <button class="text-xs text-gray-400 font-medium">Editar</button>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-2xl p-3 shadow-card flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="w-2.5 h-2.5 rounded-full bg-brand-green"></span>
+              <div>
+                <span class="text-xs font-bold text-gray-900">6 huevos camperos</span>
+                <span class="text-[10px] text-brand-green-dark font-semibold block">🟢 Vencimiento distante</span>
+              </div>
+            </div>
+            <button class="text-xs text-gray-400 font-medium">Editar</button>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-2xl p-3 shadow-card flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="w-2.5 h-2.5 rounded-full bg-brand-green"></span>
+              <div>
+                <span class="text-xs font-bold text-gray-900">1 kg de arroz</span>
+                <span class="text-[10px] text-brand-green-dark font-semibold block">🟢 Vencimiento distante</span>
+              </div>
+            </div>
+            <button class="text-xs text-gray-400 font-medium">Editar</button>
+          </div>
+        </div>
+
+        <div class="pt-2 pb-1">
+          <button onclick="startAnalysisFlow()" class="w-full bg-brand-green hover:bg-brand-green-dark text-white font-bold py-4 px-6 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wider active:scale-[0.98]">
+            <span>CONTINUAR</span>
+          </button>
+        </div>
+      </div>
+
+
+      <!-- ========================================== -->
+      <!-- PANTALLA 4: ANÁLISIS DE VENCIMIENTOS -->
+      <!-- ========================================== -->
+      <div id="screen-4" class="screen-slide screen-hidden flex flex-col justify-between p-6 bg-white">
+        <div class="text-center pt-2">
+          <div class="flex items-center justify-center gap-1.5 mb-3">
+            <span class="w-2 h-2 rounded-full bg-gray-200"></span>
+            <span class="w-6 h-2 rounded-full bg-brand-green"></span>
+            <span class="w-2 h-2 rounded-full bg-gray-200"></span>
+          </div>
+          <h2 class="text-xl font-extrabold text-gray-900">Evaluando Fechas de Vencimiento</h2>
+        </div>
+
+        <div class="my-auto flex flex-col items-center text-center">
+          <div class="relative w-48 h-48 bg-brand-green-light rounded-full flex items-center justify-center mb-6 shadow-inner">
+            <i data-lucide="clock" class="w-20 h-20 text-brand-green animate-pulse"></i>
+          </div>
+
+          <p class="text-base font-bold text-gray-900 animate-pulse" id="analysis-status-text">
+            Ordenando productos por fecha de caducidad...
+          </p>
+          <p class="text-xs text-gray-500 mt-1" id="analysis-subtext">
+            Priorizando ingredientes de consumo inmediato...
+          </p>
+
+          <div class="w-full max-w-xs mt-6 bg-gray-100 h-2.5 rounded-full overflow-hidden p-0.5 border border-gray-200">
+            <div id="scan-progress-bar" class="bg-gradient-to-r from-brand-green to-emerald-400 h-full rounded-full transition-all duration-300 w-1/12"></div>
+          </div>
+          <span class="text-xs font-semibold text-brand-green mt-2" id="scan-percentage">15%</span>
+        </div>
+
+        <div class="pb-4 text-center">
+          <span class="text-xs text-gray-400">Priorización Inteligente por Vencimiento</span>
+        </div>
+      </div>
+
+
+      <!-- ========================================== -->
+      <!-- PANTALLA 5: MOMENTO WOW (TU COCINA ANALIZADA) -->
+      <!-- ========================================== -->
+      <div id="screen-5" class="screen-slide screen-hidden flex flex-col justify-between p-6 bg-white">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <button onclick="switchScreen(3)" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
+              <i data-lucide="chevron-left" class="w-5 h-5"></i>
+            </button>
+            <span class="text-xs font-bold text-brand-green bg-brand-green-light px-3 py-1 rounded-full">
+              Vencimientos Clasificados ✨
+            </span>
+            <div class="w-9"></div>
+          </div>
+
+          <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight text-center">Tu cocina analizada</h2>
+        </div>
+
+        <div class="my-auto space-y-3.5">
+          <div class="bg-gray-50 border border-gray-100 rounded-2xl p-4 text-center shadow-card">
+            <span class="text-3xl font-extrabold text-gray-900">18</span>
+            <p class="text-xs font-bold text-gray-600 mt-0.5 uppercase tracking-wider">ingredientes detectados</p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <div class="bg-red-50 border border-red-100 rounded-2xl p-3 text-center">
+              <span class="text-sm font-extrabold text-brand-red">🔴 2 vencimientos inminentes</span>
+            </div>
+            <div class="bg-amber-50 border border-amber-100 rounded-2xl p-3 text-center">
+              <span class="text-sm font-extrabold text-amber-800">🟠 5 para esta semana</span>
+            </div>
+          </div>
+
+          <!-- Valor en vencimiento próximo -->
+          <div class="bg-gradient-to-br from-brand-orange to-amber-600 rounded-2xl p-5 text-white shadow-lg text-center relative overflow-hidden">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-amber-100">💰 Valor con vencimiento próximo</span>
+            <div class="text-4xl font-extrabold mt-1">11 €</div>
+          </div>
+
+          <div class="bg-brand-green-light border border-brand-green/30 rounded-2xl p-4 text-center">
+            <p class="text-xs font-bold text-brand-green-dark leading-relaxed">
+              "Aprovechando estos productos a tiempo proteges hasta 11 € de tu presupuesto."
+            </p>
+          </div>
+        </div>
+
+        <div class="pb-4">
+          <button onclick="switchScreen(6)" class="w-full bg-brand-green hover:bg-brand-green-dark text-white font-bold py-4 px-6 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wider active:scale-[0.98]">
+            <span>VER PLAN</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+
+      <!-- ========================================== -->
+      <!-- PANTALLA 6: DASHBOARD PRINCIPAL (VENCIMIENTOS FIJADOS) -->
+      <!-- ========================================== -->
+      <div id="screen-6" class="screen-slide screen-hidden flex flex-col justify-between p-5 bg-white">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <p class="text-xs text-gray-400 font-medium">Panel de Vencimientos</p>
+              <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">Tu Cocina</h2>
+            </div>
+            <button onclick="switchScreen(9)" class="w-10 h-10 rounded-full bg-brand-green-light border border-brand-green/30 flex items-center justify-center text-brand-green font-bold text-sm">
+              M
+            </button>
+          </div>
+
+          <!-- 4 CARDS WITH EXPIRATION PRIORITIES -->
+          <div class="grid grid-cols-2 gap-3 mb-4">
+            <!-- TARJETA 1 -->
+            <div class="bg-gradient-to-br from-brand-orange to-amber-600 rounded-2xl p-3.5 text-white shadow-md">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-100">💰 Ahorro Potencial</span>
+              <div class="text-2xl font-extrabold mt-1">9 €</div>
+              <p class="text-[10px] text-amber-100 mt-0.5">esta semana</p>
+            </div>
+
+            <!-- TARJETA 2 -->
+            <div class="bg-red-50 border border-red-200/80 rounded-2xl p-3.5 text-gray-900 shadow-card">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-brand-red">⏰ Vencimiento Inminente</span>
+              <div class="text-2xl font-extrabold text-brand-red mt-1">11 €</div>
+              <p class="text-[10px] text-gray-500 mt-0.5 leading-tight">a consumir en 1-3 días</p>
+            </div>
+
+            <!-- TARJETA 3 -->
+            <div class="bg-gray-50 border border-gray-100 rounded-2xl p-3.5 shadow-card">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-gray-400">📦 Inventario</span>
+              <div class="text-2xl font-extrabold text-gray-900 mt-1">18</div>
+              <p class="text-[10px] text-gray-500 mt-0.5">ingredientes ordenados</p>
+            </div>
+
+            <!-- TARJETA 4 -->
+            <div class="bg-green-50 border border-green-200/70 rounded-2xl p-3.5 shadow-card">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-brand-green-dark">📈 Aprovechamiento</span>
+              <div class="text-2xl font-extrabold text-brand-green-dark mt-1">92 %</div>
+              <p class="text-[10px] text-gray-600 mt-0.5 leading-tight">prioridad fijada</p>
+            </div>
+          </div>
+
+          <!-- ACCIONES RÁPIDAS -->
+          <div>
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2.5">Acciones Rápidas</h3>
+            
+            <div class="grid grid-cols-3 gap-2.5">
+              <button onclick="switchScreen(2)" class="bg-white border border-gray-100 rounded-2xl p-3 flex flex-col items-center text-center shadow-card hover:border-brand-green/40 transition-all">
+                <div class="w-10 h-10 rounded-2xl bg-brand-green-light text-brand-green flex items-center justify-center mb-2">
+                  <i data-lucide="mic" class="w-5 h-5"></i>
+                </div>
+                <span class="text-xs font-bold text-gray-900 leading-tight">🎤 Añadir por voz</span>
+              </button>
+
+              <button onclick="showInventoryModal()" class="bg-white border border-gray-100 rounded-2xl p-3 flex flex-col items-center text-center shadow-card hover:border-brand-orange/40 transition-all">
+                <div class="w-10 h-10 rounded-2xl bg-brand-orange-light text-brand-orange flex items-center justify-center mb-2">
+                  <i data-lucide="box" class="w-5 h-5"></i>
+                </div>
+                <span class="text-xs font-bold text-gray-900 leading-tight">📦 Ver inventario</span>
+              </button>
+
+              <button onclick="switchScreen(7)" class="bg-white border border-gray-100 rounded-2xl p-3 flex flex-col items-center text-center shadow-card hover:border-brand-green/40 transition-all">
+                <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-brand-green-dark flex items-center justify-center mb-2">
+                  <i data-lucide="sparkles" class="w-5 h-5"></i>
+                </div>
+                <span class="text-xs font-bold text-gray-900 leading-tight">🥫 Vaciar Nevera</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-around text-gray-400">
+          <button onclick="switchScreen(6)" class="flex flex-col items-center text-brand-green font-semibold">
+            <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+            <span class="text-[10px] mt-0.5">Dashboard</span>
+          </button>
+          <button onclick="switchScreen(7)" class="flex flex-col items-center hover:text-gray-700">
+            <i data-lucide="flame" class="w-5 h-5"></i>
+            <span class="text-[10px] mt-0.5">Vaciar Nevera</span>
+          </button>
+          <button onclick="switchScreen(8)" class="flex flex-col items-center hover:text-gray-700">
+            <i data-lucide="utensils" class="w-5 h-5"></i>
+            <span class="text-[10px] mt-0.5">Receta</span>
+          </button>
+          <button onclick="switchScreen(9)" class="flex flex-col items-center hover:text-gray-700">
+            <i data-lucide="award" class="w-5 h-5"></i>
+            <span class="text-[10px] mt-0.5">Impacto</span>
+          </button>
+        </div>
+      </div>
+
+
+      <!-- ========================================== -->
+      <!-- PANTALLA 7: MODO VACIAR NEVERA (VENCIMIENTO PRIMERO) -->
+      <!-- ========================================== -->
+      <div id="screen-7" class="screen-slide screen-hidden flex flex-col justify-between p-5 bg-white">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <button onclick="switchScreen(6)" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            </button>
+            <span class="text-xs font-extrabold text-brand-orange bg-brand-orange-light px-3 py-1 rounded-full border border-brand-orange/30">
+              ⭐ Plan por Orden de Vencimiento
+            </span>
+            <div class="w-8"></div>
+          </div>
+
+          <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">Tu plan de aprovechamiento</h2>
+          <p class="text-xs text-gray-500 mt-0.5">"Platos ordenados estrictamente según la caducidad de tus alimentos."</p>
+
+          <!-- RESUMEN DE VENCIMIENTOS -->
+          <div class="mt-3 bg-gray-50 border border-gray-100 rounded-2xl p-4 shadow-card">
+            <div class="space-y-1.5 text-xs text-gray-800">
+              <div class="flex justify-between font-bold border-b border-gray-200/60 pb-1.5 mb-1.5">
+                <span>✅ Ahorro estimado al vencer:</span>
+                <span class="text-brand-orange font-extrabold">9 €</span>
+              </div>
+              <div class="flex justify-between font-bold border-b border-gray-200/60 pb-1.5 mb-1.5">
+                <span>✅ Alimentos a tiempo recuperados:</span>
+                <span class="text-brand-green-dark font-extrabold">6</span>
+              </div>
+              <div class="flex justify-between font-bold">
+                <span>✅ Inventario aprovechado:</span>
+                <span class="text-brand-green-dark font-extrabold">92 %</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CRONOGRAMA VISUAL STRICT EXPIRATION ORDER -->
+          <div class="mt-4 space-y-3 max-h-[340px] overflow-y-auto no-scrollbar pr-0.5">
+            <!-- HOY: Vencimientos inminentes (Yogur, Tomates) -->
+            <div class="bg-white border-2 border-brand-green rounded-2xl p-3.5 shadow-card">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-brand-green text-white uppercase tracking-wider">HOY</span>
+                <span class="text-xs font-bold text-brand-red bg-red-50 px-2 py-0.5 rounded-md">🔴 Vencimiento Inminente (1-2 días)</span>
+              </div>
+              <h3 class="text-base font-bold text-gray-900 mt-2">Tortilla de verduras y tomate</h3>
+              <p class="text-xs text-gray-500 mt-1">Aprovecha primero: <strong class="text-brand-red">tomate (vence hoy), yogur natural</strong></p>
+              <div class="mt-2 flex items-center justify-between text-xs pt-2 border-t border-gray-100">
+                <span class="font-bold text-gray-600">Prioridad: <strong class="text-brand-red">ALTA 🔴</strong></span>
+                <span class="font-extrabold text-brand-green bg-green-50 px-2 py-0.5 rounded-lg">Dinero salvado: 4 €</span>
+              </div>
+              <button onclick="switchScreen(8)" class="w-full mt-3 bg-brand-green text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 hover:bg-brand-green-dark transition-all">
+                <span>VER RECETA</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+
+            <!-- MAÑANA: Vencimientos esta semana (Leche, Queso) -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-3.5 shadow-card">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-700 uppercase tracking-wider">MAÑANA</span>
+                <span class="text-xs font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md">🟠 Vencimiento Esta Semana (3-4 días)</span>
+              </div>
+              <h3 class="text-base font-bold text-gray-900 mt-2">Pasta mediterránea</h3>
+              <p class="text-xs text-gray-500 mt-1">Aprovecha: <strong class="text-amber-800">leche entera, queso rallado</strong></p>
+              <div class="mt-2 flex items-center justify-between text-xs pt-2 border-t border-gray-100">
+                <span class="font-bold text-gray-600">Prioridad: <strong class="text-amber-800">MEDIA 🟠</strong></span>
+                <span class="font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-lg">Ahorro: 3 €</span>
+              </div>
+              <button onclick="switchScreen(8)" class="w-full mt-3 bg-gray-100 text-gray-800 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 hover:bg-gray-200 transition-all">
+                <span>VER RECETA</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+
+            <!-- VIERNES: Vencimiento distante (Arroz, Huevos) -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-3.5 shadow-card">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-700 uppercase tracking-wider">VIERNES</span>
+                <span class="text-xs font-bold text-brand-green-dark bg-green-50 px-2 py-0.5 rounded-md">🟢 Sin Urgencia de Caducidad</span>
+              </div>
+              <h3 class="text-base font-bold text-gray-900 mt-2">Ensalada completa</h3>
+              <p class="text-xs text-gray-500 mt-1">Aprovecha: <strong class="text-brand-green-dark">arroz, cebolla</strong></p>
+              <div class="mt-2 flex items-center justify-between text-xs pt-2 border-t border-gray-100">
+                <span class="font-bold text-gray-600">Prioridad: <strong class="text-brand-green-dark">NORMAL 🟢</strong></span>
+                <span class="font-bold text-brand-green-dark bg-green-50 px-2 py-0.5 rounded-lg">Ahorro: 2 €</span>
+              </div>
+              <button onclick="switchScreen(8)" class="w-full mt-3 bg-gray-100 text-gray-800 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 hover:bg-gray-200 transition-all">
+                <span>VER RECETA</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <button onclick="switchScreen(6)" class="w-full bg-gray-100 text-gray-700 font-bold py-3 rounded-2xl text-xs">
+            Volver al Dashboard
+          </button>
+        </div>
+      </div>
+
+
+      <!-- ========================================== -->
+      <!-- PANTALLA 8: RECETA -->
+      <!-- ========================================== -->
+      <div id="screen-8" class="screen-slide screen-hidden flex flex-col justify-between bg-white relative">
+        <div class="relative w-full h-52 bg-gray-900">
+          <img id="detail-img" src="https://images.unsplash.com/photo-1510693206972-df098062cb71?auto=format&fit=crop&w=800&q=80" alt="Tortilla" class="w-full h-full object-cover">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+          
+          <button onclick="switchScreen(7)" class="absolute top-4 left-4 w-9 h-9 rounded-full bg-white/80 backdrop-blur-md flex items-center justify-center text-gray-900 shadow-md">
+            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+          </button>
+
+          <div class="absolute bottom-4 left-5 right-5 text-white">
+            <h2 class="text-xl font-extrabold leading-tight">Tortilla de verduras y tomate</h2>
+            <p class="text-xs text-emerald-300 font-medium">Tiempo: 15 min • Prioridad: Caducidad Inminente 🔴</p>
+          </div>
+        </div>
+
+        <div class="flex-1 p-5 space-y-4 overflow-y-auto no-scrollbar max-h-[460px]">
+          <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 shadow-sm">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-amber-900 block mb-1">
+              🌱 CONSUMO PRIORITARIO POR VENCIMIENTO
+            </span>
+            <div class="space-y-1 text-xs text-gray-800">
+              <p class="font-bold">Consumirás a tiempo:</p>
+              <div class="flex flex-wrap gap-2 font-bold mt-1">
+                <span class="bg-red-50 text-brand-red px-2 py-0.5 rounded-md border border-red-200">🔴 tomate (vence hoy)</span>
+                <span class="bg-white px-2 py-0.5 rounded-md border border-green-200">✅ cebolla</span>
+                <span class="bg-white px-2 py-0.5 rounded-md border border-green-200">✅ huevo</span>
+              </div>
+            </div>
+
+            <div class="mt-3 pt-2 border-t border-amber-200/60 flex justify-between items-center text-xs">
+              <span>Dinero recuperado a tiempo: <strong class="text-brand-orange font-extrabold">4 €</strong></span>
+              <span>Inventario utilizado: <strong class="text-brand-green-dark font-extrabold">27 %</strong></span>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-bold text-gray-900 mb-2">Ingredientes necesarios</h3>
+            <div class="space-y-1.5 text-xs">
+              <div class="p-2 rounded-xl bg-red-50 border border-red-200 flex justify-between font-bold text-gray-900">
+                <span>✓ Tomate (2 uds)</span>
+                <span class="text-brand-red">🔴 Vence hoy</span>
+              </div>
+              <div class="p-2 rounded-xl bg-green-50 border border-green-200 flex justify-between font-bold text-gray-900">
+                <span>✓ Cebolla (1 ud)</span>
+                <span class="text-brand-green-dark">🟢 En tu posesión</span>
+              </div>
+              <div class="p-2 rounded-xl bg-green-50 border border-green-200 flex justify-between font-bold text-gray-900">
+                <span>✓ Huevo (4 uds)</span>
+                <span class="text-brand-green-dark">🟢 En tu posesión</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 bg-white border-t border-gray-100 shadow-lg">
+          <button onclick="markAsCooked()" class="w-full bg-brand-green hover:bg-brand-green-dark text-white font-bold py-4 px-6 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wider active:scale-[0.98]">
+            <i data-lucide="check-circle" class="w-5 h-5"></i>
+            <span>HE COCINADO ESTO</span>
+          </button>
+        </div>
+      </div>
+
+
+      <!-- ========================================== -->
+      <!-- PANTALLA 9: IMPACTO Y CELEBRACIÓN -->
+      <!-- ========================================== -->
+      <div id="screen-9" class="screen-slide screen-hidden flex flex-col justify-between p-6 bg-white">
+        <div class="pt-4 text-center">
+          <div class="w-16 h-16 rounded-full bg-brand-green-light text-brand-green flex items-center justify-center mx-auto mb-3 shadow-xs">
+            <i data-lucide="party-popper" class="w-9 h-9"></i>
+          </div>
+          <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">Excelente trabajo</h2>
+          <p class="text-xs text-gray-500 mt-1">Alimentos consumidos antes de su vencimiento.</p>
+        </div>
+
+        <div class="my-auto space-y-3">
+          <div class="bg-gray-50 border border-gray-100 rounded-2xl p-4 space-y-2 text-xs font-bold text-gray-900 shadow-card">
+            <p>✅ Has consumido 4 alimentos antes de su vencimiento</p>
+            <p>✅ Has ahorrado 4 €</p>
+            <p>✅ Tus alertas de caducidad han bajado un 35 %</p>
+            <p>✅ Tu inventario está mejor optimizado</p>
+          </div>
+
+          <div class="bg-gradient-to-br from-brand-orange to-amber-600 rounded-2xl p-4 text-white shadow-md">
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-100 block mb-2">GRÁFICO SEMANAL DE CONTROL</span>
+            <div class="grid grid-cols-3 gap-2 text-center text-xs">
+              <div class="bg-white/10 p-2 rounded-xl">
+                <span class="text-[9px] text-amber-100 block">Ahorro semanal</span>
+                <span class="font-extrabold text-base">9 €</span>
+              </div>
+              <div class="bg-white/10 p-2 rounded-xl">
+                <span class="text-[9px] text-amber-100 block">Consumo a tiempo</span>
+                <span class="font-extrabold text-base">4.2 kg</span>
+              </div>
+              <div class="bg-white/10 p-2 rounded-xl">
+                <span class="text-[9px] text-amber-100 block">Atendidos</span>
+                <span class="font-extrabold text-base">6 prod.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-brand-green-light p-3.5 rounded-2xl text-center border border-brand-green/30">
+            <p class="text-xs font-bold text-brand-green-dark">
+              "Cada alimento aprovechado a tiempo es dinero que permanece en tu hogar."
+            </p>
+          </div>
+        </div>
+
+        <div class="pb-4">
+          <button onclick="switchScreen(6)" class="w-full bg-gray-900 hover:bg-black text-white font-bold py-4 px-6 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wider active:scale-[0.98]">
+            <span>CONTINUAR</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Inventory Modal -->
+    <div id="inventory-modal" class="hidden absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end justify-center">
+      <div class="bg-white rounded-t-3xl p-5 w-full max-h-[85%] overflow-y-auto no-scrollbar shadow-2xl">
+        <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-3"></div>
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-lg font-extrabold text-gray-900">Inventario (18 ingredientes)</h3>
+          <button onclick="closeInventoryModal()" class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+        <div class="space-y-3 text-xs">
+          <div>
+            <h4 class="font-bold text-gray-400 uppercase tracking-wider mb-2">🔴 VENCIMIENTO INMINENTE (1-2 DÍAS)</h4>
+            <div class="space-y-1.5">
+              <div class="p-2.5 bg-red-50 rounded-xl flex items-center justify-between border border-red-100">
+                <span class="font-bold text-gray-900">Tomates (4 uds)</span>
+                <span class="text-brand-red font-semibold">🔴 Vence hoy (1,20 €)</span>
+              </div>
+              <div class="p-2.5 bg-red-50 rounded-xl flex items-center justify-between border border-red-100">
+                <span class="font-bold text-gray-900">Yogur natural (2 uds)</span>
+                <span class="text-brand-red font-semibold">🔴 Vence mañana (2,10 €)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button onclick="closeInventoryModal()" class="w-full mt-4 bg-gray-900 text-white font-bold py-3 rounded-2xl text-xs">
+          Cerrar
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // ==========================================
+    // GLOBAL PRODUCTION STATE & INVENTORY ENGINE
+    // ==========================================
+    let appInventory = [
+      { id: 1, name: "Tomates maduros", qty: 4, unit: "uds", expDays: 1, priority: "urgent", price: 1.80 },
+      { id: 2, name: "Yogur natural", qty: 2, unit: "uds", expDays: 1, priority: "urgent", price: 2.10 },
+      { id: 3, name: "Leche entera", qty: 1, unit: "L", expDays: 3, priority: "this_week", price: 1.10 },
+      { id: 4, name: "Queso fresco", qty: 1, unit: "bloque", expDays: 4, priority: "this_week", price: 2.50 },
+      { id: 5, name: "Huevos camperos", qty: 6, unit: "uds", expDays: 7, priority: "ok", price: 1.80 },
+      { id: 6, name: "Arroz", qty: 1, unit: "kg", expDays: 30, priority: "ok", price: 1.20 },
+      { id: 7, name: "Cebolla", qty: 1, unit: "ud", expDays: 5, priority: "this_week", price: 0.60 }
+    ];
+
+    let userStats = {
+      savedMoneyWeekly: 9.00,
+      savedMoneyTotal: 34.50,
+      salvagedKgTotal: 4.2,
+      cookedRecipesCount: 5
+    };
+
+    let isRecording = false;
+    let speechRecognitionInstance = null;
+    let activeMediaStream = null;
+    let autoDemoTimer = null;
+    let autoDemoStep = 1;
+    let currentScreenNum = 1;
+
+    const screenTitles = [
+      "Bienvenida",
+      "Voz y Cámara",
+      "Transcripción",
+      "Vencimientos",
+      "Confirmación",
+      "Dashboard",
+      "Vaciar Nevera",
+      "Receta",
+      "Impacto"
+    ];
+
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    // Initialize UI on load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderDynamicInventoryUI();
+      initWebSpeechEngine();
+      updateNavigationUI(1);
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') prevScreen();
+        if (e.key === 'ArrowRight') nextScreen();
+      });
+
+      const appViewport = document.getElementById('app-container');
+      if (appViewport) {
+        appViewport.addEventListener('touchstart', (e) => {
+          touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        appViewport.addEventListener('touchend', (e) => {
+          touchEndX = e.changedTouches[0].screenX;
+          if (touchEndX - touchStartX < -50) nextScreen();
+          if (touchEndX - touchStartX > 50) prevScreen();
+        }, { passive: true });
+      }
+    });
+
+    function updateNavigationUI(num) {
+      const counterText = document.getElementById('screen-counter-text');
+      const subtitleText = document.getElementById('screen-subtitle-text');
+      const btnPrev = document.getElementById('btn-prev');
+      const btnNext = document.getElementById('btn-next');
+
+      if (counterText) counterText.innerText = `Pantalla ${num} de 9`;
+      if (subtitleText) subtitleText.innerText = screenTitles[num - 1] || '';
+
+      if (btnPrev) btnPrev.disabled = (num === 1);
+      if (btnNext) btnNext.disabled = (num === 9);
+
+      // Render sleek dots indicator
+      const dotsContainer = document.getElementById('dots-container');
+      if (dotsContainer) {
+        let dotsHTML = '';
+        for (let i = 1; i <= 9; i++) {
+          if (i === num) {
+            dotsHTML += `<button onclick="switchScreen(${i})" title="${screenTitles[i-1]}" class="h-2 w-5 bg-brand-green rounded-full transition-all duration-300 shadow-sm" aria-label="Pantalla ${i}"></button>`;
+          } else {
+            dotsHTML += `<button onclick="switchScreen(${i})" title="${screenTitles[i-1]}" class="h-2 w-2 bg-slate-700 hover:bg-slate-500 rounded-full transition-all duration-300" aria-label="Pantalla ${i}"></button>`;
+          }
+        }
+        dotsContainer.innerHTML = dotsHTML;
+      }
+    }
+
+    function prevScreen() {
+      if (currentScreenNum > 1) {
+        switchScreen(currentScreenNum - 1, 'prev');
+      }
+    }
+
+    function nextScreen() {
+      if (currentScreenNum < 9) {
+        switchScreen(currentScreenNum + 1, 'next');
+      }
+    }
+
+    function switchScreen(screenNum, direction = null) {
+      screenNum = parseInt(screenNum, 10);
+      if (isNaN(screenNum) || screenNum < 1) screenNum = 1;
+      if (screenNum > 9) screenNum = 9;
+
+      const newScreen = document.getElementById(`screen-${screenNum}`);
+      if (!newScreen) return;
+
+      if (screenNum === currentScreenNum && newScreen.classList.contains('screen-active')) {
+        return;
+      }
+
+      if (!direction) {
+        direction = screenNum >= currentScreenNum ? 'next' : 'prev';
+      }
+
+      const oldNum = currentScreenNum;
+      currentScreenNum = screenNum;
+
+      const oldScreen = document.getElementById(`screen-${oldNum}`);
+
+      if (oldScreen && oldNum !== screenNum) {
+        oldScreen.classList.remove('screen-active', 'screen-enter-left', 'screen-enter-right');
+        if (direction === 'next') {
+          oldScreen.classList.add('screen-exit-left');
+        } else {
+          oldScreen.classList.add('screen-exit-right');
+        }
+        setTimeout(() => {
+          oldScreen.classList.remove('screen-exit-left', 'screen-exit-right');
+          oldScreen.classList.add('screen-hidden');
+        }, 280);
+      }
+
+      newScreen.classList.remove('screen-hidden', 'screen-active', 'screen-exit-left', 'screen-exit-right');
+      if (direction === 'next') {
+        newScreen.classList.add('screen-enter-right');
+      } else {
+        newScreen.classList.add('screen-enter-left');
+      }
+
+      // Force reflow
+      void newScreen.offsetWidth;
+
+      requestAnimationFrame(() => {
+        newScreen.classList.remove('screen-enter-right', 'screen-enter-left');
+        newScreen.classList.add('screen-active');
+      });
+
+      updateNavigationUI(currentScreenNum);
+
+      if (screenNum === 6 || screenNum === 3 || screenNum === 5 || screenNum === 7) {
+        renderDynamicInventoryUI();
+      }
+
+      lucide.createIcons();
+    }
+
+    function switchInputTab(mode) {
+      const voiceTab = document.getElementById('tab-btn-voice');
+      const cameraTab = document.getElementById('tab-btn-camera');
+      const voiceContainer = document.getElementById('input-mode-voice');
+      const cameraContainer = document.getElementById('input-mode-camera');
+      const screen2Header = document.getElementById('screen-2-header');
+
+      if (mode === 'voice') {
+        if (voiceTab) voiceTab.className = "px-3 py-1.5 rounded-full bg-brand-green text-white shadow-xs transition-all flex items-center gap-1 font-bold";
+        if (cameraTab) cameraTab.className = "px-3 py-1.5 rounded-full text-gray-600 hover:text-gray-900 transition-all flex items-center gap-1 font-medium";
+        if (voiceContainer) voiceContainer.classList.remove('hidden');
+        if (cameraContainer) cameraContainer.classList.add('hidden');
+        if (screen2Header) screen2Header.classList.remove('hidden');
+        stopRealCamera();
+      } else {
+        if (cameraTab) cameraTab.className = "px-3 py-1.5 rounded-full bg-brand-green text-white shadow-xs transition-all flex items-center gap-1 font-bold";
+        if (voiceTab) voiceTab.className = "px-3 py-1.5 rounded-full text-gray-600 hover:text-gray-900 transition-all flex items-center gap-1 font-medium";
+        if (cameraContainer) cameraContainer.classList.remove('hidden');
+        if (voiceContainer) voiceContainer.classList.add('hidden');
+        if (screen2Header) screen2Header.classList.add('hidden');
+        startRealCamera();
+      }
+      lucide.createIcons();
+    }
+
+    // ==========================================
+    // REAL WEB SPEECH API & AUDIO RECOGNITION
+    // ==========================================
+    function initWebSpeechEngine() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        console.log('Web Speech API no disponible en este navegador. Se usará el simulador conversacional.');
+        return;
+      }
+
+      speechRecognitionInstance = new SpeechRecognition();
+      speechRecognitionInstance.continuous = true;
+      speechRecognitionInstance.interimResults = true;
+      speechRecognitionInstance.lang = 'es-ES';
+
+      speechRecognitionInstance.onresult = (event) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          transcript += event.results[i][0].transcript;
+        }
+        const liveText = document.getElementById('speech-live-text');
+        if (liveText && transcript) {
+          liveText.innerText = `"${transcript}"`;
+          parseSpokenTextToInventory(transcript);
+        }
+      };
+
+      speechRecognitionInstance.onerror = (err) => {
+        console.log('Speech API Notice:', err.error);
+      };
+    }
+
+    function toggleVoiceRecording() {
+      const wave = document.getElementById('sound-wave-container');
+      const actionBtn = document.getElementById('btn-voice-action');
+      const micGlow = document.getElementById('mic-glow-ring');
+      
+      isRecording = !isRecording;
+
+      if (isRecording) {
+        wave.classList.remove('hidden');
+        if (micGlow) micGlow.className = "absolute w-36 h-36 bg-red-500 rounded-full opacity-40 animate-mic-glow";
+        actionBtn.innerHTML = `<span>DETENER & PROCESAR</span><i data-lucide="square" class="w-4 h-4"></i>`;
+        actionBtn.className = "w-full bg-brand-red hover:bg-red-600 text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider active:scale-[0.98]";
+
+        if (speechRecognitionInstance) {
+          try { speechRecognitionInstance.start(); } catch(e){}
+        }
+      } else {
+        wave.classList.add('hidden');
+        if (micGlow) micGlow.className = "absolute w-36 h-36 bg-brand-green rounded-full opacity-20 animate-mic-glow";
+        actionBtn.innerHTML = `<span>CONTINUAR A CONFIRMACIÓN</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+        actionBtn.className = "w-full bg-brand-green hover:bg-brand-green-dark text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 text-xs uppercase tracking-wider active:scale-[0.98]";
+
+        if (speechRecognitionInstance) {
+          try { speechRecognitionInstance.stop(); } catch(e){}
+        }
+      }
+
+      lucide.createIcons();
+    }
+
+    function parseSpokenTextToInventory(text) {
+      const lower = text.toLowerCase();
+      const detected = [];
+
+      if (lower.includes('tomate')) detected.push({ name: 'Tomates maduros', qty: 4, expDays: 1, priority: 'urgent', price: 1.80 });
+      if (lower.includes('leche')) detected.push({ name: 'Leche entera', qty: 1, expDays: 3, priority: 'this_week', price: 1.10 });
+      if (lower.includes('huevo')) detected.push({ name: 'Huevos camperos', qty: 6, expDays: 7, priority: 'ok', price: 1.80 });
+      if (lower.includes('yogur')) detected.push({ name: 'Yogur natural', qty: 2, expDays: 1, priority: 'urgent', price: 2.10 });
+      if (lower.includes('queso')) detected.push({ name: 'Queso fresco', qty: 1, expDays: 4, priority: 'this_week', price: 2.50 });
+      if (lower.includes('arroz')) detected.push({ name: 'Arroz de grano medio', qty: 1, expDays: 30, priority: 'ok', price: 1.20 });
+
+      if (detected.length > 0) {
+        detected.forEach(item => {
+          if (!appInventory.some(existing => existing.name === item.name)) {
+            item.id = Date.now() + Math.random();
+            appInventory.push(item);
+          }
+        });
+      }
+    }
+
+    function processVoiceAndNext() {
+      if (isRecording) {
+        toggleVoiceRecording();
+      }
+      switchScreen(3);
+    }
+
+    function setSamplePhrase(type) {
+      const liveText = document.getElementById('speech-live-text');
+      if (type === 1) {
+        liveText.innerText = '"Tengo cuatro tomates, media cebolla, seis huevos y dos yogures que vencen mañana."';
+        parseSpokenTextToInventory('cuatro tomates media cebolla seis huevos dos yogures vence mañana');
+      } else {
+        liveText.innerText = '"Tengo arroz, leche que vence el viernes, queso y una lechuga."';
+        parseSpokenTextToInventory('arroz leche vence el viernes queso lechuga');
+      }
+    }
+
+    // ==========================================
+    // REAL CAMERA STREAM & SNAPSHOT CAPTURE
+    // ==========================================
+    async function startRealCamera() {
+      const videoEl = document.getElementById('camera-video');
+      const placeholder = document.getElementById('camera-placeholder');
+      const previewImg = document.getElementById('camera-preview-img');
+
+      try {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          activeMediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+          videoEl.srcObject = activeMediaStream;
+          videoEl.classList.remove('hidden');
+          if (placeholder) placeholder.classList.add('hidden');
+          if (previewImg) previewImg.classList.add('hidden');
+        } else {
+          alert('Acceso a cámara no disponible. Puedes subir una fotografía desde la galería.');
+        }
+      } catch (err) {
+        console.log('Camera access notice:', err);
+      }
+    }
+
+    function stopRealCamera() {
+      if (activeMediaStream) {
+        activeMediaStream.getTracks().forEach(track => track.stop());
+        activeMediaStream = null;
+      }
+      const videoEl = document.getElementById('camera-video');
+      if (videoEl) videoEl.classList.add('hidden');
+      const placeholder = document.getElementById('camera-placeholder');
+      if (placeholder) placeholder.classList.remove('hidden');
+    }
+
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const previewImg = document.getElementById('camera-preview-img');
+          const videoEl = document.getElementById('camera-video');
+          const placeholder = document.getElementById('camera-placeholder');
+
+          stopRealCamera();
+          if (previewImg) {
+            previewImg.src = e.target.result;
+            previewImg.classList.remove('hidden');
+          }
+          if (videoEl) videoEl.classList.add('hidden');
+          if (placeholder) placeholder.classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function processCameraScanAndNext() {
+      const videoEl = document.getElementById('camera-video');
+      const previewImg = document.getElementById('camera-preview-img');
+
+      // Capture frame snapshot onto canvas if video is active
+      if (videoEl && !videoEl.classList.contains('hidden') && videoEl.videoWidth) {
+        const canvas = document.createElement('canvas');
+        canvas.width = videoEl.videoWidth;
+        canvas.height = videoEl.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+        if (previewImg) {
+          previewImg.src = canvas.toDataURL('image/jpeg');
+          previewImg.classList.remove('hidden');
+        }
+      }
+
+      stopRealCamera();
+      startAnalysisFlow();
+    }
+
+    // ==========================================
+    // DYNAMIC INVENTORY & RECIPE CALCULATIONS
+    // ==========================================
+    function renderDynamicInventoryUI() {
+      // Urgent items (expiring in <= 2 days)
+      const urgentItems = appInventory.filter(i => i.priority === 'urgent' || i.expDays <= 2);
+      const weekItems = appInventory.filter(i => i.priority === 'this_week' || (i.expDays > 2 && i.expDays <= 5));
+      
+      const totalUrgentValue = urgentItems.reduce((acc, item) => acc + (item.price || 1.5), 0);
+      const totalWeeklySavings = appInventory.reduce((acc, item) => acc + (item.price || 1.2), 0) * 0.7;
+
+      // Update Screen 5 (Tu cocina analizada)
+      const wowTotalCount = document.querySelector('#screen-5 .text-3xl');
+      if (wowTotalCount) wowTotalCount.innerText = appInventory.length;
+
+      const wowValue = document.querySelector('#screen-5 .text-4xl');
+      if (wowValue) wowValue.innerText = `${totalUrgentValue.toFixed(0)} €`;
+
+      // Update Screen 6 (Dashboard)
+      const dashSavings = document.querySelector('#screen-6 .from-brand-orange .text-2xl');
+      if (dashSavings) dashSavings.innerText = `${totalWeeklySavings.toFixed(0)} €`;
+
+      const dashUrgentValue = document.querySelector('#screen-6 .text-brand-red.text-2xl');
+      if (dashUrgentValue) dashUrgentValue.innerText = `${totalUrgentValue.toFixed(0)} €`;
+
+      const dashTotalInv = document.querySelector('#screen-6 .text-gray-900.text-2xl');
+      if (dashTotalInv) dashTotalInv.innerText = appInventory.length;
+
+      // Render Modal Inventory List
+      const modalList = document.querySelector('#inventory-modal .space-y-3');
+      if (modalList) {
+        modalList.innerHTML = `
+          <div>
+            <h4 class="font-bold text-gray-400 uppercase tracking-wider mb-2 text-[10px]">🔴 VENCIMIENTO INMINENTE (1-2 DÍAS)</h4>
+            <div class="space-y-1.5">
+              ${urgentItems.map(item => `
+                <div class="p-2.5 bg-red-50 rounded-xl flex items-center justify-between border border-red-100 text-xs">
+                  <div>
+                    <span class="font-bold text-gray-900 block">${item.name} (${item.qty} ${item.unit || 'uds'})</span>
+                    <span class="text-brand-red font-semibold text-[10px]">🔴 Vence en ${item.expDays} día(s)</span>
+                  </div>
+                  <span class="font-extrabold text-brand-red text-xs">${item.price ? item.price.toFixed(2) + ' €' : '1.50 €'}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          <div class="mt-3">
+            <h4 class="font-bold text-gray-400 uppercase tracking-wider mb-2 text-[10px]">🟠 VENCIMIENTO ESTA SEMANA</h4>
+            <div class="space-y-1.5">
+              ${weekItems.map(item => `
+                <div class="p-2.5 bg-amber-50 rounded-xl flex items-center justify-between border border-amber-100 text-xs">
+                  <div>
+                    <span class="font-bold text-gray-900 block">${item.name} (${item.qty} ${item.unit || 'uds'})</span>
+                    <span class="text-amber-800 font-semibold text-[10px]">🟠 Vence en ${item.expDays} días</span>
+                  </div>
+                  <span class="font-extrabold text-amber-800 text-xs">${item.price ? item.price.toFixed(2) + ' €' : '1.20 €'}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function removeIngredientFromInventory(id) {
+      appInventory = appInventory.filter(i => i.id !== id);
+      renderDynamicInventoryUI();
+    }
+
+    function markAsCooked() {
+      // Consume top urgent items from inventory
+      const urgentItems = appInventory.filter(i => i.priority === 'urgent' || i.expDays <= 2);
+      if (urgentItems.length > 0) {
+        const consumed = urgentItems[0];
+        userStats.savedMoneyWeekly += consumed.price || 2.0;
+        userStats.savedMoneyTotal += consumed.price || 2.0;
+        userStats.salvagedKgTotal += 0.4;
+        userStats.cookedRecipesCount++;
+        appInventory = appInventory.filter(i => i.id !== consumed.id);
+      } else if (appInventory.length > 0) {
+        appInventory.shift();
+      }
+
+      renderDynamicInventoryUI();
+      switchScreen(9);
+    }
+
+    function startAutoDemo() {
+      const btn = document.getElementById('btn-auto-demo');
+
+      if (autoDemoTimer) {
+        clearInterval(autoDemoTimer);
+        autoDemoTimer = null;
+        if (btn) {
+          btn.innerHTML = `<i data-lucide="play" class="w-3.5 h-3.5 text-brand-green"></i><span>Auto-Play</span>`;
+        }
+        lucide.createIcons();
+        return;
+      }
+
+      if (btn) {
+        btn.innerHTML = `<i data-lucide="pause" class="w-3.5 h-3.5 text-brand-orange"></i><span>Pausar</span>`;
+      }
+      lucide.createIcons();
+
+      autoDemoStep = currentScreenNum;
+
+      autoDemoTimer = setInterval(() => {
+        autoDemoStep++;
+        if (autoDemoStep > 9) autoDemoStep = 1;
+        if (autoDemoStep === 4) {
+          switchScreen(4, 'next');
+          startAnalysisFlow();
+        } else {
+          switchScreen(autoDemoStep, 'next');
+        }
+      }, 3500);
+    }
+
+    function startAnalysisFlow() {
+      switchScreen(4);
+      let progress = 15;
+      const bar = document.getElementById('scan-progress-bar');
+      const pct = document.getElementById('scan-percentage');
+      const statusText = document.getElementById('analysis-status-text');
+      const subtext = document.getElementById('analysis-subtext');
+
+      const interval = setInterval(() => {
+        progress += 25;
+        if (progress > 100) progress = 100;
+        if (bar) bar.style.width = progress + '%';
+        if (pct) pct.innerText = progress + '%';
+
+        if (progress === 40) {
+          statusText.innerText = "Evaluando fechas de vencimiento...";
+          subtext.innerText = "Priorizando ingredientes de consumo inmediato...";
+        } else if (progress === 75) {
+          statusText.innerText = "Construyendo tu plan semanal...";
+          subtext.innerText = "Fijando recetas por orden de caducidad...";
+        } else if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => switchScreen(5), 500);
+        }
+      }, 450);
+    }
+
+    function showInventoryModal() {
+      renderDynamicInventoryUI();
+      document.getElementById('inventory-modal').classList.remove('hidden');
+    }
+
+    function closeInventoryModal() {
+      document.getElementById('inventory-modal').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>

@@ -48,7 +48,7 @@ export function humanizeSpeechError(err: string): string {
     case 'permission-denied':
       return 'Permiso de micrófono denegado. Permite el acceso al micrófono en el icono del candado del navegador.'
     case 'no-speech':
-      return 'No se detectó voz. Pulsa el micrófono y habla de nuevo.'
+      return 'No se detectó voz reciente. El micrófono continúa activo para que puedas seguir hablando.'
     case 'audio-capture':
       return 'No se encontró ningún micrófono conectado en tu dispositivo.'
     case 'service-not-allowed':
@@ -81,10 +81,14 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
   const [isListening, setIsListening] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [errorCode, setErrorCode] = useState<string | null>(null)
+
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null)
   const isListeningRef = useRef(false)
+  const userStoppedRef = useRef(false)
+  const accumulatedFinalRef = useRef('')
   const retryCountRef = useRef(0)
   const simulationTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const restartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const SpeechRecognitionAPI = typeof window !== 'undefined'
     ? (window.SpeechRecognition || window.webkitSpeechRecognition)
@@ -92,6 +96,10 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
   const isSupported = !!SpeechRecognitionAPI
 
   const cleanupRecognition = useCallback(() => {
+    if (restartTimerRef.current) {
+      clearTimeout(restartTimerRef.current)
+      restartTimerRef.current = null
+    }
     if (recognitionRef.current) {
       recognitionRef.current.onstart = null
       recognitionRef.current.onresult = null
@@ -120,8 +128,11 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
     setError(null)
     setErrorCode(null)
     setInterimTranscript('')
+    userStoppedRef.current = false
+    isListeningRef.current = true
+    setIsListening(true)
 
-    // Intentar despertar y solicitar permisos de micrófono de forma explícita
+    // Solicitar / verificar permisos de micrófono
     if (typeof navigator !== 'undefined' && navigator.mediaDevices?.getUserMedia) {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
@@ -137,101 +148,142 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
       }
     }
 
-    const recognition = new SpeechRecognitionAPI()
+    const initRecognitionSession = () => {
+      if (!isListeningRef.current || userStoppedRef.current) return
 
-    // continuous: false para máxima compatibilidad y evitar timeouts de red en Chromium
-    recognition.continuous = false
-    recognition.interimResults = true
-    recognition.lang = retryCountRef.current > 0 ? 'es-ES' : (navigator.language?.startsWith('es') ? navigator.language : 'es-ES')
+      try {
+        const recognition = new SpeechRecognitionAPI()
 
-    recognition.onstart = () => {
-      setIsListening(true)
-      isListeningRef.current = true
-      setError(null)
-      setErrorCode(null)
-    }
+        // Modo continuo para no cortar la frase automáticamente
+        recognition.continuous = true
+        recognition.interimResults = true
+        recognition.lang = retryCountRef.current > 0 ? 'es-ES' : (navigator.language?.startsWith('es') ? navigator.language : 'es-ES')
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      let finalText = ''
-      let interimText = ''
+        let sessionFinalText = ''
 
-      for (let i = 0; i < event.results.length; i++) {
-        const result = event.results[i]
-        if (result.isFinal) {
-          finalText += result[0].transcript + ' '
-        } else {
-          interimText += result[0].transcript
+        recognition.onstart = () => {
+          if (isListeningRef.current) {
+            setIsListening(true)
+            setError(null)
+            setErrorCode(null)
+          }
+        }
+
+        recognition.onresult = (event: SpeechRecognitionEvent) => {
+          sessionFinalText = ''
+          let interim = ''
+
+          for (let i = 0; i < event.results.length; i++) {
+            const res = event.results[i]
+            if (res.isFinal) {
+              sessionFinalText += res[0].transcript + ' '
+            } else {
+              interim += res[0].transcript
+            }
+          }
+
+          const combined = (accumulatedFinalRef.current ? accumulatedFinalRef.current + ' ' : '') + sessionFinalText
+          const cleanText = collapseRepeats(combined.trim())
+          if (cleanText) {
+            setTranscript(cleanText)
+          }
+          setInterimTranscript(interim)
+        }
+
+        recognition.onerror = (event: Event) => {
+          const err = (event as Event & { error?: string }).error || 'unknown'
+
+          // Si el usuario pausó unos segundos, Chrome dispara 'no-speech'.
+          // ¡NO detener! Mantener la escucha activa para que el usuario pueda pensar y seguir hablando.
+          if (err === 'no-speech') {
+            return
+          }
+
+          if (err === 'aborted') {
+            return
+          }
+
+          // Si falla por network en el primer intento, reintentar automáticamente con locale es-ES
+          if (err === 'network' && retryCountRef.current === 0) {
+            retryCountRef.current = 1
+            if (isListeningRef.current && !userStoppedRef.current) {
+              restartTimerRef.current = setTimeout(() => {
+                initRecognitionSession()
+              }, 200)
+              return
+            }
+          }
+
+          setErrorCode(err)
+          setError(humanizeSpeechError(err))
+          setIsListening(false)
+          isListeningRef.current = false
+        }
+
+        recognition.onend = () => {
+          // Guardar el texto final acumulado de esta sesión antes de reiniciar
+          if (sessionFinalText.trim()) {
+            const currentCombined = (accumulatedFinalRef.current ? accumulatedFinalRef.current + ' ' : '') + sessionFinalText
+            accumulatedFinalRef.current = collapseRepeats(currentCombined.trim())
+          }
+
+          // REGLA CLAVE: Solo el usuario puede detener el micrófono.
+          // Si el navegador se desconectó o terminó por silencio pero el usuario NO pulsó parar:
+          if (isListeningRef.current && !userStoppedRef.current) {
+            restartTimerRef.current = setTimeout(() => {
+              if (isListeningRef.current && !userStoppedRef.current) {
+                initRecognitionSession()
+              }
+            }, 100)
+            return
+          }
+
+          setIsListening(false)
+          isListeningRef.current = false
+          setInterimTranscript('')
+        }
+
+        recognitionRef.current = recognition
+        recognition.start()
+      } catch (err: any) {
+        console.warn('Error iniciando sesión de reconocimiento:', err)
+        if (isListeningRef.current && !userStoppedRef.current) {
+          restartTimerRef.current = setTimeout(() => {
+            initRecognitionSession()
+          }, 300)
         }
       }
-
-      if (finalText) {
-        setTranscript(prev => {
-          const combined = prev ? `${prev} ${finalText.trim()}` : finalText.trim()
-          return collapseRepeats(combined)
-        })
-      }
-      setInterimTranscript(interimText)
     }
 
-    recognition.onerror = (event: Event) => {
-      const err = (event as Event & { error?: string }).error || 'unknown'
-      if (err === 'aborted') {
-        setIsListening(false)
-        isListeningRef.current = false
-        return
-      }
-
-      // Si falla por network en el primer intento, reintentar una vez con locale es-ES
-      if (err === 'network' && retryCountRef.current === 0) {
-        retryCountRef.current = 1
-        cleanupRecognition()
-        setTimeout(() => {
-          startListening()
-        }, 150)
-        return
-      }
-
-      setErrorCode(err)
-      setError(humanizeSpeechError(err))
-      setIsListening(false)
-      isListeningRef.current = false
-    }
-
-    recognition.onend = () => {
-      setIsListening(false)
-      isListeningRef.current = false
-      setInterimTranscript('')
-    }
-
-    recognitionRef.current = recognition
-    isListeningRef.current = true
-
-    try {
-      recognition.start()
-    } catch (e: any) {
-      console.warn('Speech recognition start failed:', e)
-      setIsListening(false)
-      isListeningRef.current = false
-      setErrorCode('network')
-      setError(humanizeSpeechError('network'))
-    }
+    initRecognitionSession()
   }, [SpeechRecognitionAPI, cleanupRecognition])
 
   const stopListening = useCallback(() => {
+    userStoppedRef.current = true
     isListeningRef.current = false
+
+    if (restartTimerRef.current) {
+      clearTimeout(restartTimerRef.current)
+      restartTimerRef.current = null
+    }
+
     if (simulationTimerRef.current) {
       clearInterval(simulationTimerRef.current)
       simulationTimerRef.current = null
     }
+
     if (recognitionRef.current) {
       try {
         recognitionRef.current.stop()
       } catch {}
     }
+
     setIsListening(false)
+    setInterimTranscript('')
   }, [])
 
   const resetTranscript = useCallback(() => {
+    accumulatedFinalRef.current = ''
     setTranscript('')
     setInterimTranscript('')
     setError(null)
@@ -239,13 +291,14 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
     retryCountRef.current = 0
   }, [])
 
-  // Simulación realista de dictado por voz (ideal para tests, demos o navegadores sin Google Cloud)
   const simulateVoiceInput = useCallback((sampleText?: string) => {
     const textToSimulate = sampleText || 'Tengo cuatro tomates, media cebolla, seis huevos y dos yogures que vencen mañana'
-    
+
     stopListening()
     resetTranscript()
     setIsListening(true)
+    isListeningRef.current = true
+    userStoppedRef.current = false
     setError(null)
     setErrorCode(null)
 
@@ -264,7 +317,10 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
         }
         setInterimTranscript('')
         setTranscript(textToSimulate)
+        accumulatedFinalRef.current = textToSimulate
         setIsListening(false)
+        isListeningRef.current = false
+        userStoppedRef.current = true
       }
     }, 160)
   }, [stopListening, resetTranscript])
@@ -273,6 +329,9 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
     return () => {
       if (simulationTimerRef.current) {
         clearInterval(simulationTimerRef.current)
+      }
+      if (restartTimerRef.current) {
+        clearTimeout(restartTimerRef.current)
       }
       cleanupRecognition()
     }

@@ -142,13 +142,24 @@ export default function VoicePage() {
                 )}
               </button>
 
-              <p className="text-gray-500 text-xs text-center font-medium">
-                {isListening ? (
-                  <span className="text-red-500 font-bold animate-pulse">🔴 Escuchando... Pulsa para parar</span>
-                ) : (
-                  'Pulsa para hablar'
-                )}
-              </p>
+              {isListening ? (
+                <div className="flex flex-col items-center gap-1.5 mt-1">
+                  <span className="text-red-600 font-bold text-xs flex items-center gap-1.5 animate-pulse">
+                    <span className="w-2 h-2 rounded-full bg-red-600 animate-ping inline-block" />
+                    Escuchando activamente... Habla a tu ritmo
+                  </span>
+                  <button
+                    onClick={handleToggleMic}
+                    className="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full text-xs font-bold shadow-md shadow-red-200 transition flex items-center gap-1.5 active:scale-95 cursor-pointer"
+                  >
+                    <span>⏹️ He terminado de hablar</span>
+                  </button>
+                </div>
+              ) : (
+                <p className="text-gray-500 text-xs text-center font-medium">
+                  Pulsa para hablar
+                </p>
+              )}
             </div>
           )}
 

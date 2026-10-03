@@ -107,21 +107,21 @@ export default function InventoryPage() {
   }
 
   return (
-    <div className="min-h-app bg-gray-50 flex flex-col pb-12">
+    <div className="h-full max-h-full bg-gray-50 flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="bg-white px-5 pt-safe pb-4 border-b border-gray-100">
-        <div className="flex items-center justify-between mb-3">
+      <div className="bg-white px-3.5 pt-safe pb-2 border-b border-gray-100 flex-shrink-0">
+        <div className="flex items-center justify-between mb-2">
           <button
             onClick={() => navigate('/dashboard')}
-            className="flex items-center gap-2 text-gray-400 hover:text-gray-600 transition"
+            className="flex items-center gap-1.5 text-gray-400 hover:text-gray-600 transition"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-3.5 h-3.5" />
             <span className="text-xs font-medium">Dashboard</span>
           </button>
-          <h1 className="text-base font-extrabold text-gray-900">Inventario de Despensa</h1>
+          <h1 className="text-sm font-black text-gray-900">Inventario de Despensa</h1>
           <button
             onClick={() => setShowAddModal(true)}
-            className="w-8 h-8 rounded-xl bg-green-500 text-white flex items-center justify-center hover:bg-green-600 transition shadow-sm"
+            className="w-7 h-7 rounded-lg bg-green-500 text-white flex items-center justify-center hover:bg-green-600 transition shadow-xs"
             title="Agregar ingrediente manualmente"
           >
             <Plus className="w-4 h-4" />
@@ -130,25 +130,25 @@ export default function InventoryPage() {
 
         {/* Buscador */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Buscar por nombre (tomate, huevo...)"
-            className="w-full pl-9 pr-9 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="w-full pl-8 pr-8 py-1.5 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-900 focus:outline-none focus:ring-1 focus:ring-green-400"
           />
           {search && (
-            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2">
-              <X className="w-4 h-4 text-gray-300" />
+            <button onClick={() => setSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2">
+              <X className="w-3.5 h-3.5 text-gray-400" />
             </button>
           )}
         </div>
 
         {/* Semáforo Tabs de filtro */}
-        <div className="flex gap-2 mt-3 overflow-x-auto scrollbar-hide py-1">
+        <div className="flex gap-1.5 mt-2 overflow-x-auto scrollbar-hide py-0.5">
           <button
             onClick={() => setFilter('all')}
-            className={`flex-shrink-0 text-xs px-3 py-1.5 rounded-full font-medium transition ${
+            className={`flex-shrink-0 text-[11px] px-2.5 py-1 rounded-full font-medium transition ${
               filter === 'all' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -156,36 +156,36 @@ export default function InventoryPage() {
           </button>
           <button
             onClick={() => setFilter('critical')}
-            className={`flex-shrink-0 text-xs px-3 py-1.5 rounded-full font-bold transition flex items-center gap-1.5 ${
+            className={`flex-shrink-0 text-[11px] px-2.5 py-1 rounded-full font-bold transition flex items-center gap-1 ${
               filter === 'critical' ? 'bg-[#F44336] text-white' : 'bg-red-50 text-red-700 hover:bg-red-100'
             }`}
           >
-            <span className="w-2 h-2 rounded-full bg-red-500"></span>
-            Rojo · ≤2 días ({criticalCount})
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+            ≤2 días ({criticalCount})
           </button>
           <button
             onClick={() => setFilter('warning')}
-            className={`flex-shrink-0 text-xs px-3 py-1.5 rounded-full font-bold transition flex items-center gap-1.5 ${
+            className={`flex-shrink-0 text-[11px] px-2.5 py-1 rounded-full font-bold transition flex items-center gap-1 ${
               filter === 'warning' ? 'bg-[#FF9800] text-white' : 'bg-orange-50 text-orange-700 hover:bg-orange-100'
             }`}
           >
-            <span className="w-2 h-2 rounded-full bg-orange-500"></span>
-            Naranja · ≤7 días ({warningCount})
+            <span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+            ≤7 días ({warningCount})
           </button>
           <button
             onClick={() => setFilter('ok')}
-            className={`flex-shrink-0 text-xs px-3 py-1.5 rounded-full font-bold transition flex items-center gap-1.5 ${
+            className={`flex-shrink-0 text-[11px] px-2.5 py-1 rounded-full font-bold transition flex items-center gap-1 ${
               filter === 'ok' ? 'bg-[#4CAF50] text-white' : 'bg-green-50 text-green-700 hover:bg-green-100'
             }`}
           >
-            <span className="w-2 h-2 rounded-full bg-green-500"></span>
-            Verde · Bien ({okCount})
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+            Bien ({okCount})
           </button>
         </div>
       </div>
 
       {/* Lista de Alimentos */}
-      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-2.5">
+      <div className="flex-1 min-h-0 overflow-y-auto px-3 py-2 space-y-1.5">
         {isLoading && (
           <div className="flex items-center justify-center py-20 text-gray-400 text-sm">
             Cargando despensa...
@@ -348,13 +348,13 @@ export default function InventoryPage() {
 
       {/* CTA Inferior a Vaciar Nevera */}
       {inventory.length > 0 && (
-        <div className="sticky bottom-0 z-30 px-5 py-3 bg-white/95 backdrop-blur-sm border-t border-gray-100">
+        <div className="flex-shrink-0 px-3.5 py-1.5 bg-white/95 backdrop-blur-sm border-t border-gray-100">
           <button
             onClick={() => navigate('/vaciar-nevera')}
-            className="w-full py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-extrabold rounded-2xl transition shadow-lg shadow-orange-100 flex items-center justify-center gap-2 active:scale-98 text-sm"
+            className="w-full py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-black rounded-xl transition shadow-xs flex items-center justify-center gap-1.5 active:scale-98 text-xs"
           >
             Modo Vaciar Nevera ({criticalCount + warningCount} en riesgo)
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>
       )}

@@ -83,59 +83,59 @@ export default function ConfirmIngredientsPage() {
   }
 
   return (
-    <div className="min-h-app bg-gray-50 flex flex-col">
+    <div className="h-full max-h-full bg-gray-50 flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="bg-white px-5 pt-safe pb-5 border-b border-gray-100">
-        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-400 hover:text-gray-600 mb-4">
-          <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm">Volver</span>
+      <div className="bg-white px-4 pt-safe pb-2 border-b border-gray-100 flex-shrink-0">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-gray-400 hover:text-gray-600 mb-1 transition">
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span className="text-xs">Volver</span>
         </button>
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-green-500" />
-          <h1 className="text-xl font-bold text-gray-900">Confirmar ingredientes</h1>
+        <div className="flex items-center gap-1.5">
+          <Sparkles className="w-4 h-4 text-green-500" />
+          <h1 className="text-lg font-black text-gray-900 leading-tight">Confirmar ingredientes</h1>
         </div>
-        <p className="text-gray-500 text-sm mt-1">
-          Extracción inteligente completada. Revisa o ajusta antes de guardar.
+        <p className="text-gray-400 text-xs">
+          Revisa o ajusta antes de guardar en tu inventario.
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-5 py-5 space-y-4">
+      <div className="flex-1 min-h-0 overflow-y-auto px-3 py-2 space-y-2">
         {/* Original text */}
         {rawText && (
-          <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1">
+          <div className="bg-white rounded-xl p-2.5 border border-gray-100 shadow-2xs">
+            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-0.5">
               Texto dictado o escrito
             </p>
-            <p className="text-gray-700 text-sm italic font-medium">"{rawText}"</p>
+            <p className="text-gray-700 text-xs italic font-medium">"{rawText}"</p>
           </div>
         )}
 
         {/* Ingredient list */}
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-gray-50 flex items-center justify-between">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-2xs overflow-hidden">
+          <div className="px-3.5 py-2 border-b border-gray-50 flex items-center justify-between">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">
               Ingredientes extraídos ({rows.length})
             </p>
-            <span className="text-[11px] text-green-600 font-medium bg-green-50 px-2 py-0.5 rounded-full">
+            <span className="text-[10px] text-green-600 font-semibold bg-green-50 px-2 py-0.5 rounded-full">
               Semáforo automático
             </span>
           </div>
 
           {rows.length === 0 && (
-            <div className="px-4 py-8 text-center text-gray-400 text-sm">
+            <div className="px-4 py-6 text-center text-gray-400 text-xs">
               No se detectaron ingredientes. Añade uno manualmente abajo.
             </div>
           )}
 
           <div className="divide-y divide-gray-50">
             {rows.map((row) => (
-              <div key={row.id} className="px-5 py-3.5 hover:bg-gray-50/50 transition">
+              <div key={row.id} className="px-3 py-2 hover:bg-gray-50/50 transition">
                 <div className="flex items-center gap-2">
                   <div className="flex-1 min-w-0">
                     <input
                       value={row.name}
                       onChange={e => updateRow(row.id, 'name', e.target.value)}
-                      className="w-full text-sm font-semibold text-gray-900 bg-transparent border-b border-gray-200 focus:border-green-400 focus:outline-none py-1 capitalize"
+                      className="w-full text-xs font-semibold text-gray-900 bg-transparent border-b border-gray-200 focus:border-green-400 focus:outline-none py-0.5 capitalize"
                       placeholder="Ingrediente..."
                     />
                   </div>
@@ -146,39 +146,39 @@ export default function ConfirmIngredientsPage() {
                       value={row.quantity ?? ''}
                       onChange={e => updateRow(row.id, 'quantity', e.target.value ? Number(e.target.value) : null)}
                       placeholder="Cant."
-                      className="w-14 text-xs text-center bg-gray-50 rounded-xl px-2 py-1.5 border border-gray-200 focus:outline-none focus:ring-1 focus:ring-green-400 font-medium"
+                      className="w-12 text-xs text-center bg-gray-50 rounded-lg px-1.5 py-1 border border-gray-200 focus:outline-none focus:ring-1 focus:ring-green-400 font-medium"
                     />
                     <input
                       value={row.unit ?? ''}
                       onChange={e => updateRow(row.id, 'unit', e.target.value || null)}
                       placeholder="ud"
-                      className="w-12 text-xs text-center bg-gray-50 rounded-xl px-2 py-1.5 border border-gray-200 focus:outline-none focus:ring-1 focus:ring-green-400"
+                      className="w-10 text-xs text-center bg-gray-50 rounded-lg px-1 py-1 border border-gray-200 focus:outline-none focus:ring-1 focus:ring-green-400"
                     />
                   </div>
 
                   <button
                     onClick={() => removeRow(row.id)}
-                    className="p-1.5 text-gray-300 hover:text-red-500 transition flex-shrink-0"
+                    className="p-1 text-gray-300 hover:text-red-500 transition flex-shrink-0"
                     title="Eliminar"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
 
-                <div className="mt-2.5 flex items-center justify-between text-xs text-gray-500">
+                <div className="mt-1.5 flex items-center justify-between text-xs text-gray-500">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[11px] text-gray-400">Vida útil:</span>
+                    <span className="text-[10px] text-gray-400">Vida útil:</span>
                     <input
                       type="number"
                       min={1}
                       value={row.expiryDays ?? ''}
                       onChange={e => updateRow(row.id, 'expiryDays', e.target.value ? Number(e.target.value) : null)}
-                      className="w-12 text-center bg-gray-50 rounded-lg px-1.5 py-0.5 border border-gray-200 font-semibold text-gray-800"
+                      className="w-10 text-center bg-gray-50 rounded-md px-1 py-0.5 border border-gray-200 font-bold text-gray-800 text-[11px]"
                     />
-                    <span className="text-[11px] text-gray-400">días</span>
+                    <span className="text-[10px] text-gray-400">días</span>
                   </div>
 
-                  <span className="text-[11px] text-gray-400">
+                  <span className="text-[10px] text-gray-400 font-medium">
                     {row.expiryDays != null
                       ? `Vence en ${row.expiryDays} día${row.expiryDays === 1 ? '' : 's'}`
                       : 'Sin fecha'}
@@ -190,24 +190,24 @@ export default function ConfirmIngredientsPage() {
         </div>
 
         {/* Add ingredient manually */}
-        <div className="bg-white rounded-3xl border border-gray-100 p-4 shadow-sm">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2.5">
-            + Añadir otro ingrediente manualmente
+        <div className="bg-white rounded-2xl border border-gray-100 p-2.5 shadow-2xs">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-1.5">
+            + Añadir otro ingrediente
           </p>
-          <div className="flex gap-2">
+          <div className="flex gap-1.5">
             <input
               value={newName}
               onChange={e => setNewName(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && addRow()}
               placeholder="Ej: dos yogures, media cebolla..."
-              className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent"
+              className="flex-1 px-3 py-1.5 rounded-lg border border-gray-200 bg-gray-50 text-xs text-gray-900 focus:outline-none focus:ring-1 focus:ring-green-400"
             />
             <button
               onClick={addRow}
               disabled={!newName.trim()}
-              className="px-4 py-2.5 bg-green-500 text-white rounded-xl disabled:opacity-40 hover:bg-green-600 transition font-medium flex items-center gap-1 text-sm shadow-sm"
+              className="px-3 py-1.5 bg-green-500 text-white rounded-lg disabled:opacity-40 hover:bg-green-600 transition font-bold flex items-center gap-1 text-xs shadow-xs"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5" />
               Añadir
             </button>
           </div>
@@ -215,18 +215,18 @@ export default function ConfirmIngredientsPage() {
       </div>
 
       {/* Confirm button */}
-      <div className="sticky bottom-0 z-30 px-5 py-3.5 bg-white/95 backdrop-blur-sm border-t border-gray-100 pb-safe">
+      <div className="flex-shrink-0 px-4 py-2 bg-white/95 backdrop-blur-sm border-t border-gray-100 pb-safe">
         <button
           onClick={handleConfirm}
           disabled={rows.length === 0 || isPending}
-          className="w-full py-3.5 bg-green-500 hover:bg-green-600 text-white font-bold rounded-2xl transition disabled:opacity-40 flex items-center justify-center gap-2 shadow-lg shadow-green-100 active:scale-98"
+          className="w-full py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl transition disabled:opacity-40 flex items-center justify-center gap-2 shadow-md shadow-green-100 active:scale-98 text-sm"
         >
           {isPending ? (
             'Guardando en inventario...'
           ) : (
             <>
-              <CheckCircle className="w-5 h-5" />
-              Guardar en inventario e ir al Dashboard
+              <CheckCircle className="w-4 h-4" />
+              Guardar e ir al Dashboard
             </>
           )}
         </button>

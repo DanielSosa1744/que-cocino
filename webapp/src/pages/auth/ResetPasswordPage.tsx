@@ -31,31 +31,31 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-app bg-white flex flex-col justify-center px-6 py-12">
+    <div className="h-full max-h-full bg-white flex flex-col justify-center px-5 py-2 overflow-y-auto">
       <div className="max-w-sm mx-auto w-full">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-green-50 mb-4">
-            <Leaf className="w-8 h-8 text-green-500" />
+        <div className="text-center mb-4">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-green-50 mb-1.5 shadow-xs">
+            <Leaf className="w-6 h-6 text-green-500" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Nueva contraseña</h1>
-          <p className="text-gray-500 text-sm mt-1">Introduce tu nueva clave de acceso</p>
+          <h1 className="text-xl font-bold text-gray-900 leading-tight">Nueva contraseña</h1>
+          <p className="text-gray-400 text-xs mt-0.5">Introduce tu nueva clave de acceso</p>
         </div>
 
         {success ? (
-          <div className="bg-green-50 rounded-2xl p-6 text-center border border-green-100">
-            <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-2" />
-            <h3 className="font-bold text-gray-900 mb-1">¡Contraseña actualizada!</h3>
+          <div className="bg-green-50 rounded-2xl p-5 text-center border border-green-100">
+            <CheckCircle className="w-10 h-10 text-green-500 mx-auto mb-2" />
+            <h3 className="font-bold text-gray-900 mb-1 text-sm">¡Contraseña actualizada!</h3>
             <p className="text-gray-500 text-xs">Redirigiendo al inicio de sesión...</p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             {error && (
-              <div className="bg-red-50 text-red-600 text-xs p-3 rounded-xl border border-red-100">
+              <div className="bg-red-50 text-red-600 text-xs p-2.5 rounded-xl border border-red-100">
                 {error}
               </div>
             )}
             <div>
-              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1.5">
+              <label className="block text-xs font-semibold text-gray-700 mb-1">
                 Nueva Contraseña
               </label>
               <input
@@ -65,13 +65,13 @@ export default function ResetPasswordPage() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="Mínimo 6 caracteres"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-green-400"
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-green-100 disabled:opacity-50"
+              className="w-full py-2.5 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl text-xs transition shadow-xs disabled:opacity-50"
             >
               {loading ? 'Guardando...' : 'Actualizar contraseña'}
             </button>

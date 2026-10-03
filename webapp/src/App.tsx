@@ -1,7 +1,7 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
-import BottomTabBar, { isTabBarHidden } from './components/BottomTabBar'
+import BottomTabBar from './components/BottomTabBar'
 
 // Auth pages
 import LoginPage from './pages/auth/LoginPage'
@@ -20,12 +20,10 @@ import RecipeDetailPage from './pages/recipes/RecipeDetailPage'
 import ImpactPage from './pages/impact/ImpactPage'
 
 function AppContent() {
-  const location = useLocation()
-  const hideTabBar = isTabBarHidden(location.pathname)
-
   return (
-    <div className={`max-w-md mx-auto min-h-app bg-white shadow-xl relative ${hideTabBar ? '' : 'pb-tabbar'}`}>
-      <Routes>
+    <div className="w-full max-w-md mx-auto h-[100dvh] max-h-[100dvh] bg-white shadow-xl relative flex flex-col overflow-hidden">
+      <main className="flex-1 min-h-0 relative overflow-hidden flex flex-col">
+        <Routes>
           {/* Public routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -78,10 +76,11 @@ function AppContent() {
           <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
+      </main>
 
-        {/* Barra de navegación inferior móvil para pantallas autenticadas */}
-        <BottomTabBar />
-      </div>
+      {/* Barra de navegación inferior móvil para pantallas autenticadas */}
+      <BottomTabBar />
+    </div>
   )
 }
 

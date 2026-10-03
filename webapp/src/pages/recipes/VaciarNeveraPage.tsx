@@ -1,4 +1,4 @@
-﻿import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useInventory } from '../../hooks/useInventory'
 import { useVaciarNevera } from '../../hooks/useRecipes'
 import {
@@ -47,43 +47,43 @@ export default function VaciarNeveraPage() {
   const otherRecipes = recipes.length > 1 ? recipes.slice(1) : []
 
   return (
-    <div className="min-h-app bg-gray-50 flex flex-col pb-10">
+    <div className="h-full max-h-full bg-gray-50 flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="bg-white px-5 pt-safe pb-5 border-b border-gray-100">
+      <div className="bg-white px-4 pt-safe pb-2 border-b border-gray-100 flex-shrink-0">
         <button
           onClick={() => navigate('/dashboard')}
-          className="flex items-center gap-2 text-gray-400 hover:text-gray-600 mb-4 transition"
+          className="flex items-center gap-1.5 text-gray-400 hover:text-gray-600 mb-1 transition"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm font-medium">Volver al Dashboard</span>
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span className="text-xs font-medium">Dashboard</span>
         </button>
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-8 h-8 rounded-xl bg-orange-50 flex items-center justify-center">
-            <ChefHat className="w-5 h-5 text-orange-500" />
+        <div className="flex items-center gap-2 mb-0.5">
+          <div className="w-7 h-7 rounded-lg bg-orange-50 flex items-center justify-center">
+            <ChefHat className="w-4 h-4 text-orange-500" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Modo Vaciar Nevera</h1>
+          <h1 className="text-lg font-black text-gray-900 leading-tight">Modo Vaciar Nevera</h1>
         </div>
-        <p className="text-gray-500 text-sm mt-0.5">
-          ¿Qué debería cocinar hoy para no tirar comida?
+        <p className="text-gray-400 text-xs">
+          Cocina primero lo que vence antes para no tirar comida
         </p>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-5 py-5 space-y-4">
+      <div className="flex-1 min-h-0 overflow-y-auto px-3 py-2 space-y-2.5">
         {/* Banner de alimentos en riesgo */}
         {urgentItems.length > 0 && (
-          <div className="bg-orange-50/80 rounded-2xl p-4 border border-orange-100">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-orange-700 uppercase tracking-wide flex items-center gap-1.5">
-                <Flame className="w-3.5 h-3.5 text-orange-500" />
+          <div className="bg-orange-50/80 rounded-xl p-2.5 border border-orange-100">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[10px] font-bold text-orange-700 uppercase tracking-wide flex items-center gap-1">
+                <Flame className="w-3 h-3 text-orange-500" />
                 Alimentos que vencen pronto ({urgentItems.length})
               </span>
-              <span className="text-[11px] text-orange-600 font-semibold">Priorizados por el motor</span>
+              <span className="text-[10px] text-orange-600 font-semibold">Priorizados</span>
             </div>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-1">
               {urgentItems.map(item => (
                 <span
                   key={item.id}
-                  className={`text-xs px-2.5 py-1 rounded-xl font-medium flex items-center gap-1 ${
+                  className={`text-[11px] px-2 py-0.5 rounded-lg font-medium flex items-center gap-1 ${
                     item.urgency === 'critical'
                       ? 'bg-red-100 text-red-700 border border-red-200'
                       : 'bg-orange-100 text-orange-800 border border-orange-200'
@@ -103,25 +103,25 @@ export default function VaciarNeveraPage() {
 
         {/* Loading state */}
         {isLoading && (
-          <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <div className="w-9 h-9 border-3 border-orange-500 border-t-transparent rounded-full animate-spin" />
-            <p className="text-gray-500 text-sm font-medium">Calculando puntuación de vaciado...</p>
+          <div className="flex flex-col items-center justify-center py-12 gap-2">
+            <div className="w-8 h-8 border-3 border-orange-500 border-t-transparent rounded-full animate-spin" />
+            <p className="text-gray-500 text-xs font-medium">Calculando puntuación de vaciado...</p>
           </div>
         )}
 
         {/* Empty inventory */}
         {!isLoading && inventory.length === 0 && (
-          <div className="bg-white rounded-3xl p-8 text-center border border-gray-100 shadow-sm">
-            <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl">
+          <div className="bg-white rounded-2xl p-6 text-center border border-gray-100 shadow-2xs">
+            <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center mx-auto mb-3 text-2xl">
               🛒
             </div>
-            <h3 className="font-bold text-gray-900 text-lg mb-1">Tu inventario está vacío</h3>
-            <p className="text-gray-500 text-xs mb-6 max-w-xs mx-auto">
-              Añade los ingredientes que tienes en casa por voz para que el motor te recomiende qué cocinar primero.
+            <h3 className="font-bold text-gray-900 text-base mb-1">Tu inventario está vacío</h3>
+            <p className="text-gray-500 text-xs mb-4 max-w-xs mx-auto">
+              Añade los ingredientes que tienes en casa por voz para recomendarte qué cocinar primero.
             </p>
             <button
               onClick={() => navigate('/voice')}
-              className="w-full py-3.5 bg-green-500 hover:bg-green-600 text-white font-bold rounded-2xl text-sm transition"
+              className="w-full py-2.5 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl text-xs transition shadow-xs"
             >
               Dictar ingredientes con el micrófono
             </button>
@@ -130,17 +130,17 @@ export default function VaciarNeveraPage() {
 
         {/* No compatible recipes */}
         {!isLoading && inventory.length > 0 && recipes.length === 0 && (
-          <div className="bg-white rounded-3xl p-8 text-center border border-gray-100 shadow-sm">
-            <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl">
+          <div className="bg-white rounded-2xl p-6 text-center border border-gray-100 shadow-2xs">
+            <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center mx-auto mb-3 text-2xl">
               🍳
             </div>
-            <h3 className="font-bold text-gray-900 text-lg mb-1">Sin recetas compatibles</h3>
-            <p className="text-gray-500 text-xs mb-5 max-w-xs mx-auto">
-              Ninguna receta de la base de datos coincide actualmente con tus ingredientes. Añade más alimentos para descubrir recetas.
+            <h3 className="font-bold text-gray-900 text-base mb-1">Sin recetas compatibles</h3>
+            <p className="text-gray-500 text-xs mb-4 max-w-xs mx-auto">
+              Ninguna receta coincide con tus ingredientes. Añade más alimentos para descubrir recetas.
             </p>
             <button
               onClick={() => navigate('/voice')}
-              className="px-6 py-3 bg-green-500 text-white font-bold rounded-xl text-sm"
+              className="px-4 py-2 bg-green-500 text-white font-bold rounded-xl text-xs"
             >
               + Añadir más ingredientes
             </button>
@@ -149,59 +149,59 @@ export default function VaciarNeveraPage() {
 
         {/* HERO CARD: "Te recomendamos cocinar esto primero" */}
         {!isLoading && topRecipe && (
-          <div className="bg-white rounded-3xl border-2 border-orange-400 p-5 shadow-md shadow-orange-100/50 space-y-4">
+          <div className="bg-white rounded-2xl border-2 border-orange-400 p-3.5 shadow-xs space-y-2.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-black uppercase tracking-wider text-orange-600 bg-orange-50 px-3 py-1 rounded-full flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-orange-500" />
-                Te recomendamos cocinar esto primero
+              <span className="text-[10px] font-black uppercase tracking-wider text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-orange-500" />
+                Cocinar primero
               </span>
               <PriorityBadge priority={topRecipe.priority} />
             </div>
 
             <div>
-              <h2 className="text-2xl font-black text-gray-900 leading-tight">
+              <h2 className="text-lg font-black text-gray-900 leading-snug">
                 {topRecipe.name}
               </h2>
               {topRecipe.description && (
-                <p className="text-gray-500 text-xs mt-1.5 leading-relaxed">
+                <p className="text-gray-500 text-xs mt-0.5 leading-snug line-clamp-2">
                   {topRecipe.description}
                 </p>
               )}
             </div>
 
             {/* Métricas destacadas de la recomendación */}
-            <div className="grid grid-cols-3 gap-2 bg-gray-50 rounded-2xl p-3 text-center">
+            <div className="grid grid-cols-3 gap-1.5 bg-gray-50 rounded-xl p-2 text-center">
               <div>
-                <p className="text-base font-extrabold text-orange-600">
+                <p className="text-sm font-extrabold text-orange-600">
                   {topRecipe.totalIngredientsUsed}
                 </p>
-                <p className="text-[10px] text-gray-500 uppercase tracking-tight">Consumidos</p>
+                <p className="text-[9px] text-gray-500 uppercase tracking-tight">Consumidos</p>
               </div>
               <div>
-                <p className="text-base font-extrabold text-red-500">
+                <p className="text-sm font-extrabold text-red-500">
                   {topRecipe.urgentIngredientsUsed}
                 </p>
-                <p className="text-[10px] text-gray-500 uppercase tracking-tight">Urgentes</p>
+                <p className="text-[9px] text-gray-500 uppercase tracking-tight">Urgentes</p>
               </div>
               <div>
-                <p className="text-base font-extrabold text-gray-800">
-                  {topRecipe.prep_time} min
+                <p className="text-sm font-extrabold text-gray-800">
+                  {topRecipe.prep_time}m
                 </p>
-                <p className="text-[10px] text-gray-500 uppercase tracking-tight">Tiempo</p>
+                <p className="text-[9px] text-gray-500 uppercase tracking-tight">Tiempo</p>
               </div>
             </div>
 
             {/* Ingredientes aprovechados */}
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
-                Ingredientes aprovechados de tu nevera:
+              <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1 flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3 text-green-500" />
+                Aprovecha de tu nevera:
               </p>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-1">
                 {topRecipe.matchedIngredients.map(ing => (
                   <span
                     key={ing}
-                    className="text-xs font-medium bg-green-50 text-green-700 border border-green-200 px-2.5 py-1 rounded-xl capitalize"
+                    className="text-[11px] font-medium bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded-lg capitalize"
                   >
                     ✓ {ing}
                   </span>
@@ -212,14 +212,11 @@ export default function VaciarNeveraPage() {
             {/* Si faltan ingredientes secundarios */}
             {topRecipe.missingIngredients.length > 0 && (
               <div>
-                <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1.5">
-                  Ingredientes adicionales opcionales o faltantes:
-                </p>
                 <div className="flex flex-wrap gap-1">
                   {topRecipe.missingIngredients.map(ing => (
                     <span
                       key={ing}
-                      className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg capitalize"
+                      className="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-md capitalize"
                     >
                       + {ing}
                     </span>
@@ -230,10 +227,10 @@ export default function VaciarNeveraPage() {
 
             <button
               onClick={() => navigate(`/recipe/${topRecipe.id}`, { state: { recipe: topRecipe } })}
-              className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-black rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-orange-200 transition active:scale-98"
+              className="w-full py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl flex items-center justify-center gap-1.5 shadow-md shadow-orange-100 transition active:scale-98 text-xs"
             >
               Cocinar {topRecipe.name} ahora
-              <ArrowRight className="w-5 h-5" />
+              <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         )}

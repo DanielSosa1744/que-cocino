@@ -26,8 +26,8 @@ export default function BottomTabBar() {
   if (isHidden) return null
 
   return (
-    <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-100 max-w-md mx-auto pb-safe">
-      <nav className="flex justify-around items-center h-16 px-2">
+    <div className="flex-shrink-0 w-full z-40 bg-white/95 backdrop-blur-md border-t border-gray-100 pb-safe">
+      <nav className="flex justify-around items-center h-14 px-2">
         {tabs.map((tab) => {
           const isActive = location.pathname === tab.path
           const Icon = tab.icon
@@ -48,7 +48,7 @@ export default function BottomTabBar() {
                   </span>
                 )}
               </div>
-              <span className="text-[10px] mt-1 tracking-tight">{tab.label}</span>
+              <span className="text-[10px] mt-0.5 tracking-tight">{tab.label}</span>
             </button>
           )
         })}

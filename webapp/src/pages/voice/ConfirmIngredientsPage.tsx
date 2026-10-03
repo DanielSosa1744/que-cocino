@@ -78,8 +78,8 @@ export default function ConfirmIngredientsPage() {
     }))
 
     await addIngredients(items)
-    // Siguiente paso del flujo: Dashboard
-    navigate('/dashboard', { replace: true })
+    // Mostrar el inventario actualizado
+    navigate('/inventory', { replace: true })
   }
 
   return (

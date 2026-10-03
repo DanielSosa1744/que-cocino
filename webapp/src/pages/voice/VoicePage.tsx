@@ -69,6 +69,7 @@ export default function VoicePage() {
   }
 
   const examples = [
+    '"Tengo cuatro tomates y dos yogures"',
     '"Tengo cuatro tomates, seis huevos y media cebolla"',
     '"Dos yogures que vencen mañana"',
     '"Un kilo de pollo, arroz y ajo"',
@@ -89,7 +90,7 @@ export default function VoicePage() {
       {/* Header */}
       <div className="px-4 pt-safe pb-2 border-b border-gray-100 flex-shrink-0">
         <button
-          onClick={() => navigate('/home')}
+          onClick={() => navigate(-1)}
           className="flex items-center gap-1.5 text-gray-400 hover:text-gray-600 mb-1 transition active:scale-95"
         >
           <ArrowLeft className="w-3.5 h-3.5" />

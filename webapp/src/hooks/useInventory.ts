@@ -9,6 +9,7 @@ import {
   defaultExpiryDate,
 } from '../lib/ingredientParser'
 import { localStore } from '../lib/localStore'
+import { inventoryLogger } from '../lib/inventoryLogs'
 import type { InventoryItem } from '../types/app.types'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -149,7 +150,7 @@ export function useAddIngredients() {
           })
 
           if (existingItem) {
-            // Actualizar registro existente en inventory
+            // Actualizar registro existente en inventory (incrementar cantidad)
             const newQty = (Number(existingItem.quantity) || 0) + (Number(item.quantity) || 1)
             let updatedExpiresAt = existingItem.expires_at
             if (expiresAt) {
@@ -170,6 +171,7 @@ export function useAddIngredients() {
               .eq('id', existingItem.id)
 
             if (updateError) throw updateError
+            inventoryLogger.addLog(user.id, 'increased', trimmedName, item.quantity ?? 1, unit)
           } else {
             // Crear nuevo registro en inventory
             const { error: insertError } = await db
@@ -187,17 +189,24 @@ export function useAddIngredients() {
               })
 
             if (insertError) throw insertError
+            inventoryLogger.addLog(user.id, 'added', trimmedName, item.quantity ?? 1, unit)
           }
         }
 
         return true
       } catch (err) {
         console.warn('Fallback a localStore para añadir:', err)
+        for (const item of items) {
+          inventoryLogger.addLog(user.id, 'added', item.name, item.quantity ?? 1, item.unit)
+        }
         return localStore.addInventory(user.id, items)
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['inventory', user?.id] })
+      queryClient.invalidateQueries({ queryKey: ['inventory'] })
+      queryClient.invalidateQueries({ queryKey: ['vaciar-nevera'] })
+      queryClient.invalidateQueries({ queryKey: ['cooked-history'] })
+      queryClient.invalidateQueries({ queryKey: ['recipes'] })
     },
   })
 }
@@ -207,9 +216,25 @@ export function useUpdateIngredient() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (params: { id: string } & Partial<InventoryItem>) => {
-      const { id, ...updates } = params
+    mutationFn: async (params: {
+      id: string
+      actionType?: 'increased' | 'decreased' | 'updated'
+      changeQty?: number
+      itemName?: string
+      unit?: string
+    } & Partial<InventoryItem>) => {
+      const { id, actionType, changeQty, itemName, unit: logUnit, ...updates } = params
       if (!user) throw new Error('Not authenticated')
+
+      if (actionType && itemName) {
+        inventoryLogger.addLog(
+          user.id,
+          actionType === 'updated' ? 'increased' : actionType,
+          itemName,
+          changeQty ?? 1,
+          logUnit
+        )
+      }
 
       if (!isSupabaseConfigured) {
         localStore.updateInventory(user.id, id, updates)
@@ -232,7 +257,10 @@ export function useUpdateIngredient() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['inventory', user?.id] })
+      queryClient.invalidateQueries({ queryKey: ['inventory'] })
+      queryClient.invalidateQueries({ queryKey: ['vaciar-nevera'] })
+      queryClient.invalidateQueries({ queryKey: ['cooked-history'] })
+      queryClient.invalidateQueries({ queryKey: ['recipes'] })
     },
   })
 }
@@ -242,8 +270,14 @@ export function useDeleteIngredient() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async (params: string | { id: string; name?: string }) => {
+      const id = typeof params === 'string' ? params : params.id
+      const name = typeof params === 'string' ? undefined : params.name
       if (!user) throw new Error('Not authenticated')
+
+      if (name) {
+        inventoryLogger.addLog(user.id, 'deleted', name, null)
+      }
 
       if (!isSupabaseConfigured) {
         localStore.deleteInventory(user.id, id)
@@ -263,7 +297,10 @@ export function useDeleteIngredient() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['inventory', user?.id] })
+      queryClient.invalidateQueries({ queryKey: ['inventory'] })
+      queryClient.invalidateQueries({ queryKey: ['vaciar-nevera'] })
+      queryClient.invalidateQueries({ queryKey: ['cooked-history'] })
+      queryClient.invalidateQueries({ queryKey: ['recipes'] })
     },
   })
 }
@@ -295,7 +332,10 @@ export function useClearInventory() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['inventory', user?.id] })
+      queryClient.invalidateQueries({ queryKey: ['inventory'] })
+      queryClient.invalidateQueries({ queryKey: ['vaciar-nevera'] })
+      queryClient.invalidateQueries({ queryKey: ['cooked-history'] })
+      queryClient.invalidateQueries({ queryKey: ['recipes'] })
     },
   })
 }

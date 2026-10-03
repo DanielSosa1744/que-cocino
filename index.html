@@ -1449,11 +1449,20 @@
             <div class="space-y-1.5">
               ${urgentItems.map(item => `
                 <div class="p-2.5 bg-red-50 rounded-xl flex items-center justify-between border border-red-100 text-xs">
-                  <div>
-                    <span class="font-bold text-gray-900 block">${item.name} (${item.qty} ${item.unit || 'uds'})</span>
+                  <div class="flex-1 min-w-0 pr-2">
+                    <span class="font-bold text-gray-900 block truncate">${item.name}</span>
                     <span class="text-brand-red font-semibold text-[10px]">🔴 Vence en ${item.expDays} día(s)</span>
                   </div>
-                  <span class="font-extrabold text-brand-red text-xs">${item.price ? item.price.toFixed(2) + ' €' : '1.50 €'}</span>
+                  <div class="flex items-center gap-2 flex-shrink-0">
+                    <div class="flex items-center bg-white border border-red-200 rounded-lg p-0.5">
+                      <button onclick="decreaseInventoryQty(${item.id})" class="w-5 h-5 rounded bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold text-[10px] flex items-center justify-center">➖</button>
+                      <span class="font-bold text-xs px-1.5 min-w-[20px] text-center">${item.qty}</span>
+                      <button onclick="increaseInventoryQty(${item.id})" class="w-5 h-5 rounded bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold text-[10px] flex items-center justify-center">➕</button>
+                    </div>
+                    <button onclick="if(confirm('¿Eliminar este ingrediente del inventario?')) removeIngredientFromInventory(${item.id})" class="p-1 text-gray-400 hover:text-brand-red">
+                      <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </div>
                 </div>
               `).join('')}
             </div>
@@ -1463,11 +1472,20 @@
             <div class="space-y-1.5">
               ${weekItems.map(item => `
                 <div class="p-2.5 bg-amber-50 rounded-xl flex items-center justify-between border border-amber-100 text-xs">
-                  <div>
-                    <span class="font-bold text-gray-900 block">${item.name} (${item.qty} ${item.unit || 'uds'})</span>
+                  <div class="flex-1 min-w-0 pr-2">
+                    <span class="font-bold text-gray-900 block truncate">${item.name}</span>
                     <span class="text-amber-800 font-semibold text-[10px]">🟠 Vence en ${item.expDays} días</span>
                   </div>
-                  <span class="font-extrabold text-amber-800 text-xs">${item.price ? item.price.toFixed(2) + ' €' : '1.20 €'}</span>
+                  <div class="flex items-center gap-2 flex-shrink-0">
+                    <div class="flex items-center bg-white border border-amber-200 rounded-lg p-0.5">
+                      <button onclick="decreaseInventoryQty(${item.id})" class="w-5 h-5 rounded bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold text-[10px] flex items-center justify-center">➖</button>
+                      <span class="font-bold text-xs px-1.5 min-w-[20px] text-center">${item.qty}</span>
+                      <button onclick="increaseInventoryQty(${item.id})" class="w-5 h-5 rounded bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold text-[10px] flex items-center justify-center">➕</button>
+                    </div>
+                    <button onclick="if(confirm('¿Eliminar este ingrediente del inventario?')) removeIngredientFromInventory(${item.id})" class="p-1 text-gray-400 hover:text-brand-red">
+                      <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </div>
                 </div>
               `).join('')}
             </div>
@@ -1610,6 +1628,28 @@
         }
       }
       lucide.createIcons();
+    }
+
+    function increaseInventoryQty(id) {
+      const item = appInventory.find(i => i.id === id);
+      if (item) {
+        item.qty = (item.qty || 1) + 1;
+        renderDynamicInventoryUI();
+      }
+    }
+
+    function decreaseInventoryQty(id) {
+      const item = appInventory.find(i => i.id === id);
+      if (item) {
+        if (item.qty <= 1) {
+          if (confirm(`Ya no quedan ${item.name}. ¿Eliminar del inventario?`)) {
+            removeIngredientFromInventory(id);
+          }
+        } else {
+          item.qty -= 1;
+          renderDynamicInventoryUI();
+        }
+      }
     }
 
     function removeIngredientFromInventory(id) {

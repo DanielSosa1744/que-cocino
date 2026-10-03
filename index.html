@@ -442,61 +442,8 @@
           <p class="text-xs text-gray-500 mt-0.5">Clasificados automáticamente según su fecha estimada.</p>
         </div>
 
-        <div class="my-3 space-y-2 max-h-[440px] overflow-y-auto no-scrollbar pr-0.5">
-          <div class="bg-white border border-gray-200 rounded-2xl p-3 shadow-card flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <span class="w-2.5 h-2.5 rounded-full bg-brand-red"></span>
-              <div>
-                <span class="text-xs font-bold text-gray-900">2 yogures naturales</span>
-                <span class="text-[10px] text-brand-red font-semibold block">🔴 Vence mañana</span>
-              </div>
-            </div>
-            <button class="text-xs text-gray-400 font-medium">Editar</button>
-          </div>
-
-          <div class="bg-white border border-gray-200 rounded-2xl p-3 shadow-card flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <span class="w-2.5 h-2.5 rounded-full bg-brand-red"></span>
-              <div>
-                <span class="text-xs font-bold text-gray-900">4 tomates maduros</span>
-                <span class="text-[10px] text-brand-red font-semibold block">🔴 Vence en 1-2 días</span>
-              </div>
-            </div>
-            <button class="text-xs text-gray-400 font-medium">Editar</button>
-          </div>
-
-          <div class="bg-white border border-gray-200 rounded-2xl p-3 shadow-card flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <span class="w-2.5 h-2.5 rounded-full bg-brand-orange"></span>
-              <div>
-                <span class="text-xs font-bold text-gray-900">1 litro de leche</span>
-                <span class="text-[10px] text-amber-800 font-semibold block">🟠 Vence esta semana</span>
-              </div>
-            </div>
-            <button class="text-xs text-gray-400 font-medium">Editar</button>
-          </div>
-
-          <div class="bg-white border border-gray-200 rounded-2xl p-3 shadow-card flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <span class="w-2.5 h-2.5 rounded-full bg-brand-green"></span>
-              <div>
-                <span class="text-xs font-bold text-gray-900">6 huevos camperos</span>
-                <span class="text-[10px] text-brand-green-dark font-semibold block">🟢 Vencimiento distante</span>
-              </div>
-            </div>
-            <button class="text-xs text-gray-400 font-medium">Editar</button>
-          </div>
-
-          <div class="bg-white border border-gray-200 rounded-2xl p-3 shadow-card flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <span class="w-2.5 h-2.5 rounded-full bg-brand-green"></span>
-              <div>
-                <span class="text-xs font-bold text-gray-900">1 kg de arroz</span>
-                <span class="text-[10px] text-brand-green-dark font-semibold block">🟢 Vencimiento distante</span>
-              </div>
-            </div>
-            <button class="text-xs text-gray-400 font-medium">Editar</button>
-          </div>
+        <div id="screen-3-ingredients-list" class="my-3 space-y-2 max-h-[440px] overflow-y-auto no-scrollbar pr-0.5">
+          <!-- Renderizado dinámico mediante renderDetectedIngredients() -->
         </div>
 
         <div class="pt-2 pb-1">
@@ -1114,6 +1061,10 @@
 
       updateNavigationUI(currentScreenNum);
 
+      if (screenNum === 3) {
+        renderDetectedIngredients();
+      }
+
       if (screenNum === 6 || screenNum === 3 || screenNum === 5 || screenNum === 7) {
         renderDynamicInventoryUI();
       }
@@ -1214,41 +1165,143 @@
     }
 
     function parseSpokenTextToInventory(text) {
-      const lower = text.toLowerCase()
+      if (!text) return;
+      const clean = text.toLowerCase()
         .replace(/á/g, 'a').replace(/é/g, 'e').replace(/í/g, 'i')
         .replace(/ó/g, 'o').replace(/ú/g, 'u').replace(/ñ/g, 'n');
-      
+
       const catalog = [
-        { key: 'tomate', name: 'Tomates maduros', qty: 4, unit: 'uds', expDays: 1, priority: 'urgent', price: 1.80 },
-        { key: 'yogur', name: 'Yogur natural', qty: 2, unit: 'uds', expDays: 1, priority: 'urgent', price: 2.10 },
-        { key: 'pollo', name: 'Pechuga de pollo', qty: 1, unit: 'bandeja', expDays: 2, priority: 'urgent', price: 4.50 },
-        { key: 'pescado', name: 'Filetes de merluza', qty: 2, unit: 'uds', expDays: 2, priority: 'urgent', price: 3.80 },
-        { key: 'carne', name: 'Carne picada', qty: 500, unit: 'g', expDays: 2, priority: 'urgent', price: 4.20 },
-        { key: 'leche', name: 'Leche entera', qty: 1, unit: 'L', expDays: 3, priority: 'this_week', price: 1.10 },
-        { key: 'queso', name: 'Queso fresco', qty: 1, unit: 'bloque', expDays: 4, priority: 'this_week', price: 2.50 },
-        { key: 'lechuga', name: 'Lechuga fresca', qty: 1, unit: 'ud', expDays: 3, priority: 'this_week', price: 0.95 },
-        { key: 'zanahoria', name: 'Zanahorias', qty: 3, unit: 'uds', expDays: 5, priority: 'this_week', price: 0.80 },
-        { key: 'cebolla', name: 'Cebolla', qty: 1, unit: 'ud', expDays: 5, priority: 'this_week', price: 0.60 },
-        { key: 'pimiento', name: 'Pimientos', qty: 2, unit: 'uds', expDays: 5, priority: 'this_week', price: 1.30 },
-        { key: 'huevo', name: 'Huevos camperos', qty: 6, unit: 'uds', expDays: 7, priority: 'ok', price: 1.80 },
-        { key: 'patata', name: 'Patatas', qty: 4, unit: 'uds', expDays: 14, priority: 'ok', price: 1.50 },
-        { key: 'papa', name: 'Patatas', qty: 4, unit: 'uds', expDays: 14, priority: 'ok', price: 1.50 },
-        { key: 'arroz', name: 'Arroz', qty: 1, unit: 'kg', expDays: 30, priority: 'ok', price: 1.20 },
-        { key: 'pasta', name: 'Pasta', qty: 500, unit: 'g', expDays: 90, priority: 'ok', price: 1.15 },
-        { key: 'manzana', name: 'Manzanas', qty: 3, unit: 'uds', expDays: 7, priority: 'ok', price: 1.40 },
-        { key: 'platano', name: 'Plátanos', qty: 2, unit: 'uds', expDays: 4, priority: 'this_week', price: 1.10 },
+        { keys: ['tomate', 'tomates'], name: 'Tomates maduros', defaultQty: 4, unit: 'uds', expDays: 2, priority: 'urgent', price: 1.80 },
+        { keys: ['yogur', 'yogures'], name: 'Yogur natural', defaultQty: 2, unit: 'uds', expDays: 1, priority: 'urgent', price: 2.10 },
+        { keys: ['pollo', 'pechuga'], name: 'Pechuga de pollo', defaultQty: 1, unit: 'bandeja', expDays: 2, priority: 'urgent', price: 4.50 },
+        { keys: ['pescado', 'merluza', 'salmon', 'atun'], name: 'Pescado fresco', defaultQty: 2, unit: 'filetes', expDays: 2, priority: 'urgent', price: 3.80 },
+        { keys: ['carne', 'picada', 'ternera', 'cerdo'], name: 'Carne picada', defaultQty: 500, unit: 'g', expDays: 2, priority: 'urgent', price: 4.20 },
+        { keys: ['leche'], name: 'Leche entera', defaultQty: 1, unit: 'L', expDays: 4, priority: 'this_week', price: 1.10 },
+        { keys: ['queso'], name: 'Queso fresco', defaultQty: 1, unit: 'bloque', expDays: 5, priority: 'this_week', price: 2.50 },
+        { keys: ['lechuga'], name: 'Lechuga', defaultQty: 1, unit: 'ud', expDays: 3, priority: 'this_week', price: 0.95 },
+        { keys: ['zanahoria', 'zanahorias'], name: 'Zanahorias', defaultQty: 3, unit: 'uds', expDays: 5, priority: 'this_week', price: 0.80 },
+        { keys: ['cebolla', 'cebollas'], name: 'Cebolla', defaultQty: 1, unit: 'ud', expDays: 6, priority: 'this_week', price: 0.60 },
+        { keys: ['pimiento', 'pimientos'], name: 'Pimientos', defaultQty: 2, unit: 'uds', expDays: 5, priority: 'this_week', price: 1.30 },
+        { keys: ['champinon', 'champinones', 'setas'], name: 'Champiñones', defaultQty: 1, unit: 'bandeja', expDays: 3, priority: 'this_week', price: 1.60 },
+        { keys: ['huevo', 'huevos'], name: 'Huevos camperos', defaultQty: 6, unit: 'uds', expDays: 14, priority: 'ok', price: 1.80 },
+        { keys: ['patata', 'patatas', 'papa', 'papas'], name: 'Patatas', defaultQty: 4, unit: 'uds', expDays: 20, priority: 'ok', price: 1.50 },
+        { keys: ['arroz'], name: 'Arroz', defaultQty: 1, unit: 'kg', expDays: 60, priority: 'ok', price: 1.20 },
+        { keys: ['pasta', 'fideos', 'espaguetis'], name: 'Pasta', defaultQty: 500, unit: 'g', expDays: 60, priority: 'ok', price: 1.15 },
+        { keys: ['manzana', 'manzanas'], name: 'Manzanas', defaultQty: 3, unit: 'uds', expDays: 10, priority: 'ok', price: 1.40 },
+        { keys: ['platano', 'platanos', 'banana', 'bananas'], name: 'Plátanos', defaultQty: 3, unit: 'uds', expDays: 4, priority: 'this_week', price: 1.10 },
+        { keys: ['ajo', 'ajos'], name: 'Ajo', defaultQty: 1, unit: 'cabeza', expDays: 30, priority: 'ok', price: 0.70 },
+        { keys: ['lenteja', 'lentejas', 'garbanzo', 'garbanzos'], name: 'Legumbres', defaultQty: 1, unit: 'bote', expDays: 60, priority: 'ok', price: 1.20 },
+        { keys: ['pan'], name: 'Pan', defaultQty: 1, unit: 'barra', expDays: 3, priority: 'this_week', price: 0.85 }
       ];
 
+      const numberWords = { 'un': 1, 'una': 1, 'uno': 1, 'dos': 2, 'tres': 3, 'cuatro': 4, 'cinco': 5, 'seis': 6, 'medio': 0.5, 'media': 0.5, 'kilo': 1, 'litro': 1 };
+
+      const detected = [];
       catalog.forEach(item => {
-        if (lower.includes(item.key)) {
-          const existing = appInventory.find(i => 
-            i.name.toLowerCase().includes(item.key) || item.name.toLowerCase().includes(i.name.toLowerCase())
-          );
-          if (!existing) {
-            appInventory.unshift({ ...item, id: Date.now() + Math.random() });
+        const matched = item.keys.some(k => clean.includes(k));
+        if (matched) {
+          let qty = item.defaultQty;
+          item.keys.forEach(k => {
+            const regex = new RegExp(`(\\d+|un|una|uno|dos|tres|cuatro|cinco|seis|medio|media)\\s+(?:de\\s+)?(?:${k})`, 'i');
+            const match = clean.match(regex);
+            if (match && match[1]) {
+              const raw = match[1].toLowerCase();
+              if (numberWords[raw] !== undefined) qty = numberWords[raw];
+              else if (!isNaN(parseFloat(raw))) qty = parseFloat(raw);
+            }
+          });
+
+          let expDays = item.expDays;
+          let priority = item.priority;
+          if (clean.includes('manana') || clean.includes('hoy') || clean.includes('urgente') || clean.includes('vence pronto')) {
+            if (clean.includes('manana') || clean.includes('hoy')) {
+              expDays = 1;
+              priority = 'urgent';
+            }
           }
+
+          detected.push({
+            id: Date.now() + Math.random(),
+            name: item.name,
+            qty: qty,
+            unit: item.unit,
+            expDays: expDays,
+            priority: priority,
+            price: item.price
+          });
         }
       });
+
+      // Solo si se detectaron ingredientes, reemplazar appInventory con los reales dictados
+      if (detected.length > 0) {
+        appInventory = detected;
+      }
+
+      renderDetectedIngredients();
+      renderDynamicInventoryUI();
+    }
+
+    function renderDetectedIngredients() {
+      const listEl = document.getElementById('screen-3-ingredients-list');
+      if (!listEl) return;
+
+      if (!appInventory || appInventory.length === 0) {
+        listEl.innerHTML = `
+          <div class="p-6 bg-gray-50 border border-gray-100 rounded-2xl text-center space-y-2">
+            <i data-lucide="mic-off" class="w-8 h-8 text-gray-400 mx-auto"></i>
+            <p class="text-xs font-semibold text-gray-700">No se detectaron alimentos en el dictado.</p>
+            <p class="text-[11px] text-gray-400">Prueba diciendo: "Tengo dos yogures, cuatro tomates y media cebolla"</p>
+            <button onclick="switchScreen(2)" class="mt-2 inline-flex items-center gap-1 px-3 py-1.5 bg-brand-green text-white rounded-xl text-xs font-bold shadow-xs">
+              <span>Volver a hablar</span>
+            </button>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      // Ordenar por orden estricto de vencimiento (urgentes primero)
+      const sorted = [...appInventory].sort((a, b) => a.expDays - b.expDays);
+
+      listEl.innerHTML = sorted.map((item) => {
+        let dotColor = 'bg-brand-green';
+        let labelColor = 'text-brand-green-dark';
+        let labelText = '🟢 Vencimiento distante';
+
+        if (item.expDays <= 2 || item.priority === 'urgent') {
+          dotColor = 'bg-brand-red';
+          labelColor = 'text-brand-red';
+          labelText = item.expDays === 1 ? '🔴 Vence mañana' : '🔴 Vence en 1-2 días';
+        } else if (item.expDays <= 5 || item.priority === 'this_week') {
+          dotColor = 'bg-brand-orange';
+          labelColor = 'text-amber-700';
+          labelText = '🟠 Vence esta semana';
+        }
+
+        const unitLabel = (item.unit && item.unit !== 'uds' && item.unit !== 'ud') ? `${item.unit} de ` : '';
+
+        return `
+          <div class="bg-white border border-gray-200 rounded-2xl p-3 shadow-card flex items-center justify-between transition-all hover:border-green-200">
+            <div class="flex items-center gap-3">
+              <span class="w-2.5 h-2.5 rounded-full ${dotColor}"></span>
+              <div>
+                <span class="text-xs font-bold text-gray-900">${item.qty} ${unitLabel}${item.name}</span>
+                <span class="text-[10px] ${labelColor} font-semibold block">${labelText}</span>
+              </div>
+            </div>
+            <button onclick="removeDetectedItem(${item.id})" class="text-xs text-gray-400 hover:text-red-500 font-medium px-2 py-1 rounded-lg hover:bg-gray-50 transition" title="Eliminar">
+              ✕
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function removeDetectedItem(id) {
+      appInventory = appInventory.filter(i => i.id !== id);
+      renderDetectedIngredients();
       renderDynamicInventoryUI();
     }
 
@@ -1256,17 +1309,24 @@
       if (isRecording) {
         toggleVoiceRecording();
       }
+      const liveText = document.getElementById('speech-live-text');
+      if (liveText && liveText.innerText) {
+        parseSpokenTextToInventory(liveText.innerText.replace(/"/g, ''));
+      }
+      renderDetectedIngredients();
       switchScreen(3);
     }
 
     function setSamplePhrase(type) {
       const liveText = document.getElementById('speech-live-text');
       if (type === 1) {
-        liveText.innerText = '"Tengo cuatro tomates, media cebolla, seis huevos y dos yogures que vencen mañana."';
-        parseSpokenTextToInventory('cuatro tomates media cebolla seis huevos dos yogures vence mañana');
+        const text = "Tengo cuatro tomates, media cebolla, seis huevos y dos yogures que vencen mañana.";
+        if (liveText) liveText.innerText = `"${text}"`;
+        parseSpokenTextToInventory(text);
       } else {
-        liveText.innerText = '"Tengo arroz, leche que vence el viernes, queso y una lechuga."';
-        parseSpokenTextToInventory('arroz leche vence el viernes queso lechuga');
+        const text = "Tengo arroz, leche que vence el viernes, queso y una lechuga.";
+        if (liveText) liveText.innerText = `"${text}"`;
+        parseSpokenTextToInventory(text);
       }
     }
 

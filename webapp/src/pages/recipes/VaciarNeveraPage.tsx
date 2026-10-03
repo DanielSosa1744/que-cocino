@@ -155,7 +155,14 @@ export default function VaciarNeveraPage() {
                 <Sparkles className="w-3 h-3 text-orange-500" />
                 Cocinar primero
               </span>
-              <PriorityBadge priority={topRecipe.priority} />
+              <div className="flex items-center gap-1.5">
+                {topRecipe.matchPercentage !== undefined && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    {topRecipe.matchPercentage}% coincidencia
+                  </span>
+                )}
+                <PriorityBadge priority={topRecipe.priority} />
+              </div>
             </div>
 
             <div>
@@ -170,7 +177,7 @@ export default function VaciarNeveraPage() {
             </div>
 
             {/* Métricas destacadas de la recomendación */}
-            <div className="grid grid-cols-3 gap-1.5 bg-gray-50 rounded-xl p-2 text-center">
+            <div className="grid grid-cols-4 gap-1.5 bg-gray-50 rounded-xl p-2 text-center">
               <div>
                 <p className="text-sm font-extrabold text-orange-600">
                   {topRecipe.totalIngredientsUsed}
@@ -182,6 +189,12 @@ export default function VaciarNeveraPage() {
                   {topRecipe.urgentIngredientsUsed}
                 </p>
                 <p className="text-[9px] text-gray-500 uppercase tracking-tight">Urgentes</p>
+              </div>
+              <div>
+                <p className="text-sm font-extrabold text-emerald-600">
+                  {topRecipe.matchPercentage}%
+                </p>
+                <p className="text-[9px] text-gray-500 uppercase tracking-tight">Match</p>
               </div>
               <div>
                 <p className="text-sm font-extrabold text-gray-800">
@@ -258,7 +271,14 @@ export default function VaciarNeveraPage() {
                         {recipe.prep_time} min · {recipe.difficulty}
                       </p>
                     </div>
-                    <PriorityBadge priority={recipe.priority} />
+                    <div className="flex items-center gap-1.5">
+                      {recipe.matchPercentage !== undefined && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          {recipe.matchPercentage}% coincidencia
+                        </span>
+                      )}
+                      <PriorityBadge priority={recipe.priority} />
+                    </div>
                   </div>
 
                   <div className="flex flex-wrap gap-1 mt-2">

@@ -1475,7 +1475,7 @@
         `;
       }
 
-      // Render Dynamic Screen 7 Recipe Timeline based on real inventory
+      // Render Dynamic Screen 7 Recipe Timeline based on real inventory and DB recipes
       const screen7List = document.getElementById('screen-7-recipe-list');
       if (screen7List) {
         if (appInventory.length === 0) {
@@ -1486,74 +1486,127 @@
             </div>
           `;
         } else {
-          // Identify ingredients
-          const topUrgent = urgentItems.slice(0, 2);
-          const topWeek = weekItems.slice(0, 2);
-          const topNormal = appInventory.filter(i => i.priority === 'ok' || i.expDays > 5).slice(0, 2);
+          const DB_RECIPES = [
+            {
+              id: '11111111-1111-1111-1111-111111111111',
+              name: 'Tortilla',
+              desc: 'Tortilla casera y jugosa. La mejor forma de aprovechar huevos y cebolla antes de que se echen a perder.',
+              ingredients: ['huevo', 'cebolla'],
+              time: 15,
+              difficulty: 'Fácil'
+            },
+            {
+              id: '22222222-2222-2222-2222-222222222222',
+              name: 'Ensalada',
+              desc: 'Ensalada fresca y rápida. Ideal para gastar tomates maduros y lechuga antes de que pierdan frescura.',
+              ingredients: ['tomate', 'lechuga'],
+              time: 10,
+              difficulty: 'Fácil'
+            },
+            {
+              id: '33333333-3333-3333-3333-333333333333',
+              name: 'Pasta mediterránea',
+              desc: 'Pasta reconfortante al estilo mediterráneo. Aprovecha tomates frescos y queso disponible en tu nevera.',
+              ingredients: ['tomate', 'queso', 'pasta'],
+              time: 20,
+              difficulty: 'Fácil'
+            },
+            {
+              id: '44444444-4444-4444-4444-444444444444',
+              name: 'Revuelto de tomate y huevo',
+              desc: 'Plato exprés altamente nutritivo para salvar tomates blandos y huevos frescos.',
+              ingredients: ['tomate', 'huevo'],
+              time: 12,
+              difficulty: 'Fácil'
+            },
+            {
+              id: '55555555-5555-5555-5555-555555555555',
+              name: 'Arroz con verduras',
+              desc: 'Arroz de aprovechamiento para usar cualquier verdura que tengas en la nevera.',
+              ingredients: ['arroz', 'cebolla', 'tomate'],
+              time: 25,
+              difficulty: 'Media'
+            }
+          ];
 
-          const r1Ings = topUrgent.length > 0 ? topUrgent.map(i => i.name).join(', ') : appInventory[0].name;
-          const r2Ings = topWeek.length > 0 ? topWeek.map(i => i.name).join(', ') : (appInventory[1] ? appInventory[1].name : 'aceite y especias');
-          const r3Ings = topNormal.length > 0 ? topNormal.map(i => i.name).join(', ') : 'ingredientes de despensa';
+          const invList = appInventory.map(i => ({
+            name: i.name.toLowerCase(),
+            isUrgent: i.priority === 'urgent' || i.expDays <= 2
+          }));
 
-          const r1Name = topUrgent.length > 0 ? `Salteado de ${topUrgent[0].name.toLowerCase()}` : `Plato de aprovechamiento de ${appInventory[0].name.toLowerCase()}`;
-          const r2Name = topWeek.length > 0 ? `Guiso suave con ${topWeek[0].name.toLowerCase()}` : `Plato combinado diario`;
-          const r3Name = topNormal.length > 0 ? `Arroz o ensalada con ${topNormal[0].name.toLowerCase()}` : `Reserva de despensa`;
+          const scored = DB_RECIPES.map(rec => {
+            const matched = [];
+            let urgentUsed = 0;
+            rec.ingredients.forEach(reqIng => {
+              const found = invList.find(inv => inv.name.includes(reqIng) || reqIng.includes(inv.name));
+              if (found) {
+                matched.push(reqIng);
+                if (found.isUrgent) urgentUsed++;
+              }
+            });
+            const matchPercentage = Math.round((matched.length / rec.ingredients.length) * 100);
+            const score = urgentUsed * 2 + matched.length;
+            return {
+              ...rec,
+              matched,
+              urgentUsed,
+              matchPercentage,
+              score
+            };
+          }).filter(r => r.matched.length > 0).sort((a, b) => b.score - a.score || b.matchPercentage - a.matchPercentage);
 
-          screen7List.innerHTML = `
-            <!-- HOY: Vencimientos inminentes -->
-            <div class="bg-white border-2 border-brand-green rounded-2xl p-3.5 shadow-card">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-brand-green text-white uppercase tracking-wider">HOY</span>
-                <span class="text-xs font-bold text-brand-red bg-red-50 px-2 py-0.5 rounded-md">🔴 Vencimiento Inminente</span>
+          if (scored.length === 0) {
+            screen7List.innerHTML = `
+              <div class="text-center py-8 text-gray-400">
+                <p class="text-sm font-semibold">Sin recetas compatibles</p>
+                <p class="text-xs mt-1">Ninguna receta coincide con tus ingredientes disponibles.</p>
               </div>
-              <h3 class="text-base font-bold text-gray-900 mt-2">${r1Name}</h3>
-              <p class="text-xs text-gray-500 mt-1">Aprovecha primero: <strong class="text-brand-red">${r1Ings}</strong></p>
-              <div class="mt-2 flex items-center justify-between text-xs pt-2 border-t border-gray-100">
-                <span class="font-bold text-gray-600">Prioridad: <strong class="text-brand-red">ALTA 🔴</strong></span>
-                <span class="font-extrabold text-brand-green bg-green-50 px-2 py-0.5 rounded-lg">Dinero salvado: ${(totalUrgentValue || 3).toFixed(0)} €</span>
-              </div>
-              <button onclick="switchScreen(8)" class="w-full mt-3 bg-brand-green text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 hover:bg-brand-green-dark transition-all">
-                <span>VER RECETA</span>
-                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-              </button>
-            </div>
+            `;
+          } else {
+            const top = scored[0];
+            const others = scored.slice(1);
 
-            <!-- MAÑANA: Vencimientos esta semana -->
-            <div class="bg-white border border-gray-200 rounded-2xl p-3.5 shadow-card">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-700 uppercase tracking-wider">MAÑANA</span>
-                <span class="text-xs font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md">🟠 Vencimiento Esta Semana</span>
+            let html = `
+              <!-- HERO RECETA: Cocinar primero -->
+              <div class="bg-white border-2 border-brand-green rounded-2xl p-3.5 shadow-card">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-brand-green text-white uppercase tracking-wider">COCINAR PRIMERO</span>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md border border-emerald-200">${top.matchPercentage}% coincidencia</span>
+                    ${top.urgentUsed > 0 ? '<span class="text-xs font-bold text-brand-red bg-red-50 px-2 py-0.5 rounded-md">🔴 Vencimiento</span>' : ''}
+                  </div>
+                </div>
+                <h3 class="text-base font-bold text-gray-900 mt-2">${top.name}</h3>
+                <p class="text-xs text-gray-500 mt-1">${top.desc}</p>
+                <div class="mt-2 flex items-center justify-between text-xs pt-2 border-t border-gray-100">
+                  <span class="font-bold text-gray-600">Aprovecha: <strong class="text-brand-green-dark">${top.matched.join(', ')}</strong></span>
+                  <span class="font-extrabold text-brand-green bg-green-50 px-2 py-0.5 rounded-lg">${top.time} min</span>
+                </div>
+                <button onclick="switchScreen(8)" class="w-full mt-3 bg-brand-green text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 hover:bg-brand-green-dark transition-all">
+                  <span>VER RECETA</span>
+                  <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </button>
               </div>
-              <h3 class="text-base font-bold text-gray-900 mt-2">${r2Name}</h3>
-              <p class="text-xs text-gray-500 mt-1">Aprovecha: <strong class="text-amber-800">${r2Ings}</strong></p>
-              <div class="mt-2 flex items-center justify-between text-xs pt-2 border-t border-gray-100">
-                <span class="font-bold text-gray-600">Prioridad: <strong class="text-amber-800">MEDIA 🟠</strong></span>
-                <span class="font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-lg">Ahorro: 3 €</span>
-              </div>
-              <button onclick="switchScreen(8)" class="w-full mt-3 bg-gray-100 text-gray-800 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 hover:bg-gray-200 transition-all">
-                <span>VER RECETA</span>
-                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-              </button>
-            </div>
+            `;
 
-            <!-- VIERNES: Despensa / Larga duración -->
-            <div class="bg-white border border-gray-200 rounded-2xl p-3.5 shadow-card">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-700 uppercase tracking-wider">VIERNES</span>
-                <span class="text-xs font-bold text-brand-green-dark bg-green-50 px-2 py-0.5 rounded-md">🟢 Sin Urgencia</span>
-              </div>
-              <h3 class="text-base font-bold text-gray-900 mt-2">${r3Name}</h3>
-              <p class="text-xs text-gray-500 mt-1">Aprovecha: <strong class="text-brand-green-dark">${r3Ings}</strong></p>
-              <div class="mt-2 flex items-center justify-between text-xs pt-2 border-t border-gray-100">
-                <span class="font-bold text-gray-600">Prioridad: <strong class="text-brand-green-dark">NORMAL 🟢</strong></span>
-                <span class="font-bold text-brand-green-dark bg-green-50 px-2 py-0.5 rounded-lg">Ahorro: 2 €</span>
-              </div>
-              <button onclick="switchScreen(8)" class="w-full mt-3 bg-gray-100 text-gray-800 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 hover:bg-gray-200 transition-all">
-                <span>VER RECETA</span>
-                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-              </button>
-            </div>
-          `;
+            others.forEach(rec => {
+              html += `
+                <div class="bg-white border border-gray-200 rounded-2xl p-3.5 shadow-card mt-3">
+                  <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-gray-900">${rec.name}</h3>
+                    <span class="text-xs font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">${rec.matchPercentage}% coincidencia</span>
+                  </div>
+                  <p class="text-xs text-gray-500 mt-1">${rec.desc}</p>
+                  <div class="mt-2 flex items-center justify-between text-xs pt-2 border-t border-gray-100">
+                    <span class="text-gray-500">Usa: <strong class="text-gray-700">${rec.matched.join(', ')}</strong></span>
+                    <span class="text-gray-500 font-medium">${rec.time} min · ${rec.difficulty}</span>
+                  </div>
+                </div>
+              `;
+            });
+
+            screen7List.innerHTML = html;
+          }
         }
       }
       lucide.createIcons();

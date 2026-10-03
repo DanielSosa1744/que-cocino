@@ -1,7 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
-import { calculateUrgency, guessCategory } from '../lib/ingredientParser'
+import {
+  calculateUrgency,
+  guessCategory,
+  isIngredientMatch,
+  singularize,
+  defaultExpiryDate,
+} from '../lib/ingredientParser'
 import { localStore } from '../lib/localStore'
 import type { InventoryItem } from '../types/app.types'
 
@@ -21,23 +27,39 @@ export function useInventory() {
       }
 
       try {
+        // Intentar consulta con join a la tabla ingredients
+        let rows: any[] = []
         const { data, error } = await db
           .from('inventory')
-          .select('*')
+          .select('*, ingredients(id, name, category, shelf_life_days, unit_default)')
           .eq('user_id', user.id)
           .eq('is_consumed', false)
           .order('expires_at', { ascending: true, nullsFirst: false })
 
-        if (error) throw error
+        if (error) {
+          // Fallback a selección directa si PostgREST no resuelve la relación anidada
+          const direct = await db
+            .from('inventory')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('is_consumed', false)
+            .order('expires_at', { ascending: true, nullsFirst: false })
+
+          if (direct.error) throw direct.error
+          rows = direct.data || []
+        } else {
+          rows = data || []
+        }
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return (data || []).map((row: any): InventoryItem => {
+        return rows.map((row: any): InventoryItem => {
           const { urgency, daysUntilExpiry } = calculateUrgency(row.expires_at)
           return {
             id: row.id,
             name: row.name,
             quantity: row.quantity,
             unit: row.unit ?? 'ud',
-            category: row.category ?? guessCategory(row.name),
+            category: row.ingredients?.category ?? row.category ?? guessCategory(row.name),
             expires_at: row.expires_at,
             created_at: row.created_at,
             ingredient_id: row.ingredient_id,
@@ -73,18 +95,102 @@ export function useAddIngredients() {
       }
 
       try {
-        const rows = items.map(item => ({
-          user_id: user.id,
-          name: item.name,
-          quantity: item.quantity,
-          unit: item.unit ?? 'ud',
-          expires_at: item.expires_at ?? null,
-          is_consumed: false,
-        }))
+        // 1. Obtener catálogo maestro de ingredients en Supabase
+        const { data: dbIngredients, error: ingError } = await db
+          .from('ingredients')
+          .select('id, name, category, shelf_life_days, unit_default')
 
-        const { data, error } = await db.from('inventory').insert(rows).select()
-        if (error) throw error
-        return data
+        if (ingError) {
+          console.warn('Advertencia al consultar catálogo ingredients:', ingError)
+        }
+        const catalog = dbIngredients || []
+
+        // 2. Obtener registros vigentes en inventory para el usuario
+        const { data: existingInventory, error: invError } = await db
+          .from('inventory')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('is_consumed', false)
+
+        if (invError) {
+          console.warn('Advertencia al consultar inventario existente:', invError)
+        }
+        const currentInventory = existingInventory || []
+
+        // 3. Procesar cada ingrediente: buscar en catálogo y crear o actualizar en inventory
+        for (const item of items) {
+          const trimmedName = item.name.trim()
+
+          // 3.1 Buscar coincidencia en la tabla ingredients
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const matchedCatalog = catalog.find((cat: any) =>
+            isIngredientMatch(trimmedName, cat.name) ||
+            singularize(trimmedName) === singularize(cat.name) ||
+            cat.name.toLowerCase() === trimmedName.toLowerCase()
+          )
+
+          const ingredientId = matchedCatalog ? matchedCatalog.id : null
+          const unit = item.unit || matchedCatalog?.unit_default || 'ud'
+
+          // Calcular fecha de caducidad si no fue provista
+          let expiresAt = item.expires_at || null
+          if (!expiresAt && matchedCatalog?.shelf_life_days) {
+            expiresAt = defaultExpiryDate(matchedCatalog.shelf_life_days)
+          }
+
+          // 3.2 Buscar si ya existe en inventory activo del usuario
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const existingItem = currentInventory.find((ex: any) => {
+            if (ingredientId && ex.ingredient_id && ex.ingredient_id === ingredientId) {
+              return true
+            }
+            return isIngredientMatch(ex.name, trimmedName) ||
+              singularize(ex.name) === singularize(trimmedName)
+          })
+
+          if (existingItem) {
+            // Actualizar registro existente en inventory
+            const newQty = (Number(existingItem.quantity) || 0) + (Number(item.quantity) || 1)
+            let updatedExpiresAt = existingItem.expires_at
+            if (expiresAt) {
+              if (!updatedExpiresAt || new Date(expiresAt) < new Date(updatedExpiresAt)) {
+                updatedExpiresAt = expiresAt
+              }
+            }
+
+            const { error: updateError } = await db
+              .from('inventory')
+              .update({
+                quantity: newQty,
+                unit: existingItem.unit || unit,
+                expires_at: updatedExpiresAt,
+                updated_at: new Date().toISOString(),
+                ...(ingredientId && !existingItem.ingredient_id ? { ingredient_id: ingredientId } : {}),
+              })
+              .eq('id', existingItem.id)
+
+            if (updateError) throw updateError
+          } else {
+            // Crear nuevo registro en inventory
+            const { error: insertError } = await db
+              .from('inventory')
+              .insert({
+                user_id: user.id,
+                ingredient_id: ingredientId,
+                name: trimmedName,
+                quantity: item.quantity ?? 1,
+                unit,
+                expires_at: expiresAt,
+                is_consumed: false,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              })
+
+            if (insertError) throw insertError
+          }
+        }
+
+        return true
       } catch (err) {
         console.warn('Fallback a localStore para añadir:', err)
         return localStore.addInventory(user.id, items)

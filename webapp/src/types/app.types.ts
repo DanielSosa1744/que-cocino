@@ -35,6 +35,7 @@ export interface RecipeWithScore {
   score: number // score = ingredientes_urgentes_utilizados + ingredientes_totales_utilizados
   urgentIngredientsUsed: number
   totalIngredientsUsed: number
+  matchPercentage?: number
   priority: PriorityLevel
   matchedIngredients: string[]
   missingIngredients: string[]

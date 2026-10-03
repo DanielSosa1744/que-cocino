@@ -4,7 +4,7 @@ import { ArrowLeft, Clock, Users, CheckCircle, Sparkles, ChefHat } from 'lucide-
 import { useSaveCooked, useVaciarNevera } from '../../hooks/useRecipes'
 import { useDeleteIngredient } from '../../hooks/useInventory'
 import { useInventory } from '../../hooks/useInventory'
-import { singularize } from '../../lib/ingredientParser'
+import { isIngredientMatch } from '../../lib/ingredientParser'
 import type { RecipeWithScore } from '../../types/app.types'
 
 export default function RecipeDetailPage() {
@@ -52,13 +52,10 @@ export default function RecipeDetailPage() {
       co2AvoidedKg,
     })
 
-    // Marcar ingredientes consumidos del inventario de forma precisa
-    const matchedKeys = new Set(recipe.matchedIngredients.map(ing => singularize(ing)))
-    const matchedInventoryItems = inventory.filter(item => {
-      const itemKey = singularize(item.name)
-      return matchedKeys.has(itemKey) ||
-        Array.from(matchedKeys).some(k => itemKey.split(/\s+/).includes(k) || k.split(/\s+/).includes(itemKey))
-    })
+    // Marcar ingredientes consumidos del inventario de forma precisa usando isIngredientMatch
+    const matchedInventoryItems = inventory.filter(item =>
+      recipe.matchedIngredients.some(ing => isIngredientMatch(item.name, ing))
+    )
 
     matchedInventoryItems.forEach(item => deleteItem(item.id))
 

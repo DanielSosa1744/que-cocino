@@ -102,12 +102,38 @@ export function useVaciarNevera(inventory: InventoryItem[]) {
 
       // Únicamente recetas compatibles con el inventario (que aprovechen al menos 1 ingrediente)
       // Ordenadas descendentemente por score (urgencia + total aprovechado)
-      return scored
+      const compatible = scored
         .filter(r => r.totalIngredientsUsed > 0)
         .sort((a, b) => {
           if (b.score !== a.score) return b.score - a.score
           return b.urgentIngredientsUsed - a.urgentIngredientsUsed
         })
+
+      if (compatible.length > 0) {
+        return compatible
+      }
+
+      // Fallback Inteligente: Si el usuario tiene ingredientes pero ninguna receta fija coincide,
+      // construimos dinámicamente un plato combinado de aprovechamiento basado en sus alimentos.
+      const urgentOrFirst = inventory.slice(0, 3)
+      const namesList = urgentOrFirst.map(i => i.name)
+      const dynamicRecipe: RecipeWithScore = {
+        id: 'rec-dynamic-aprovechamiento',
+        name: `Salteado rápido de ${namesList.slice(0, 2).join(' y ')}`,
+        description: `Plato improvisado de aprovechamiento diseñado específicamente para consumir tus ingredientes antes de que caduquen.`,
+        difficulty: 'Fácil',
+        prep_time: 12,
+        instructions: `1. Lava y trocea ${namesList.join(', ')} en porciones homogéneas.\n2. Calienta 2 cucharadas de aceite en una sartén o wok a fuego vivo.\n3. Saltea los ingredientes durante 6-8 minutos, sazonando con sal, pimienta y tus especias favoritas.\n4. Sirve caliente directamente para disfrutar de todo su sabor y valor nutricional.`,
+        servings: 2,
+        score: urgentOrFirst.length * 2,
+        urgentIngredientsUsed: urgentOrFirst.filter(i => i.urgency === 'critical' || i.urgency === 'warning').length,
+        totalIngredientsUsed: urgentOrFirst.length,
+        priority: urgentOrFirst.some(i => i.urgency === 'critical') ? 'Alta' : 'Media',
+        matchedIngredients: namesList,
+        missingIngredients: [],
+      }
+
+      return [dynamicRecipe]
     },
     enabled: inventory.length > 0,
   })

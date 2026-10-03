@@ -678,7 +678,7 @@
           </div>
 
           <!-- CRONOGRAMA VISUAL STRICT EXPIRATION ORDER -->
-          <div class="mt-4 space-y-3 max-h-[340px] overflow-y-auto no-scrollbar pr-0.5">
+          <div id="screen-7-recipe-list" class="mt-4 space-y-3 max-h-[340px] overflow-y-auto no-scrollbar pr-0.5">
             <!-- HOY: Vencimientos inminentes (Yogur, Tomates) -->
             <div class="bg-white border-2 border-brand-green rounded-2xl p-3.5 shadow-card">
               <div class="flex items-center justify-between">
@@ -1156,22 +1156,38 @@
     }
 
     function parseSpokenTextToInventory(text) {
-      const lower = text.toLowerCase();
+      const lower = text.toLowerCase()
+        .replace(/á/g, 'a').replace(/é/g, 'e').replace(/í/g, 'i')
+        .replace(/ó/g, 'o').replace(/ú/g, 'u').replace(/ñ/g, 'n');
+      
       const catalog = [
         { key: 'tomate', name: 'Tomates maduros', qty: 4, unit: 'uds', expDays: 1, priority: 'urgent', price: 1.80 },
-        { key: 'leche', name: 'Leche entera', qty: 1, unit: 'L', expDays: 3, priority: 'this_week', price: 1.10 },
-        { key: 'huevo', name: 'Huevos camperos', qty: 6, unit: 'uds', expDays: 7, priority: 'ok', price: 1.80 },
         { key: 'yogur', name: 'Yogur natural', qty: 2, unit: 'uds', expDays: 1, priority: 'urgent', price: 2.10 },
+        { key: 'pollo', name: 'Pechuga de pollo', qty: 1, unit: 'bandeja', expDays: 2, priority: 'urgent', price: 4.50 },
+        { key: 'pescado', name: 'Filetes de merluza', qty: 2, unit: 'uds', expDays: 2, priority: 'urgent', price: 3.80 },
+        { key: 'carne', name: 'Carne picada', qty: 500, unit: 'g', expDays: 2, priority: 'urgent', price: 4.20 },
+        { key: 'leche', name: 'Leche entera', qty: 1, unit: 'L', expDays: 3, priority: 'this_week', price: 1.10 },
         { key: 'queso', name: 'Queso fresco', qty: 1, unit: 'bloque', expDays: 4, priority: 'this_week', price: 2.50 },
-        { key: 'arroz', name: 'Arroz', qty: 1, unit: 'kg', expDays: 30, priority: 'ok', price: 1.20 },
+        { key: 'lechuga', name: 'Lechuga fresca', qty: 1, unit: 'ud', expDays: 3, priority: 'this_week', price: 0.95 },
+        { key: 'zanahoria', name: 'Zanahorias', qty: 3, unit: 'uds', expDays: 5, priority: 'this_week', price: 0.80 },
         { key: 'cebolla', name: 'Cebolla', qty: 1, unit: 'ud', expDays: 5, priority: 'this_week', price: 0.60 },
+        { key: 'pimiento', name: 'Pimientos', qty: 2, unit: 'uds', expDays: 5, priority: 'this_week', price: 1.30 },
+        { key: 'huevo', name: 'Huevos camperos', qty: 6, unit: 'uds', expDays: 7, priority: 'ok', price: 1.80 },
+        { key: 'patata', name: 'Patatas', qty: 4, unit: 'uds', expDays: 14, priority: 'ok', price: 1.50 },
+        { key: 'papa', name: 'Patatas', qty: 4, unit: 'uds', expDays: 14, priority: 'ok', price: 1.50 },
+        { key: 'arroz', name: 'Arroz', qty: 1, unit: 'kg', expDays: 30, priority: 'ok', price: 1.20 },
+        { key: 'pasta', name: 'Pasta', qty: 500, unit: 'g', expDays: 90, priority: 'ok', price: 1.15 },
+        { key: 'manzana', name: 'Manzanas', qty: 3, unit: 'uds', expDays: 7, priority: 'ok', price: 1.40 },
+        { key: 'platano', name: 'Plátanos', qty: 2, unit: 'uds', expDays: 4, priority: 'this_week', price: 1.10 },
       ];
 
       catalog.forEach(item => {
         if (lower.includes(item.key)) {
-          const existing = appInventory.find(i => i.name.toLowerCase().includes(item.key));
+          const existing = appInventory.find(i => 
+            i.name.toLowerCase().includes(item.key) || item.name.toLowerCase().includes(i.name.toLowerCase())
+          );
           if (!existing) {
-            appInventory.push({ ...item, id: Date.now() + Math.random() });
+            appInventory.unshift({ ...item, id: Date.now() + Math.random() });
           }
         }
       });
@@ -1334,6 +1350,89 @@
           </div>
         `;
       }
+
+      // Render Dynamic Screen 7 Recipe Timeline based on real inventory
+      const screen7List = document.getElementById('screen-7-recipe-list');
+      if (screen7List) {
+        if (appInventory.length === 0) {
+          screen7List.innerHTML = `
+            <div class="text-center py-8 text-gray-400">
+              <p class="text-sm">Tu inventario está vacío.</p>
+              <p class="text-xs mt-1">Dicta o añade ingredientes para ver tu plan.</p>
+            </div>
+          `;
+        } else {
+          // Identify ingredients
+          const topUrgent = urgentItems.slice(0, 2);
+          const topWeek = weekItems.slice(0, 2);
+          const topNormal = appInventory.filter(i => i.priority === 'ok' || i.expDays > 5).slice(0, 2);
+
+          const r1Ings = topUrgent.length > 0 ? topUrgent.map(i => i.name).join(', ') : appInventory[0].name;
+          const r2Ings = topWeek.length > 0 ? topWeek.map(i => i.name).join(', ') : (appInventory[1] ? appInventory[1].name : 'aceite y especias');
+          const r3Ings = topNormal.length > 0 ? topNormal.map(i => i.name).join(', ') : 'ingredientes de despensa';
+
+          const r1Name = topUrgent.length > 0 ? `Salteado de ${topUrgent[0].name.toLowerCase()}` : `Plato de aprovechamiento de ${appInventory[0].name.toLowerCase()}`;
+          const r2Name = topWeek.length > 0 ? `Guiso suave con ${topWeek[0].name.toLowerCase()}` : `Plato combinado diario`;
+          const r3Name = topNormal.length > 0 ? `Arroz o ensalada con ${topNormal[0].name.toLowerCase()}` : `Reserva de despensa`;
+
+          screen7List.innerHTML = `
+            <!-- HOY: Vencimientos inminentes -->
+            <div class="bg-white border-2 border-brand-green rounded-2xl p-3.5 shadow-card">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-brand-green text-white uppercase tracking-wider">HOY</span>
+                <span class="text-xs font-bold text-brand-red bg-red-50 px-2 py-0.5 rounded-md">🔴 Vencimiento Inminente</span>
+              </div>
+              <h3 class="text-base font-bold text-gray-900 mt-2">${r1Name}</h3>
+              <p class="text-xs text-gray-500 mt-1">Aprovecha primero: <strong class="text-brand-red">${r1Ings}</strong></p>
+              <div class="mt-2 flex items-center justify-between text-xs pt-2 border-t border-gray-100">
+                <span class="font-bold text-gray-600">Prioridad: <strong class="text-brand-red">ALTA 🔴</strong></span>
+                <span class="font-extrabold text-brand-green bg-green-50 px-2 py-0.5 rounded-lg">Dinero salvado: ${(totalUrgentValue || 3).toFixed(0)} €</span>
+              </div>
+              <button onclick="switchScreen(8)" class="w-full mt-3 bg-brand-green text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 hover:bg-brand-green-dark transition-all">
+                <span>VER RECETA</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+
+            <!-- MAÑANA: Vencimientos esta semana -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-3.5 shadow-card">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-700 uppercase tracking-wider">MAÑANA</span>
+                <span class="text-xs font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md">🟠 Vencimiento Esta Semana</span>
+              </div>
+              <h3 class="text-base font-bold text-gray-900 mt-2">${r2Name}</h3>
+              <p class="text-xs text-gray-500 mt-1">Aprovecha: <strong class="text-amber-800">${r2Ings}</strong></p>
+              <div class="mt-2 flex items-center justify-between text-xs pt-2 border-t border-gray-100">
+                <span class="font-bold text-gray-600">Prioridad: <strong class="text-amber-800">MEDIA 🟠</strong></span>
+                <span class="font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-lg">Ahorro: 3 €</span>
+              </div>
+              <button onclick="switchScreen(8)" class="w-full mt-3 bg-gray-100 text-gray-800 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 hover:bg-gray-200 transition-all">
+                <span>VER RECETA</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+
+            <!-- VIERNES: Despensa / Larga duración -->
+            <div class="bg-white border border-gray-200 rounded-2xl p-3.5 shadow-card">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-700 uppercase tracking-wider">VIERNES</span>
+                <span class="text-xs font-bold text-brand-green-dark bg-green-50 px-2 py-0.5 rounded-md">🟢 Sin Urgencia</span>
+              </div>
+              <h3 class="text-base font-bold text-gray-900 mt-2">${r3Name}</h3>
+              <p class="text-xs text-gray-500 mt-1">Aprovecha: <strong class="text-brand-green-dark">${r3Ings}</strong></p>
+              <div class="mt-2 flex items-center justify-between text-xs pt-2 border-t border-gray-100">
+                <span class="font-bold text-gray-600">Prioridad: <strong class="text-brand-green-dark">NORMAL 🟢</strong></span>
+                <span class="font-bold text-brand-green-dark bg-green-50 px-2 py-0.5 rounded-lg">Ahorro: 2 €</span>
+              </div>
+              <button onclick="switchScreen(8)" class="w-full mt-3 bg-gray-100 text-gray-800 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 hover:bg-gray-200 transition-all">
+                <span>VER RECETA</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          `;
+        }
+      }
+      lucide.createIcons();
     }
 
     function removeIngredientFromInventory(id) {

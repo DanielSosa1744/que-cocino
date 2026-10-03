@@ -80,6 +80,71 @@ export const INITIAL_RECIPES: LocalRecipe[] = [
       { ingredient_name: 'tomate' },
     ],
   },
+  {
+    id: 'rec-bol-yogur',
+    name: 'Bol de Yogur con Fruta',
+    description: 'Desayuno o merienda exprés ideal para consumir yogures naturales antes de su fecha de caducidad.',
+    difficulty: 'Fácil',
+    prep_time: 5,
+    instructions: '1. Sirve el yogur en un cuenco.\n2. Añade fruta troceada o frutos secos al gusto.\n3. Opcionalmente endulza con miel.',
+    servings: 1,
+    recipe_ingredients: [
+      { ingredient_name: 'yogur' },
+    ],
+  },
+  {
+    id: 'rec-tortilla-patatas',
+    name: 'Tortilla de Patatas clásica',
+    description: 'Aprovecha patatas, huevos y cebolla para preparar la clásica tortilla jugosa.',
+    difficulty: 'Media',
+    prep_time: 30,
+    instructions: '1. Corta las patatas y la cebolla en láminas finas y póchalas en aceite abundante.\n2. Escurre el aceite y mezcla con los huevos batidos.\n3. Cuaja en la sartén a fuego medio.',
+    servings: 4,
+    recipe_ingredients: [
+      { ingredient_name: 'patata' },
+      { ingredient_name: 'huevo' },
+      { ingredient_name: 'cebolla' },
+    ],
+  },
+  {
+    id: 'rec-pollo-salteado',
+    name: 'Salteado de Pollo con Verduras',
+    description: 'Receta rápida para cocinar pechuga de pollo con cebolla, pimientos o tomates frescos.',
+    difficulty: 'Fácil',
+    prep_time: 15,
+    instructions: '1. Corta el pollo en tiras y dóralo en una sartén con un poco de aceite.\n2. Añade la cebolla y pimientos en juliana.\n3. Saltea a fuego vivo hasta que las verduras estén al dente.',
+    servings: 2,
+    recipe_ingredients: [
+      { ingredient_name: 'pollo' },
+      { ingredient_name: 'cebolla' },
+    ],
+  },
+  {
+    id: 'rec-crema-zanahoria',
+    name: 'Crema suave de Zanahoria',
+    description: 'Plato reconfortante para dar salida a zanahorias, cebollas y patatas maduras.',
+    difficulty: 'Fácil',
+    prep_time: 25,
+    instructions: '1. Pela y trocea las zanahorias y la cebolla.\n2. Rehoga 5 minutos y cubre con agua o caldo.\n3. Hierve 20 minutos y tritura hasta obtener una textura suave.',
+    servings: 3,
+    recipe_ingredients: [
+      { ingredient_name: 'zanahoria' },
+      { ingredient_name: 'cebolla' },
+    ],
+  },
+  {
+    id: 'rec-queso-tomate',
+    name: 'Tosta de Queso y Tomate',
+    description: 'Aperitivo o cena ligera perfecta para aprovechar pan, queso fresco y tomates maduros.',
+    difficulty: 'Fácil',
+    prep_time: 8,
+    instructions: '1. Tuesta rebanadas de pan.\n2. Coloca láminas de tomate maduro y queso por encima.\n3. Aliña con aceite de oliva virgen extra y orégano.',
+    servings: 2,
+    recipe_ingredients: [
+      { ingredient_name: 'queso' },
+      { ingredient_name: 'tomate' },
+    ],
+  },
 ]
 
 export const INITIAL_DEMO_INVENTORY: Array<{

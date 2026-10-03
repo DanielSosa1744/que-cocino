@@ -77,7 +77,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="h-full max-h-full bg-white flex flex-col justify-center items-center px-6 py-8 overflow-y-auto select-none">
+    <div className="h-full max-h-full bg-transparent flex flex-col justify-center items-center px-6 py-8 overflow-y-auto select-none animate-fade-in">
       <div className="w-full max-w-sm mx-auto text-center">
         {/* Título principal */}
         <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-stone-900 mb-2">
@@ -85,14 +85,51 @@ export default function HomePage() {
         </h1>
 
         {/* Subtítulo limpio */}
-        <p className="text-sm text-stone-500 max-w-xs mx-auto leading-relaxed mb-8 font-normal">
+        <p className="text-sm text-stone-500 max-w-xs mx-auto leading-relaxed mb-6 font-normal">
           Introduce los ingredientes que tienes disponibles y te mostraremos qué recetas puedes preparar.
         </p>
 
+        {/* Micrófono flotante con animación vertical lenta y halo pulsante (Apple Voice Memos / Calm) */}
+        <div className="relative my-6 flex items-center justify-center">
+          {/* Halos orgánicos suaves */}
+          <div
+            className={`absolute w-32 h-32 rounded-full pointer-events-none transition-all duration-700 ${
+              isListening
+                ? 'bg-stone-400/25 blur-xl scale-125'
+                : 'bg-stone-300/30 blur-xl animate-halo-warm'
+            }`}
+          />
+          <div
+            className={`absolute w-24 h-24 rounded-full pointer-events-none transition-all duration-500 ${
+              isListening
+                ? 'bg-stone-300/40 animate-pulse'
+                : 'bg-stone-200/50 animate-halo-warm-inner'
+            }`}
+          />
+
+          {/* Botón de micrófono flotante */}
+          <button
+            type="button"
+            onClick={handleStartVoice}
+            aria-label={isListening ? 'Detener escucha' : 'Hablar'}
+            className={`animate-float-slow relative z-10 w-20 h-20 rounded-full flex items-center justify-center shadow-sm border border-stone-200/80 transition-all duration-300 tap-subtle cursor-pointer ${
+              isListening
+                ? 'bg-stone-900 text-white scale-105 shadow-md shadow-stone-900/10'
+                : 'bg-white hover:bg-stone-50 text-stone-800'
+            }`}
+          >
+            <GoogleIcon
+              name={isListening ? 'graphic_eq' : 'mic'}
+              size={28}
+              className={isListening ? 'text-white' : 'text-stone-700'}
+            />
+          </button>
+        </div>
+
         {/* Estado activo de voz si está escuchando */}
         {isListening ? (
-          <div className="py-6 space-y-4">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-stone-100 text-stone-700 text-xs font-mono">
+          <div className="py-4 space-y-3 transition-all duration-300">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 border border-stone-200/60 text-stone-700 text-xs font-mono shadow-2xs">
               <span className="w-2 h-2 rounded-full bg-stone-900 animate-pulse" />
               <span>{currentVoiceText || 'Escuchando... habla a tu ritmo'}</span>
             </div>
@@ -115,7 +152,7 @@ export default function HomePage() {
                 value={inputText}
                 onChange={e => setInputText(e.target.value)}
                 placeholder="Escribe tus ingredientes..."
-                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 focus:border-stone-800 rounded-xl text-sm text-stone-900 placeholder:text-stone-400 outline-none transition"
+                className="w-full px-4 py-3 bg-white/80 border border-stone-200/80 focus:border-stone-800 focus:bg-white rounded-xl text-sm text-stone-900 placeholder:text-stone-400 outline-none transition shadow-2xs"
               />
             </div>
 
@@ -124,7 +161,7 @@ export default function HomePage() {
               <button
                 type="button"
                 onClick={handleStartVoice}
-                className="flex-1 py-2.5 px-4 bg-white border border-stone-200 hover:bg-stone-50 text-stone-800 text-xs font-medium rounded-xl transition flex items-center justify-center gap-1.5 tap-subtle cursor-pointer"
+                className="flex-1 py-2.5 px-4 bg-white/90 border border-stone-200 hover:bg-stone-50 text-stone-800 text-xs font-medium rounded-xl transition flex items-center justify-center gap-1.5 tap-subtle cursor-pointer shadow-2xs"
               >
                 <GoogleIcon name="mic" size={16} />
                 Hablar
@@ -133,7 +170,7 @@ export default function HomePage() {
               <button
                 type="submit"
                 disabled={!inputText.trim() || isProcessing}
-                className="flex-1 py-2.5 px-4 bg-stone-900 hover:bg-black text-white text-xs font-medium rounded-xl transition disabled:opacity-30 disabled:cursor-not-allowed tap-subtle cursor-pointer"
+                className="flex-1 py-2.5 px-4 bg-stone-900 hover:bg-black text-white text-xs font-medium rounded-xl transition disabled:opacity-30 disabled:cursor-not-allowed tap-subtle cursor-pointer shadow-2xs"
               >
                 {isProcessing ? 'Buscando...' : 'Ver recetas'}
               </button>
@@ -142,14 +179,14 @@ export default function HomePage() {
         )}
 
         {/* Ejemplo sugerido */}
-        <div className="mt-8 pt-4 border-t border-stone-100 text-xs text-stone-400">
+        <div className="mt-8 pt-4 border-t border-stone-200/50 text-xs text-stone-400">
           <span>Ejemplo: </span>
           <button
             type="button"
             onClick={() => {
               setInputText('Tomates, huevos, queso y cebolla')
             }}
-            className="text-stone-600 hover:text-stone-900 underline underline-offset-2 transition"
+            className="text-stone-600 hover:text-stone-900 underline underline-offset-2 transition cursor-pointer"
           >
             Tomates, huevos, queso y cebolla.
           </button>

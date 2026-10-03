@@ -29,9 +29,9 @@ export default function VaciarNeveraPage() {
       }))
 
   return (
-    <div className="h-full max-h-full bg-white flex flex-col overflow-hidden">
+    <div className="h-full max-h-full bg-transparent flex flex-col overflow-hidden animate-fade-in">
       {/* Encabezado editorial limpio */}
-      <div className="px-5 pt-safe pb-3 border-b border-stone-100 flex-shrink-0 bg-white">
+      <div className="px-5 pt-safe pb-3 border-b border-stone-200/50 flex-shrink-0 bg-transparent">
         <h1 className="text-xl font-semibold text-stone-900 tracking-tight">
           Recetas
         </h1>

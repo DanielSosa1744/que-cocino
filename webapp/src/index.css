@@ -84,12 +84,16 @@
   }
 }
 
-/* Micro-interactions */
+/* Organic warmth and micro-interactions */
+.bg-warm-canvas {
+  background: radial-gradient(circle at 50% 12%, #fcfbf9 0%, #f7f4ee 45%, #f2eee5 100%);
+}
+
 .tap-subtle {
-  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.15s ease, opacity 0.15s ease;
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 .tap-subtle:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 .hover-lift {
@@ -100,6 +104,67 @@
 }
 .hover-lift:active {
   transform: translateY(0) scale(0.98);
+}
+
+/* Floating gentle oscillation (Apple Voice Memos / Calm) */
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-float-slow {
+  animation: floatGentle 4.8s ease-in-out infinite;
+}
+
+/* Pulsing organic halo */
+@keyframes haloWarmOuter {
+  0%, 100% {
+    transform: scale(0.94);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 0.75;
+  }
+}
+
+@keyframes haloWarmInner {
+  0%, 100% {
+    transform: scale(0.97);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0.85;
+  }
+}
+
+.animate-halo-warm {
+  animation: haloWarmOuter 3.6s ease-in-out infinite;
+}
+
+.animate-halo-warm-inner {
+  animation: haloWarmInner 3.6s ease-in-out infinite;
+}
+
+/* Smooth content appearance */
+@keyframes fadeInUpGentle {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeInUpGentle 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Tab swipe slide transitions */

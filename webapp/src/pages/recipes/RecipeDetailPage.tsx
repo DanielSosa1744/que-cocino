@@ -93,7 +93,7 @@ export default function RecipeDetailPage() {
       ]
 
   return (
-    <div className="h-full max-h-full bg-white flex flex-col justify-between overflow-hidden">
+    <div className="h-full max-h-full bg-transparent flex flex-col justify-between overflow-hidden animate-fade-in">
       {/* Botón volver discreto */}
       <div className="px-5 pt-safe pb-2 flex-shrink-0">
         <button
@@ -156,7 +156,7 @@ export default function RecipeDetailPage() {
       </div>
 
       {/* Botón discreto inferior */}
-      <div className="px-5 py-3 border-t border-stone-100 flex-shrink-0 bg-white pb-safe">
+      <div className="px-5 py-3 border-t border-stone-200/50 flex-shrink-0 bg-transparent pb-safe">
         <button
           onClick={handleCooked}
           disabled={isPending || hasCooked}

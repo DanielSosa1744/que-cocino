@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+﻿import { useNavigate } from 'react-router-dom'
 import { useCookedHistory } from '../../hooks/useRecipes'
 import { ArrowLeft, TrendingDown, Euro, Wind } from 'lucide-react'
 
@@ -20,9 +20,9 @@ export default function ImpactPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-app bg-gray-50 flex flex-col">
       {/* Header */}
-      <div className="bg-white px-5 pt-12 pb-5 border-b border-gray-100">
+      <div className="bg-white px-5 pt-safe pb-5 border-b border-gray-100">
         <button onClick={() => navigate('/home')} className="flex items-center gap-2 text-gray-400 mb-4">
           <ArrowLeft className="w-4 h-4" />
           <span className="text-sm">Volver</span>

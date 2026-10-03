@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>¿Qué Cocino? - Prioridad por Vencimientos</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -48,11 +48,31 @@
     }
   </script>
   <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-font-smoothing: antialiased;
       background-color: #0F172A;
-      color: #F8FAFC;
+      color: #0F172A;
+    }
+    
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      background-color: #ffffff;
+      position: relative;
+      overflow: hidden;
     }
     
     .no-scrollbar::-webkit-scrollbar {
@@ -141,24 +161,9 @@
     }
   </style>
 </head>
-<body class="min-h-screen p-2 md:p-4 flex flex-col items-center justify-center bg-slate-950 text-white overflow-hidden select-none">
-
-  <!-- Mobile Frame Mockup Container (iPhone 16 Pro shell) -->
-  <div class="w-full max-w-[400px] h-[830px] max-h-[96vh] bg-white rounded-[44px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] border-[10px] border-slate-900 relative overflow-hidden flex flex-col mx-auto my-auto">
-    
-    <!-- iPhone Dynamic Island Status Bar -->
-    <div class="w-full bg-white pt-3 pb-1 px-7 flex items-center justify-between z-50 select-none border-b border-gray-50">
-      <span class="text-xs font-semibold text-gray-900 tracking-tight">9:41</span>
-      <div class="w-24 h-4 bg-black rounded-full flex items-center justify-end px-2 gap-1.5">
-        <span class="w-2 h-2 rounded-full bg-green-500"></span>
-      </div>
-      <div class="flex items-center gap-1.5 text-gray-900">
-        <i data-lucide="signal" class="w-3.5 h-3.5"></i>
-        <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
-        <i data-lucide="battery" class="w-4 h-4"></i>
-      </div>
-    </div>
-
+<body class="bg-slate-950 text-gray-900 select-none overflow-hidden m-0 p-0">
+  <!-- Responsive App Shell -->
+  <div class="app-shell shadow-2xl">
     <!-- App Viewport -->
     <div id="app-container" class="flex-1 relative overflow-hidden bg-white text-gray-900">
 
@@ -1100,13 +1105,13 @@
 
       speechRecognitionInstance.onresult = (event) => {
         let transcript = '';
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          transcript += event.results[i][0].transcript;
+        for (let i = 0; i < event.results.length; ++i) {
+          transcript += event.results[i][0].transcript + ' ';
         }
+        transcript = transcript.trim();
         const liveText = document.getElementById('speech-live-text');
         if (liveText && transcript) {
           liveText.innerText = `"${transcript}"`;
-          parseSpokenTextToInventory(transcript);
         }
       };
 
@@ -1140,6 +1145,11 @@
         if (speechRecognitionInstance) {
           try { speechRecognitionInstance.stop(); } catch(e){}
         }
+        
+        const liveText = document.getElementById('speech-live-text');
+        if (liveText && liveText.innerText) {
+          parseSpokenTextToInventory(liveText.innerText.replace(/"/g, ''));
+        }
       }
 
       lucide.createIcons();
@@ -1147,23 +1157,25 @@
 
     function parseSpokenTextToInventory(text) {
       const lower = text.toLowerCase();
-      const detected = [];
+      const catalog = [
+        { key: 'tomate', name: 'Tomates maduros', qty: 4, unit: 'uds', expDays: 1, priority: 'urgent', price: 1.80 },
+        { key: 'leche', name: 'Leche entera', qty: 1, unit: 'L', expDays: 3, priority: 'this_week', price: 1.10 },
+        { key: 'huevo', name: 'Huevos camperos', qty: 6, unit: 'uds', expDays: 7, priority: 'ok', price: 1.80 },
+        { key: 'yogur', name: 'Yogur natural', qty: 2, unit: 'uds', expDays: 1, priority: 'urgent', price: 2.10 },
+        { key: 'queso', name: 'Queso fresco', qty: 1, unit: 'bloque', expDays: 4, priority: 'this_week', price: 2.50 },
+        { key: 'arroz', name: 'Arroz', qty: 1, unit: 'kg', expDays: 30, priority: 'ok', price: 1.20 },
+        { key: 'cebolla', name: 'Cebolla', qty: 1, unit: 'ud', expDays: 5, priority: 'this_week', price: 0.60 },
+      ];
 
-      if (lower.includes('tomate')) detected.push({ name: 'Tomates maduros', qty: 4, expDays: 1, priority: 'urgent', price: 1.80 });
-      if (lower.includes('leche')) detected.push({ name: 'Leche entera', qty: 1, expDays: 3, priority: 'this_week', price: 1.10 });
-      if (lower.includes('huevo')) detected.push({ name: 'Huevos camperos', qty: 6, expDays: 7, priority: 'ok', price: 1.80 });
-      if (lower.includes('yogur')) detected.push({ name: 'Yogur natural', qty: 2, expDays: 1, priority: 'urgent', price: 2.10 });
-      if (lower.includes('queso')) detected.push({ name: 'Queso fresco', qty: 1, expDays: 4, priority: 'this_week', price: 2.50 });
-      if (lower.includes('arroz')) detected.push({ name: 'Arroz de grano medio', qty: 1, expDays: 30, priority: 'ok', price: 1.20 });
-
-      if (detected.length > 0) {
-        detected.forEach(item => {
-          if (!appInventory.some(existing => existing.name === item.name)) {
-            item.id = Date.now() + Math.random();
-            appInventory.push(item);
+      catalog.forEach(item => {
+        if (lower.includes(item.key)) {
+          const existing = appInventory.find(i => i.name.toLowerCase().includes(item.key));
+          if (!existing) {
+            appInventory.push({ ...item, id: Date.now() + Math.random() });
           }
-        });
-      }
+        }
+      });
+      renderDynamicInventoryUI();
     }
 
     function processVoiceAndNext() {

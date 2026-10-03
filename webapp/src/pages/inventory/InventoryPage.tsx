@@ -107,9 +107,9 @@ export default function InventoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col pb-12">
+    <div className="min-h-app bg-gray-50 flex flex-col pb-12">
       {/* Header */}
-      <div className="bg-white px-5 pt-12 pb-4 border-b border-gray-100">
+      <div className="bg-white px-5 pt-safe pb-4 border-b border-gray-100">
         <div className="flex items-center justify-between mb-3">
           <button
             onClick={() => navigate('/dashboard')}
@@ -348,10 +348,10 @@ export default function InventoryPage() {
 
       {/* CTA Inferior a Vaciar Nevera */}
       {inventory.length > 0 && (
-        <div className="px-5 py-4 bg-white border-t border-gray-100">
+        <div className="sticky bottom-0 z-30 px-5 py-3 bg-white/95 backdrop-blur-sm border-t border-gray-100">
           <button
             onClick={() => navigate('/vaciar-nevera')}
-            className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-extrabold rounded-2xl transition shadow-lg shadow-orange-100 flex items-center justify-center gap-2 active:scale-98 text-sm"
+            className="w-full py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-extrabold rounded-2xl transition shadow-lg shadow-orange-100 flex items-center justify-center gap-2 active:scale-98 text-sm"
           >
             Modo Vaciar Nevera ({criticalCount + warningCount} en riesgo)
             <ChevronRight className="w-4 h-4" />

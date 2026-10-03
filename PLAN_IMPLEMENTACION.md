@@ -390,4 +390,11 @@ flowchart LR
 
 | Fecha | Tarea | Estado | Archivos | Notas |
 |---|---|---|---|---|
-| | | | | |
+| 2026-10-03 | P2-1 Control de versiones inicial | ✅ | `.gitignore` | Repositorio git inicializado y exclusión de `.env`, `node_modules` y builds de Android. |
+| 2026-10-03 | P0-1 Viewport prototipo raíz y Android asset | ✅ | `index.html`, `android/app/src/main/assets/www/index.html` | Se eliminó el marco iPhone fijo y la barra 9:41 falsa. Se implementó `.app-shell` con `100dvh` y `safe-area-inset`. |
+| 2026-10-03 | P0-2 Viewport webapp React | ✅ | `webapp/index.html`, `webapp/src/index.css`, `webapp/src/App.tsx`, `webapp/src/components/BottomTabBar.tsx`, `webapp/src/pages/**/*.tsx` | Viewport con `viewport-fit=cover` habilitando zoom. Se reemplazó `min-h-screen` y `pt-12` por `min-h-app` y `pt-safe`. Botones CTA sticky. |
+| 2026-10-03 | P0-3 Deduplicación por voz en webapp | ✅ | `webapp/src/lib/ingredientParser.ts`, `webapp/src/hooks/useSpeechRecognition.ts`, `webapp/src/lib/localStore.ts`, `webapp/src/pages/voice/ConfirmIngredientsPage.tsx` | Reconstrucción limpia de transcripción sin concatenación recursiva. Deduplicación por `singularize`, función `collapseRepeats` y fusión de cantidades en inventario. |
+| 2026-10-03 | P0-4 Deduplicación voz prototipo | ✅ | `index.html`, `android/app/src/main/assets/www/index.html` | Transcripción procesada al finalizar, deduplicación con catálogo normalizado. |
+| 2026-10-03 | P1-6 Ruta de reseteo de contraseña | ✅ | `webapp/src/pages/auth/ResetPasswordPage.tsx`, `webapp/src/App.tsx`, `webapp/src/components/BottomTabBar.tsx` | Creada la página y ruta `/reset-password` para recuperar contraseña. |
+| 2026-10-03 | P1-7 Navegación robusta en recetas | ✅ | `webapp/src/pages/recipes/RecipeDetailPage.tsx` | Soporte de fallback por parámetro `:id` cuando no viene en `location.state`. |
+| 2026-10-03 | P2-3 Matching preciso de ingredientes | ✅ | `webapp/src/lib/ingredientParser.ts`, `webapp/src/pages/recipes/RecipeDetailPage.tsx` | Búsqueda por token y singular para evitar falsos positivos. |

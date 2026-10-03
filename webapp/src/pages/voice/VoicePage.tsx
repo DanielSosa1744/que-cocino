@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSpeechRecognition } from '../../hooks/useSpeechRecognition'
 import { extractIngredients } from '../../lib/ingredientParser'
@@ -54,9 +54,9 @@ export default function VoicePage() {
   ]
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-app bg-white flex flex-col">
       {/* Header */}
-      <div className="px-5 pt-12 pb-5 border-b border-gray-100">
+      <div className="px-5 pt-safe pb-5 border-b border-gray-100">
         <button onClick={() => navigate('/home')} className="flex items-center gap-2 text-gray-400 hover:text-gray-600 mb-4">
           <ArrowLeft className="w-4 h-4" />
           <span className="text-sm">Volver</span>

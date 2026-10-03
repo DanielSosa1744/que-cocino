@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+﻿import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useInventory } from '../hooks/useInventory'
 import {
@@ -24,9 +24,9 @@ export default function HomePage() {
   const firstName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'amigo'
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-12 flex flex-col">
+    <div className="min-h-app bg-gray-50 pb-12 flex flex-col">
       {/* Header superior */}
-      <div className="bg-white border-b border-gray-100 px-5 pt-12 pb-5">
+      <div className="bg-white border-b border-gray-100 px-5 pt-safe pb-5">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl bg-green-50 flex items-center justify-center border border-green-100">

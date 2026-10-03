@@ -2,9 +2,15 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Mic, LayoutDashboard, Package, Flame, TrendingDown } from 'lucide-react'
 import { useInventory } from '../hooks/useInventory'
 
+export const isTabBarHidden = (pathname: string) =>
+  ['/login', '/register', '/forgot-password', '/reset-password', '/voice', '/confirm-ingredients'].includes(pathname)
+
 export default function BottomTabBar() {
   const location = useLocation()
   const navigate = useNavigate()
+  const isHidden = isTabBarHidden(location.pathname)
+
+  // Solo cargar inventario si la barra está visible
   const { data: inventory = [] } = useInventory()
 
   const urgentCount = inventory.filter(i => i.urgency === 'critical').length
@@ -17,14 +23,11 @@ export default function BottomTabBar() {
     { path: '/impact', label: 'Impacto', icon: TrendingDown },
   ]
 
-  // No mostrar tab bar en pantallas de voz enfocada o login
-  const isHidden = ['/login', '/register', '/forgot-password', '/voice', '/confirm-ingredients'].includes(location.pathname)
-
   if (isHidden) return null
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-100 max-w-md mx-auto">
-      <nav className="flex justify-around items-center h-16 px-2 safe-bottom">
+    <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-100 max-w-md mx-auto pb-safe">
+      <nav className="flex justify-around items-center h-16 px-2">
         {tabs.map((tab) => {
           const isActive = location.pathname === tab.path
           const Icon = tab.icon

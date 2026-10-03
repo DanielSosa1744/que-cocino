@@ -1,5 +1,5 @@
 import type { InventoryItem } from '../types/app.types'
-import { calculateUrgency, defaultExpiryDate } from './ingredientParser'
+import { calculateUrgency, defaultExpiryDate, singularize } from './ingredientParser'
 
 export interface LocalRecipe {
   id: string
@@ -151,25 +151,52 @@ export const localStore = {
       expires_at?: string | null
     }>
   ): InventoryItem[] {
-    const current = localStore.getInventory(userId)
-    const newItems: InventoryItem[] = items.map((item, idx) => {
-      const expires_at = item.expires_at ?? defaultExpiryDate(7)
-      const { urgency, daysUntilExpiry } = calculateUrgency(expires_at)
-      return {
-        id: `item-${Date.now()}-${idx}`,
-        name: item.name,
-        quantity: item.quantity,
-        unit: item.unit ?? 'ud',
-        category: item.category ?? 'despensa',
-        expires_at,
-        created_at: new Date().toISOString(),
-        urgency,
-        days_until_expiry: daysUntilExpiry,
+    const current = [...localStore.getInventory(userId)]
+
+    for (let idx = 0; idx < items.length; idx++) {
+      const item = items[idx]
+      const key = singularize(item.name)
+      const existingIndex = current.findIndex(c => singularize(c.name) === key && c.unit === (item.unit ?? 'ud'))
+
+      if (existingIndex >= 0) {
+        // Fusionar sumando cantidades
+        const existing = current[existingIndex]
+        const newQty = (existing.quantity ?? 1) + (item.quantity ?? 1)
+        
+        let newExpiresAt = existing.expires_at
+        if (item.expires_at) {
+          if (!newExpiresAt || new Date(item.expires_at) < new Date(newExpiresAt)) {
+            newExpiresAt = item.expires_at
+          }
+        }
+        const { urgency, daysUntilExpiry } = calculateUrgency(newExpiresAt)
+        
+        current[existingIndex] = {
+          ...existing,
+          quantity: newQty,
+          expires_at: newExpiresAt,
+          urgency,
+          days_until_expiry: daysUntilExpiry,
+        }
+      } else {
+        const expires_at = item.expires_at ?? defaultExpiryDate(7)
+        const { urgency, daysUntilExpiry } = calculateUrgency(expires_at)
+        current.unshift({
+          id: `item-${Date.now()}-${idx}`,
+          name: item.name,
+          quantity: item.quantity ?? 1,
+          unit: item.unit ?? 'ud',
+          category: item.category ?? 'despensa',
+          expires_at,
+          created_at: new Date().toISOString(),
+          urgency,
+          days_until_expiry: daysUntilExpiry,
+        })
       }
-    })
-    const updated = [...newItems, ...current]
-    localStorage.setItem(STORAGE_KEYS.INVENTORY + userId, JSON.stringify(updated))
-    return updated
+    }
+
+    localStorage.setItem(STORAGE_KEYS.INVENTORY + userId, JSON.stringify(current))
+    return current
   },
 
   deleteInventory(userId: string, itemId: string): void {

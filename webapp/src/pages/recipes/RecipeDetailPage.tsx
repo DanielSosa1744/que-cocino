@@ -1,24 +1,29 @@
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useState } from 'react'
 import { ArrowLeft, Clock, Users, CheckCircle, Sparkles, ChefHat } from 'lucide-react'
-import { useSaveCooked } from '../../hooks/useRecipes'
+import { useSaveCooked, useVaciarNevera } from '../../hooks/useRecipes'
 import { useDeleteIngredient } from '../../hooks/useInventory'
 import { useInventory } from '../../hooks/useInventory'
+import { singularize } from '../../lib/ingredientParser'
 import type { RecipeWithScore } from '../../types/app.types'
 
 export default function RecipeDetailPage() {
   const navigate = useNavigate()
-  const { state } = useLocation() as { state: { recipe: RecipeWithScore } }
+  const { id } = useParams<{ id: string }>()
+  const location = useLocation()
+  const stateRecipe = (location.state as { recipe?: RecipeWithScore })?.recipe
+
   const { mutateAsync: saveCooked, isPending } = useSaveCooked()
   const { mutate: deleteItem } = useDeleteIngredient()
   const { data: inventory = [] } = useInventory()
+  const { data: availableRecipes = [] } = useVaciarNevera(inventory)
   const [cooked, setCooked] = useState(false)
 
-  const recipe = state?.recipe
+  const recipe = stateRecipe || availableRecipes.find(r => r.id === id)
 
   if (!recipe) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
+      <div className="min-h-app flex items-center justify-center bg-gray-50 p-6">
         <div className="text-center bg-white p-8 rounded-3xl border border-gray-100 shadow-sm max-w-sm">
           <p className="text-gray-600 font-medium">Receta no especificada.</p>
           <button
@@ -47,13 +52,14 @@ export default function RecipeDetailPage() {
       co2AvoidedKg,
     })
 
-    // Marcar ingredientes consumidos del inventario
-    const matchedInventoryItems = inventory.filter(item =>
-      recipe.matchedIngredients.some(ing =>
-        item.name.toLowerCase().includes(ing.toLowerCase()) ||
-        ing.toLowerCase().includes(item.name.toLowerCase())
-      )
-    )
+    // Marcar ingredientes consumidos del inventario de forma precisa
+    const matchedKeys = new Set(recipe.matchedIngredients.map(ing => singularize(ing)))
+    const matchedInventoryItems = inventory.filter(item => {
+      const itemKey = singularize(item.name)
+      return matchedKeys.has(itemKey) ||
+        Array.from(matchedKeys).some(k => itemKey.split(/\s+/).includes(k) || k.split(/\s+/).includes(itemKey))
+    })
+
     matchedInventoryItems.forEach(item => deleteItem(item.id))
 
     setCooked(true)
@@ -62,7 +68,7 @@ export default function RecipeDetailPage() {
 
   if (cooked) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 text-center">
+      <div className="min-h-app bg-white flex flex-col items-center justify-center px-6 text-center">
         <div className="w-20 h-20 rounded-3xl bg-green-50 border border-green-100 flex items-center justify-center mb-4 animate-bounce">
           <CheckCircle className="w-10 h-10 text-green-500" />
         </div>
@@ -82,9 +88,9 @@ export default function RecipeDetailPage() {
     : []
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col pb-10">
+    <div className="min-h-app bg-gray-50 flex flex-col pb-10">
       {/* Header */}
-      <div className="bg-white px-5 pt-12 pb-5 border-b border-gray-100">
+      <div className="bg-white px-5 pt-safe pb-5 border-b border-gray-100">
         <button
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-gray-400 hover:text-gray-600 mb-4 transition"
@@ -205,11 +211,11 @@ export default function RecipeDetailPage() {
       </div>
 
       {/* Botón "¡Lo he cocinado!" */}
-      <div className="px-5 py-4 bg-white border-t border-gray-100">
+      <div className="sticky bottom-0 z-30 px-5 py-3.5 bg-white/95 backdrop-blur-sm border-t border-gray-100 pb-safe">
         <button
           onClick={handleCooked}
           disabled={isPending}
-          className="w-full py-4 bg-green-500 hover:bg-green-600 text-white font-extrabold rounded-2xl transition disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg shadow-green-100 active:scale-98"
+          className="w-full py-3.5 bg-green-500 hover:bg-green-600 text-white font-extrabold rounded-2xl transition disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg shadow-green-100 active:scale-98"
         >
           {isPending ? 'Registrando en historial...' : (
             <>
@@ -218,7 +224,7 @@ export default function RecipeDetailPage() {
             </>
           )}
         </button>
-        <p className="text-center text-[11px] text-gray-400 mt-2">
+        <p className="text-center text-[11px] text-gray-400 mt-1.5">
           Descontará los alimentos utilizados y actualizará tu métrica de impacto.
         </p>
       </div>

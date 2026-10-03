@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { ArrowLeft, Leaf } from 'lucide-react'
@@ -26,7 +26,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col justify-center px-6 py-12">
+    <div className="min-h-app bg-white flex flex-col justify-center px-6 py-12">
       <div className="max-w-sm mx-auto w-full">
         <Link to="/login" className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-8">
           <ArrowLeft className="w-4 h-4" />

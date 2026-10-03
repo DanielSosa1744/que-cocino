@@ -73,6 +73,7 @@ const SKIP_WORDS = new Set([
   'también', 'tambien', 'además', 'ademas', 'y', 'e', 'de', 'del', 'la', 'el',
   'las', 'los', 'un', 'una', 'unos', 'unas', 'con', 'que', 'vencen', 'vence',
   'mañana', 'hoy', 'pasado', 'próximo', 'próximos', 'dias', 'días', 'disponibles', 'disponible',
+  'creo', 'como', 'algo', 'más', 'mas', 'poco', 'pocos', 'pocas', 'por', 'para',
 ])
 
 function parseNumber(token: string): number | null {
@@ -89,6 +90,44 @@ export function normalizeIngredientName(name: string): string {
     .replace(/á/g, 'a').replace(/é/g, 'e').replace(/í/g, 'i')
     .replace(/ó/g, 'o').replace(/ú/g, 'u').replace(/ñ/g, 'n')
     .trim()
+}
+
+/**
+ * Normaliza un nombre a su forma singular básica para comparaciones y deduplicación.
+ */
+export function singularize(name: string): string {
+  let norm = normalizeIngredientName(name)
+  // Casos comunes
+  if (norm.endsWith('es')) {
+    if (norm.endsWith('ces')) norm = norm.slice(0, -3) + 'z'
+    else if (norm.endsWith('tomates')) norm = 'tomate'
+    else if (norm.endsWith('yogures')) norm = 'yogur'
+    else if (norm.endsWith('limones')) norm = 'limon'
+    else norm = norm.slice(0, -2)
+  } else if (norm.endsWith('s') && !norm.endsWith('arroz')) {
+    norm = norm.slice(0, -1)
+  }
+  return norm.trim()
+}
+
+/**
+ * Elimina repeticiones de frases/palabras causadas por buffers de SpeechRecognition acumulativos.
+ */
+export function collapseRepeats(text: string): string {
+  if (!text) return ''
+  const words = text.split(/\s+/).filter(Boolean)
+  for (let n = 8; n >= 1; n--) {
+    for (let i = 0; i + 2 * n <= words.length; ) {
+      const a = words.slice(i, i + n).join(' ').toLowerCase()
+      const b = words.slice(i + n, i + 2 * n).join(' ').toLowerCase()
+      if (a === b) {
+        words.splice(i + n, n)
+      } else {
+        i++
+      }
+    }
+  }
+  return words.join(' ')
 }
 
 export function guessCategory(name: string): string {
@@ -109,16 +148,20 @@ export function guessShelfLife(name: string): number {
 
 /**
  * Extract ingredients and quantities from spoken or typed Spanish text.
- * Arquitectura modular preparada para conectar un modelo LLM o IA en futuras versiones.
- * Ejemplo: "Tengo cuatro tomates y seis huevos" -> Tomates = 4, Huevos = 6
+ * Incluye deduplicación inteligente y fusión de cantidades de un mismo ingrediente.
  */
 export function extractIngredients(text: string): ParsedIngredient[] {
-  const results: ParsedIngredient[] = []
+  const rawList: ParsedIngredient[] = []
+  const cleanText = collapseRepeats(text)
   
   // Normalizar separadores
-  const sentences = text
+  const sentences = cleanText
     .replace(/ y /gi, ', ')
     .replace(/ e /gi, ', ')
+    .replace(/ más /gi, ', ')
+    .replace(/ mas /gi, ', ')
+    .replace(/ también /gi, ', ')
+    .replace(/ tambien /gi, ', ')
     .split(/[,;.]+/)
     .map(s => s.trim())
     .filter(Boolean)
@@ -153,9 +196,9 @@ export function extractIngredients(text: string): ParsedIngredient[] {
 
     const ingredientName = ingredientTokens.join(' ').trim()
     if (ingredientName.length > 1) {
-      results.push({
+      rawList.push({
         name: ingredientName,
-        quantity: quantity ?? 1, // Por defecto 1 si se detecta el ingrediente
+        quantity: quantity ?? 1,
         unit: unit ?? 'ud',
         category: guessCategory(ingredientName),
         expiryDays: guessShelfLife(ingredientName),
@@ -163,7 +206,27 @@ export function extractIngredients(text: string): ParsedIngredient[] {
     }
   }
 
-  return results
+  // Deduplicación y fusión: si el mismo ingrediente aparece más de una vez, sumar cantidades
+  const mergedMap = new Map<string, ParsedIngredient>()
+
+  for (const item of rawList) {
+    const key = singularize(item.name)
+    if (mergedMap.has(key)) {
+      const existing = mergedMap.get(key)!
+      // Si las unidades coinciden, sumamos las cantidades
+      if (existing.unit === item.unit) {
+        existing.quantity = (existing.quantity ?? 1) + (item.quantity ?? 1)
+      }
+      // Conservamos la fecha de caducidad más urgente si ambas están definidas
+      if (item.expiryDays != null && (existing.expiryDays == null || item.expiryDays < existing.expiryDays)) {
+        existing.expiryDays = item.expiryDays
+      }
+    } else {
+      mergedMap.set(key, { ...item })
+    }
+  }
+
+  return Array.from(mergedMap.values())
 }
 
 /**
@@ -231,10 +294,13 @@ export function scoreRecipe(
   let urgentUsed = 0
 
   for (const recipeIng of recipeIngredients) {
-    const normRecipe = normalizeIngredientName(recipeIng)
-    const match = inventoryNames.find(item =>
-      item.normalized.includes(normRecipe) || normRecipe.includes(item.normalized)
-    )
+    const normRecipe = singularize(recipeIng)
+    const match = inventoryNames.find(item => {
+      const normItem = singularize(item.raw)
+      return normItem === normRecipe ||
+        normItem.split(/\s+/).includes(normRecipe) ||
+        normRecipe.split(/\s+/).includes(normItem)
+    })
 
     if (match) {
       matched.push(recipeIng)

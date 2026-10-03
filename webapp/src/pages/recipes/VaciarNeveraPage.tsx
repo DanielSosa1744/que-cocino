@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+﻿import { useNavigate } from 'react-router-dom'
 import { useInventory } from '../../hooks/useInventory'
 import { useVaciarNevera } from '../../hooks/useRecipes'
 import {
@@ -47,9 +47,9 @@ export default function VaciarNeveraPage() {
   const otherRecipes = recipes.length > 1 ? recipes.slice(1) : []
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col pb-10">
+    <div className="min-h-app bg-gray-50 flex flex-col pb-10">
       {/* Header */}
-      <div className="bg-white px-5 pt-12 pb-5 border-b border-gray-100">
+      <div className="bg-white px-5 pt-safe pb-5 border-b border-gray-100">
         <button
           onClick={() => navigate('/dashboard')}
           className="flex items-center gap-2 text-gray-400 hover:text-gray-600 mb-4 transition"

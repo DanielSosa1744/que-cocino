@@ -1,12 +1,13 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
-import BottomTabBar from './components/BottomTabBar'
+import BottomTabBar, { isTabBarHidden } from './components/BottomTabBar'
 
 // Auth pages
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
+import ResetPasswordPage from './pages/auth/ResetPasswordPage'
 
 // App pages
 import HomePage from './pages/HomePage'
@@ -18,15 +19,18 @@ import VaciarNeveraPage from './pages/recipes/VaciarNeveraPage'
 import RecipeDetailPage from './pages/recipes/RecipeDetailPage'
 import ImpactPage from './pages/impact/ImpactPage'
 
-export default function App() {
+function AppContent() {
+  const location = useLocation()
+  const hideTabBar = isTabBarHidden(location.pathname)
+
   return (
-    <AuthProvider>
-      <div className="max-w-md mx-auto min-h-screen bg-white shadow-xl relative pb-16">
-        <Routes>
+    <div className={`max-w-md mx-auto min-h-app bg-white shadow-xl relative ${hideTabBar ? '' : 'pb-tabbar'}`}>
+      <Routes>
           {/* Public routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
 
           {/* Protected routes - Flujo principal de 8 pasos */}
           {/* 1. Login (/login) */}
@@ -78,6 +82,13 @@ export default function App() {
         {/* Barra de navegación inferior móvil para pantallas autenticadas */}
         <BottomTabBar />
       </div>
+  )
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
     </AuthProvider>
   )
 }

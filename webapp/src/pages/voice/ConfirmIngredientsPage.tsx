@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAddIngredients } from '../../hooks/useInventory'
-import { defaultExpiryDate, guessCategory, guessShelfLife } from '../../lib/ingredientParser'
+import { defaultExpiryDate, guessCategory, guessShelfLife, singularize } from '../../lib/ingredientParser'
 import { ArrowLeft, Plus, Trash2, CheckCircle, Sparkles } from 'lucide-react'
 import type { ParsedIngredient } from '../../types/app.types'
 
@@ -47,14 +47,22 @@ export default function ConfirmIngredientsPage() {
   const addRow = () => {
     if (!newName.trim()) return
     const name = newName.trim()
-    setRows(prev => [...prev, {
-      id: newId(),
-      name,
-      quantity: 1,
-      unit: 'ud',
-      category: guessCategory(name),
-      expiryDays: guessShelfLife(name),
-    }])
+    const key = singularize(name)
+
+    setRows(prev => {
+      const existingIdx = prev.findIndex(r => singularize(r.name) === key)
+      if (existingIdx >= 0) {
+        return prev.map((r, i) => i === existingIdx ? { ...r, quantity: (r.quantity ?? 1) + 1 } : r)
+      }
+      return [...prev, {
+        id: newId(),
+        name,
+        quantity: 1,
+        unit: 'ud',
+        category: guessCategory(name),
+        expiryDays: guessShelfLife(name),
+      }]
+    })
     setNewName('')
   }
 
@@ -75,9 +83,9 @@ export default function ConfirmIngredientsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-app bg-gray-50 flex flex-col">
       {/* Header */}
-      <div className="bg-white px-5 pt-12 pb-5 border-b border-gray-100">
+      <div className="bg-white px-5 pt-safe pb-5 border-b border-gray-100">
         <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-400 hover:text-gray-600 mb-4">
           <ArrowLeft className="w-4 h-4" />
           <span className="text-sm">Volver</span>
@@ -172,7 +180,7 @@ export default function ConfirmIngredientsPage() {
 
                   <span className="text-[11px] text-gray-400">
                     {row.expiryDays != null
-                      ? `Vence: ${new Date(Date.now() + row.expiryDays * 86400000).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}`
+                      ? `Vence en ${row.expiryDays} día${row.expiryDays === 1 ? '' : 's'}`
                       : 'Sin fecha'}
                   </span>
                 </div>
@@ -207,11 +215,11 @@ export default function ConfirmIngredientsPage() {
       </div>
 
       {/* Confirm button */}
-      <div className="px-5 py-4 bg-white border-t border-gray-100">
+      <div className="sticky bottom-0 z-30 px-5 py-3.5 bg-white/95 backdrop-blur-sm border-t border-gray-100 pb-safe">
         <button
           onClick={handleConfirm}
           disabled={rows.length === 0 || isPending}
-          className="w-full py-4 bg-green-500 hover:bg-green-600 text-white font-bold rounded-2xl transition disabled:opacity-40 flex items-center justify-center gap-2 shadow-lg shadow-green-100 active:scale-98"
+          className="w-full py-3.5 bg-green-500 hover:bg-green-600 text-white font-bold rounded-2xl transition disabled:opacity-40 flex items-center justify-center gap-2 shadow-lg shadow-green-100 active:scale-98"
         >
           {isPending ? (
             'Guardando en inventario...'

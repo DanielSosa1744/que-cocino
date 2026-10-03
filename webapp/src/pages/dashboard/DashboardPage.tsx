@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+﻿import { useNavigate } from 'react-router-dom'
 import { useInventory } from '../../hooks/useInventory'
 import { useVaciarNevera } from '../../hooks/useRecipes'
 import {
@@ -56,9 +56,9 @@ export default function DashboardPage() {
     : 0
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col pb-10">
+    <div className="min-h-app bg-gray-50 flex flex-col pb-10">
       {/* Header */}
-      <div className="bg-white px-5 pt-12 pb-5 border-b border-gray-100">
+      <div className="bg-white px-5 pt-safe pb-5 border-b border-gray-100">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-semibold uppercase tracking-wider text-green-600 bg-green-50 px-2.5 py-1 rounded-full">
             Control Doméstico

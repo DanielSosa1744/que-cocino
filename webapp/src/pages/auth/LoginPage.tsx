@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { Eye, EyeOff, Leaf, Sparkles } from 'lucide-react'
@@ -33,7 +33,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col justify-center px-6 py-12">
+    <div className="min-h-app bg-white flex flex-col justify-center px-6 py-12">
       <div className="max-w-sm mx-auto w-full">
         {/* Logo */}
         <div className="text-center mb-8">

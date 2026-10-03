@@ -31,9 +31,9 @@ export default function HomePage() {
   const firstName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'amigo'
 
   return (
-    <div className="min-h-app bg-gray-50 pb-12 flex flex-col">
+    <div className="min-h-app bg-gray-50 flex flex-col">
       {/* Header superior */}
-      <div className="bg-white border-b border-gray-100 px-5 pt-safe pb-5">
+      <div className="bg-white border-b border-gray-100 px-4 sm:px-5 pt-safe pb-4">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl bg-green-50 flex items-center justify-center border border-green-100">
@@ -59,16 +59,16 @@ export default function HomePage() {
         </p>
       </div>
 
-      <div className="px-5 mt-4 space-y-4 flex-1">
+      <div className="px-4 sm:px-5 py-3 space-y-3.5 flex-1">
         {/* Alerta de alimentos críticos si existen */}
         {criticalItems.length > 0 && (
-          <div className="bg-red-50 border border-red-100 rounded-2xl p-4 shadow-xs">
+          <div className="bg-red-50 border border-red-100 rounded-2xl p-3.5 shadow-xs">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-bold text-red-600 flex items-center gap-1.5 uppercase tracking-wide">
-                <AlertTriangle className="w-3.5 h-3.5" />
+                <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
                 Alimentos urgentes (≤2 días)
               </span>
-              <span className="text-[11px] font-semibold text-red-500">
+              <span className="text-[11px] font-semibold text-red-500 whitespace-nowrap">
                 {criticalItems.length} en riesgo
               </span>
             </div>
@@ -77,7 +77,7 @@ export default function HomePage() {
             </p>
             <button
               onClick={() => navigate('/vaciar-nevera')}
-              className="mt-2.5 text-xs text-red-700 font-bold flex items-center gap-1 hover:underline"
+              className="mt-2 text-xs text-red-700 font-bold flex items-center gap-1 hover:underline"
             >
               Cocinar recetas con estos ingredientes <ChevronRight className="w-3.5 h-3.5" />
             </button>
@@ -85,104 +85,104 @@ export default function HomePage() {
         )}
 
         {/* SECCIÓN PRINCIPAL: BOTÓN CENTRAL DE MICRÓFONO */}
-        <div className="bg-white rounded-3xl p-7 text-center shadow-sm border border-gray-100 flex flex-col items-center">
-          <p className="text-xs font-semibold uppercase tracking-wider text-green-600 mb-2">
+        <div className="bg-white rounded-3xl p-5 sm:p-6 text-center shadow-sm border border-gray-100 flex flex-col items-center">
+          <p className="text-xs font-semibold uppercase tracking-wider text-green-600 mb-1">
             Entrada Rápida por Voz
           </p>
 
-          <p className="text-gray-700 text-sm font-medium mb-6 max-w-xs">
+          <p className="text-gray-700 text-xs sm:text-sm font-medium mb-4 max-w-xs">
             Cuéntame qué ingredientes tienes disponibles.
           </p>
 
-          <div className="relative my-2">
+          <div className="relative my-1">
             <button
               onClick={() => navigate('/voice')}
-              className="relative w-24 h-24 rounded-full bg-[#4CAF50] hover:bg-green-600 text-white shadow-xl shadow-green-200 transition-all hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer"
+              className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#4CAF50] hover:bg-green-600 text-white shadow-xl shadow-green-200 transition-all hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer"
               aria-label="Iniciar reconocimiento de voz"
             >
-              <Mic className="w-10 h-10" />
+              <Mic className="w-9 h-9 sm:w-10 sm:h-10" />
             </button>
           </div>
 
-          <p className="text-gray-900 font-bold text-base mt-5">
+          <p className="text-gray-900 font-bold text-sm sm:text-base mt-3">
             Pulsa el micrófono para hablar
           </p>
 
-          <div className="mt-4 pt-4 border-t border-gray-100 w-full text-left space-y-2">
-            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide text-center">
+          <div className="mt-3 pt-3 border-t border-gray-100 w-full text-left space-y-1.5">
+            <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400 uppercase tracking-wide text-center">
               Ejemplos que puedes decir:
             </p>
-            <div className="bg-gray-50 rounded-xl p-2.5 text-xs text-gray-600 text-center italic border border-gray-100">
+            <div className="bg-gray-50 rounded-xl p-2 text-xs text-gray-600 text-center italic border border-gray-100">
               "Tengo cuatro tomates, seis huevos y media cebolla."
             </div>
-            <div className="bg-gray-50 rounded-xl p-2.5 text-xs text-gray-600 text-center italic border border-gray-100">
+            <div className="bg-gray-50 rounded-xl p-2 text-xs text-gray-600 text-center italic border border-gray-100">
               "Tengo dos yogures que vencen mañana."
             </div>
           </div>
         </div>
 
         {/* ACCESOS DIRECTOS DEL FLUJO PRINCIPAL */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
           {/* Dashboard */}
           <button
             onClick={() => navigate('/dashboard')}
-            className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-left hover:border-gray-200 transition flex flex-col justify-between"
+            className="bg-white rounded-2xl p-3 sm:p-4 border border-gray-100 shadow-sm text-left hover:border-gray-200 transition flex flex-col justify-between"
           >
-            <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center mb-2">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-blue-50 flex items-center justify-center mb-1.5 sm:mb-2">
               <LayoutDashboard className="w-4 h-4 text-blue-500" />
             </div>
             <div>
-              <p className="text-xs text-gray-400 font-medium">Panel general</p>
-              <p className="text-sm font-bold text-gray-900 mt-0.5">Dashboard</p>
+              <p className="text-[11px] sm:text-xs text-gray-400 font-medium">Panel general</p>
+              <p className="text-xs sm:text-sm font-bold text-gray-900 mt-0.5">Dashboard</p>
             </div>
           </button>
 
           {/* Modo Vaciar Nevera */}
           <button
             onClick={() => navigate('/vaciar-nevera')}
-            className="bg-white rounded-2xl p-4 border border-orange-200 shadow-sm text-left hover:border-orange-300 transition flex flex-col justify-between bg-gradient-to-br from-white to-orange-50/40"
+            className="bg-white rounded-2xl p-3 sm:p-4 border border-orange-200 shadow-sm text-left hover:border-orange-300 transition flex flex-col justify-between bg-gradient-to-br from-white to-orange-50/40"
           >
-            <div className="w-8 h-8 rounded-xl bg-orange-100 flex items-center justify-center mb-2">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-orange-100 flex items-center justify-center mb-1.5 sm:mb-2">
               <Trash2 className="w-4 h-4 text-orange-600" />
             </div>
             <div>
-              <p className="text-xs text-orange-600 font-medium">Recomendaciones</p>
-              <p className="text-sm font-bold text-gray-900 mt-0.5">Vaciar Nevera</p>
+              <p className="text-[11px] sm:text-xs text-orange-600 font-medium">Recomendaciones</p>
+              <p className="text-xs sm:text-sm font-bold text-gray-900 mt-0.5">Vaciar Nevera</p>
             </div>
           </button>
 
           {/* Inventario */}
           <button
             onClick={() => navigate('/inventory')}
-            className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-left hover:border-gray-200 transition flex flex-col justify-between"
+            className="bg-white rounded-2xl p-3 sm:p-4 border border-gray-100 shadow-sm text-left hover:border-gray-200 transition flex flex-col justify-between"
           >
-            <div className="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center mb-2">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gray-100 flex items-center justify-center mb-1.5 sm:mb-2">
               <Package className="w-4 h-4 text-gray-700" />
             </div>
             <div>
-              <p className="text-xs text-gray-400 font-medium">{totalItems} alimentos</p>
-              <p className="text-sm font-bold text-gray-900 mt-0.5">Inventario</p>
+              <p className="text-[11px] sm:text-xs text-gray-400 font-medium">{totalItems} alimentos</p>
+              <p className="text-xs sm:text-sm font-bold text-gray-900 mt-0.5">Inventario</p>
             </div>
           </button>
 
           {/* Impacto */}
           <button
             onClick={() => navigate('/impact')}
-            className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm text-left hover:border-gray-200 transition flex flex-col justify-between"
+            className="bg-white rounded-2xl p-3 sm:p-4 border border-gray-100 shadow-sm text-left hover:border-gray-200 transition flex flex-col justify-between"
           >
-            <div className="w-8 h-8 rounded-xl bg-green-50 flex items-center justify-center mb-2">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-green-50 flex items-center justify-center mb-1.5 sm:mb-2">
               <TrendingDown className="w-4 h-4 text-green-600" />
             </div>
             <div>
-              <p className="text-xs text-gray-400 font-medium">Ahorro y CO₂</p>
-              <p className="text-sm font-bold text-green-700 mt-0.5">Mi Impacto</p>
+              <p className="text-[11px] sm:text-xs text-gray-400 font-medium">Ahorro y CO₂</p>
+              <p className="text-xs sm:text-sm font-bold text-green-700 mt-0.5">Mi Impacto</p>
             </div>
           </button>
         </div>
 
         {/* Resumen rápido de despensa si hay alimentos */}
         {totalItems > 0 && (
-          <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-2.5">
+          <div className="bg-white rounded-3xl p-4 sm:p-5 border border-gray-100 shadow-sm space-y-2.5">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wide">
                 En tu despensa ({totalItems})

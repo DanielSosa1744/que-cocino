@@ -1,6 +1,7 @@
 import type { InventoryItem, RecipeWithScore } from '../types/app.types'
 import type { RawRecipe } from '../hooks/useRecipes'
 import { scoreRecipe, estimateItemValueARS } from './ingredientParser'
+import { resolveCulinaryIntent } from './culinaryTaxonomy'
 
 export interface RecipeWithCost extends RecipeWithScore {
   additionalCostARS: number
@@ -29,106 +30,6 @@ function singularizeTerm(term: string): string {
   if (norm.endsWith('es')) return norm.slice(0, -2)
   if (norm.endsWith('s') && !norm.endsWith('is')) return norm.slice(0, -1)
   return norm
-}
-
-// Mapa de relaciones culinarias, afinidades e inspiración
-const CULINARY_AFFINITIES: Record<string, { relatedKeywords: string[]; categoryName?: string }> = {
-  sushi: {
-    relatedKeywords: ['roll vegetariano', 'bol de arroz oriental', 'onigiri sencillo', 'ensalada japonesa', 'arroz', 'soja'],
-    categoryName: 'Cocina japonesa y oriental',
-  },
-  japon: {
-    relatedKeywords: ['roll vegetariano', 'bol de arroz oriental', 'onigiri sencillo', 'ensalada japonesa'],
-    categoryName: 'Cocina japonesa',
-  },
-  japones: {
-    relatedKeywords: ['roll vegetariano', 'bol de arroz oriental', 'onigiri sencillo', 'ensalada japonesa'],
-    categoryName: 'Cocina japonesa',
-  },
-  oriental: {
-    relatedKeywords: ['bol de arroz oriental', 'roll vegetariano', 'onigiri sencillo', 'ensalada japonesa'],
-    categoryName: 'Cocina oriental',
-  },
-  asiatico: {
-    relatedKeywords: ['bol de arroz oriental', 'roll vegetariano', 'onigiri sencillo', 'ensalada japonesa'],
-    categoryName: 'Cocina oriental',
-  },
-  ramen: {
-    relatedKeywords: ['bol de arroz oriental', 'pasta mediterranea', 'crema suave de zanahoria'],
-    categoryName: 'Platos orientales reconfortantes',
-  },
-  pizza: {
-    relatedKeywords: ['pizza casera de sarten', 'tosta de queso y tomate', 'pasta mediterranea', 'harina', 'queso'],
-    categoryName: 'Cocina italiana y masas',
-  },
-  hamburguesa: {
-    relatedKeywords: ['hamburguesa casera clasica', 'milanesa crocante con guarnicion', 'salteado de pollo', 'tosta de queso y tomate'],
-    categoryName: 'Comida rápida casera',
-  },
-  burger: {
-    relatedKeywords: ['hamburguesa casera clasica', 'milanesa crocante con guarnicion', 'salteado de pollo'],
-    categoryName: 'Comida rápida casera',
-  },
-  empanada: {
-    relatedKeywords: ['empanadas criollas al horno', 'tortilla de patatas clasica', 'tortilla', 'revuelto'],
-    categoryName: 'Tradición y masas',
-  },
-  milanesa: {
-    relatedKeywords: ['milanesa crocante con guarnicion', 'salteado de pollo con verduras', 'tortilla de patatas clasica'],
-    categoryName: 'Clásicos caseros',
-  },
-  pasta: {
-    relatedKeywords: ['pasta mediterranea', 'arroz con verduras', 'pizza casera de sarten'],
-    categoryName: 'Pastas y cereales',
-  },
-  fideo: {
-    relatedKeywords: ['pasta mediterranea', 'bol de arroz oriental'],
-    categoryName: 'Pastas y cereales',
-  },
-  espagueti: {
-    relatedKeywords: ['pasta mediterranea', 'pizza casera de sarten'],
-    categoryName: 'Pastas y cereales',
-  },
-  pollo: {
-    relatedKeywords: ['salteado de pollo con verduras', 'milanesa crocante con guarnicion', 'onigiri sencillo'],
-    categoryName: 'Carnes blancas',
-  },
-  carne: {
-    relatedKeywords: ['hamburguesa casera clasica', 'empanadas criollas al horno', 'milanesa crocante'],
-    categoryName: 'Carnes',
-  },
-  taco: {
-    relatedKeywords: ['salteado de pollo con verduras', 'tosta de queso y tomate', 'empanadas criollas al horno'],
-    categoryName: 'Comida rápida y bocados',
-  },
-  burrito: {
-    relatedKeywords: ['salteado de pollo con verduras', 'roll vegetariano', 'empanadas criollas al horno'],
-    categoryName: 'Bocados envueltos',
-  },
-  postre: {
-    relatedKeywords: ['bol de yogur con fruta'],
-    categoryName: 'Postres y meriendas',
-  },
-  dulce: {
-    relatedKeywords: ['bol de yogur con fruta'],
-    categoryName: 'Postres y meriendas',
-  },
-  sopa: {
-    relatedKeywords: ['crema suave de zanahoria', 'arroz con verduras'],
-    categoryName: 'Sopas y cremas',
-  },
-  guiso: {
-    relatedKeywords: ['arroz con verduras', 'crema suave de zanahoria'],
-    categoryName: 'Platos de cuchara',
-  },
-  ensalada: {
-    relatedKeywords: ['ensalada', 'ensalada japonesa', 'roll vegetariano', 'tosta de queso y tomate'],
-    categoryName: 'Platos frescos',
-  },
-  vegetariano: {
-    relatedKeywords: ['roll vegetariano', 'arroz con verduras', 'ensalada', 'crema suave de zanahoria', 'tortilla'],
-    categoryName: 'Platos vegetarianos',
-  },
 }
 
 function scoreAndFormatRecipes(
@@ -207,6 +108,7 @@ export function matchCravingRecipes(
 
   const normQuery = normalize(cleanTerm)
   const singularQuery = singularizeTerm(cleanTerm)
+  const culinaryIntent = resolveCulinaryIntent(cleanTerm)
 
   // 1. Búsqueda exacta: nombre de la receta contiene directamente el término
   const exactMatches = allRawRecipes.filter(r => {
@@ -224,50 +126,44 @@ export function matchCravingRecipes(
     }
   }
 
-  // 2. Búsqueda relacionada / inspirada según afinidades culinarias
-  let relatedCandidates: RawRecipe[] = []
+  // 2. Búsqueda por intención culinaria expandida
+  // Ejemplos:
+  // "Sushi" -> busca ['sushi', 'maki', 'nigiri', 'onigiri', 'poke', 'poké', 'comida japonesa', 'temaki', 'uramaki', 'sashimi', 'chirashi', 'edamame', 'roll']
+  // "Pizza" -> busca ['pizza', 'calzone', 'focaccia', 'masa italiana', 'stromboli', 'pizzeta', 'pan pizza', 'bruschetta']
+  // "Hamburguesa" -> busca ['hamburguesa', 'burger', 'cheeseburger', 'medallon', 'smash burger', 'sandwich', 'lomito']
+  const intentCandidates = allRawRecipes.filter(r => {
+    const normName = normalize(r.name)
+    const normDesc = normalize(r.description || '')
+    const hasTokenInNameOrDesc = culinaryIntent.intentTokens.some(token => {
+      const normToken = normalize(token)
+      return normName.includes(normToken) || normDesc.includes(normToken)
+    })
+    const hasTokenInIngredients = (r.recipe_ingredients || []).some(ri => {
+      const normIng = normalize(ri.ingredient_name)
+      return culinaryIntent.intentTokens.some(token => normIng.includes(normalize(token)))
+    })
+    return hasTokenInNameOrDesc || hasTokenInIngredients
+  })
 
-  // Revisar tabla de afinidad directa
-  const affinityKey = Object.keys(CULINARY_AFFINITIES).find(
-    k => normQuery.includes(k) || singularQuery.includes(k) || k.includes(normQuery)
-  )
+  let finalCandidates: RawRecipe[] = intentCandidates
 
-  if (affinityKey) {
-    const { relatedKeywords } = CULINARY_AFFINITIES[affinityKey]
-    relatedCandidates = allRawRecipes.filter(r => {
+  // 3. Si no hay candidatos por intención específica, buscar por categoría culinaria afinada
+  if (finalCandidates.length === 0 && culinaryIntent.matchedCategory) {
+    const keywords = culinaryIntent.matchedCategory.representativeKeywords
+    finalCandidates = allRawRecipes.filter(r => {
       const normName = normalize(r.name)
       const normDesc = normalize(r.description || '')
-      const hasKeyword = relatedKeywords.some(kw => {
-        const normKw = normalize(kw)
-        return normName.includes(normKw) || normDesc.includes(normKw)
-      })
-      const hasIngredient = (r.recipe_ingredients || []).some(ri => {
-        const normIng = normalize(ri.ingredient_name)
-        return relatedKeywords.some(kw => normIng.includes(normalize(kw)))
-      })
-      return hasKeyword || hasIngredient
-    })
-  }
-
-  // 3. Si no hay candidatos por afinidad directa, buscar por coincidencia en ingredientes o descripción
-  if (relatedCandidates.length === 0) {
-    relatedCandidates = allRawRecipes.filter(r => {
-      const normDesc = normalize(r.description || '')
-      const ingMatch = (r.recipe_ingredients || []).some(ri => {
-        const normIng = normalize(ri.ingredient_name)
-        return normIng.includes(normQuery) || normIng.includes(singularQuery)
-      })
-      return normDesc.includes(normQuery) || normDesc.includes(singularQuery) || ingMatch
+      return keywords.some(kw => normName.includes(normalize(kw)) || normDesc.includes(normalize(kw)))
     })
   }
 
   // 4. Si aún no hay candidatos (antojo libre no catalogado), tomar las mejores recetas de la despensa
-  // NUNCA devolver lista vacía: El usuario siempre recibe sugerencias útiles.
-  if (relatedCandidates.length === 0) {
-    relatedCandidates = [...allRawRecipes]
+  // Regla fundamental: NUNCA mostrar "No encontramos recetas", siempre sugerir alternativas útiles
+  if (finalCandidates.length === 0) {
+    finalCandidates = [...allRawRecipes]
   }
 
-  const formatted = scoreAndFormatRecipes(relatedCandidates, inventory).slice(0, 4)
+  const formatted = scoreAndFormatRecipes(finalCandidates, inventory).slice(0, 4)
 
   return {
     recipes: formatted,

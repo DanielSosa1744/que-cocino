@@ -1,5 +1,6 @@
 import type { InventoryItem } from '../types/app.types'
 import { calculateUrgency, defaultExpiryDate, singularize } from './ingredientParser'
+import { getFullRecipeCatalog } from './recipeCatalog'
 
 export interface LocalRecipe {
   id: string
@@ -394,7 +395,7 @@ export const localStore = {
   },
 
   getRecipes(): LocalRecipe[] {
-    return INITIAL_RECIPES
+    return getFullRecipeCatalog()
   },
 
   getCookedHistory(userId: string) {

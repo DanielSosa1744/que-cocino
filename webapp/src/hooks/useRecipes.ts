@@ -49,9 +49,13 @@ export function useRecipes() {
  * Fórmula requerida: score = ingredientes_urgentes_utilizados + ingredientes_totales_utilizados
  * Muestra únicamente recetas compatibles con el inventario (totalIngredientsUsed > 0).
  */
-export function useVaciarNevera(inventory: InventoryItem[]) {
+export function useVaciarNevera(inventory: InventoryItem[], recentIngredientNames: string[] = []) {
   return useQuery<RecipeWithScore[]>({
-    queryKey: ['vaciar-nevera', inventory.map(i => `${i.id}-${i.name}-${i.urgency}`).join(',')],
+    queryKey: [
+      'vaciar-nevera',
+      inventory.map(i => `${i.id}-${i.name}-${i.urgency}`).join(','),
+      recentIngredientNames.slice().sort().join(','),
+    ],
     queryFn: async () => {
       let rawRecipes: RawRecipe[] = []
 
@@ -81,9 +85,10 @@ export function useVaciarNevera(inventory: InventoryItem[]) {
         )
         const totalRequired = recipeIngredientNames.length
 
-        const { score, urgentUsed, totalUsed, priority, matched, missing } = scoreRecipe(
+        const { score, recentUsed, urgentUsed, totalUsed, priority, matched, missing } = scoreRecipe(
           recipeIngredientNames,
-          inventory.map(i => ({ name: i.name, urgency: i.urgency }))
+          inventory.map(i => ({ name: i.name, urgency: i.urgency })),
+          recentIngredientNames
         )
 
         const matchPercentage = totalRequired > 0
@@ -99,6 +104,7 @@ export function useVaciarNevera(inventory: InventoryItem[]) {
           instructions: recipe.instructions,
           servings: recipe.servings ?? 2,
           score,
+          recentIngredientsUsed: recentUsed,
           urgentIngredientsUsed: urgentUsed,
           totalIngredientsUsed: totalUsed,
           matchPercentage,
@@ -108,8 +114,13 @@ export function useVaciarNevera(inventory: InventoryItem[]) {
         }
       })
 
-      // Ordenar por afinidad con el inventario
+      // Ordenar por afinidad con el inventario priorizando primero ingredientes recientes
       const sorted = scored.sort((a, b) => {
+        const recentA = a.recentIngredientsUsed ?? 0
+        const recentB = b.recentIngredientsUsed ?? 0
+        if (recentB !== recentA) {
+          return recentB - recentA
+        }
         if (b.score !== a.score) return b.score - a.score
         if ((b.matchPercentage ?? 0) !== (a.matchPercentage ?? 0)) {
           return (b.matchPercentage ?? 0) - (a.matchPercentage ?? 0)

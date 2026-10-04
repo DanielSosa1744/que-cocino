@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useMemo, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useInventory } from '../../hooks/useInventory'
 import { useVaciarNevera, useRecipes } from '../../hooks/useRecipes'
-import { estimateItemValueARS } from '../../lib/ingredientParser'
+import { estimateItemValueARS, isIngredientMatch } from '../../lib/ingredientParser'
 import { matchCravingRecipes, type RecipeWithCost } from '../../lib/cravingMatcher'
 
 type CategoryChoice = 'ready' | 'one_missing' | 'special' | 'craving'
@@ -11,20 +11,69 @@ const CRAVING_SUGGESTIONS = ['Pizza', 'Hamburguesa', 'Pasta', 'Empanadas', 'Sush
 
 export default function VaciarNeveraPage() {
   const navigate = useNavigate()
-  const { data: inventory = [], isLoading: loadingInventory } = useInventory()
-  const { data: scoredRecipes = [], isLoading: loadingScored } = useVaciarNevera(inventory)
-  const { data: allRawRecipes = [], isLoading: loadingRaw } = useRecipes()
+  const location = useLocation()
 
-  const isLoading = loadingInventory || loadingScored || loadingRaw
+  // 1. Obtener los ingredientes recientes cargados por el usuario
+  const recentIngredients: string[] = useMemo(() => {
+    const fromState = (location.state as any)?.recentIngredients
+    if (Array.isArray(fromState) && fromState.length > 0) {
+      return fromState
+    }
+    try {
+      const stored = sessionStorage.getItem('que_cocino_recent_ingredients')
+      return stored ? JSON.parse(stored) : []
+    } catch {
+      return []
+    }
+  }, [location.state, location.key])
+
+  // 2. Obtener IDs de recetas de la tanda anterior para no repetirlas
+  const previousRecipeIds: string[] = useMemo(() => {
+    try {
+      const raw = sessionStorage.getItem('que_cocino_previous_recipe_ids')
+      return raw ? JSON.parse(raw) : []
+    } catch {
+      return []
+    }
+  }, [location.key])
+
   const [activeChoice, setActiveChoice] = useState<CategoryChoice>('ready')
   const [cravingQuery, setCravingQuery] = useState('')
 
+  // Si es una nueva carga desde el inicio, limpiar búsqueda previa de antojo y reajustar categoría
+  useEffect(() => {
+    if ((location.state as any)?.isNewBatch) {
+      setCravingQuery('')
+      setActiveChoice('ready')
+    }
+  }, [location.state])
+
+  const { data: inventory = [], isLoading: loadingInventory } = useInventory()
+  const { data: scoredRecipes = [], isLoading: loadingScored } = useVaciarNevera(inventory, recentIngredients)
+  const { data: allRawRecipes = [], isLoading: loadingRaw } = useRecipes()
+
+  const isLoading = loadingInventory || loadingScored || loadingRaw
+
   // Criterios de prioridad requeridos:
-  // 1. Mayor cantidad de ingredientes disponibles
-  // 2. Mayor aprovechamiento de ingredientes próximos a vencer
-  // 3. Menor coste adicional en ARS
-  // 4. Menor tiempo de preparación
+  // 1. Mayor cantidad de ingredientes RECIENTES utilizados (priorizar lo recién cargado)
+  // 2. Menor presencia en tandas anteriores (evitar recetas repetitivas)
+  // 3. Mayor cantidad de ingredientes disponibles en la despensa
+  // 4. Mayor aprovechamiento de ingredientes próximos a vencer
+  // 5. Menor coste adicional en ARS
+  // 6. Menor tiempo de preparación
   const sortPriority = (a: RecipeWithCost, b: RecipeWithCost) => {
+    const recentA = a.recentIngredientsUsed ?? 0
+    const recentB = b.recentIngredientsUsed ?? 0
+    if (recentB !== recentA) {
+      return recentB - recentA
+    }
+
+    const aPrev = previousRecipeIds.includes(a.id) ? 1 : 0
+    const bPrev = previousRecipeIds.includes(b.id) ? 1 : 0
+    if (aPrev !== bPrev) {
+      return aPrev - bPrev
+    }
+
     if (b.totalIngredientsUsed !== a.totalIngredientsUsed) {
       return b.totalIngredientsUsed - a.totalIngredientsUsed
     }
@@ -81,12 +130,12 @@ export default function VaciarNeveraPage() {
       specialRecipes: special,
       isReadyFallback: isFallback && exactReady.length === 0,
     }
-  }, [scoredRecipes])
+  }, [scoredRecipes, previousRecipeIds, recentIngredients])
 
   // Categoría 4: Tengo un antojo con búsqueda multinivel y alternativas garantizadas
   const cravingResult = useMemo(() => {
-    return matchCravingRecipes(cravingQuery, allRawRecipes, inventory)
-  }, [cravingQuery, allRawRecipes, inventory])
+    return matchCravingRecipes(cravingQuery, allRawRecipes, inventory, recentIngredients)
+  }, [cravingQuery, allRawRecipes, inventory, recentIngredients])
 
   // Lista actual según categoría seleccionada (siempre garantiza resultados)
   const currentCategoryRecipes = useMemo(() => {
@@ -98,6 +147,16 @@ export default function VaciarNeveraPage() {
 
   // Máximo 4 mejores recetas visibles para evitar fatiga de decisión
   const visibleRecipes = currentCategoryRecipes.slice(0, 4)
+
+  // Guardar las recetas actualmente visibles para que una nueva carga en inicio las archive y no se repitan
+  useEffect(() => {
+    if (visibleRecipes.length > 0) {
+      sessionStorage.setItem(
+        'que_cocino_current_recipe_ids',
+        JSON.stringify(visibleRecipes.map(r => r.id))
+      )
+    }
+  }, [visibleRecipes])
 
   return (
     <div className="h-full max-h-full bg-transparent flex flex-col overflow-hidden animate-fade-in text-[#2F2A26]">
@@ -198,7 +257,7 @@ export default function VaciarNeveraPage() {
             <button
               type="button"
               onClick={() => setActiveChoice('craving')}
-              className={`animate-float-btn-4 relative px-3.5 py-2.5 rounded-2xl transition-all duration-300 tap-subtle hover-lift cursor-pointer select-none flex items-center gap-2 ${
+              className={`animate-float-btn-1 relative px-3.5 py-2.5 rounded-2xl transition-all duration-300 tap-subtle hover-lift cursor-pointer select-none flex items-center gap-2 ${
                 activeChoice === 'craving'
                   ? 'bg-[#EFF4EC] border-2 border-[#5D7A56] text-[#2F2A26] shadow-[0_4px_16px_rgba(93,122,86,0.18)] font-semibold scale-[1.02]'
                   : 'bg-[#FCFAF7] border border-[#766153]/20 text-[#2F2A26] hover:border-[#766153]/40 hover:bg-[#FAF7F2] shadow-[0_2px_10px_rgba(47,42,38,0.04)] font-medium'
@@ -334,18 +393,36 @@ export default function VaciarNeveraPage() {
                   </span>
                 </div>
 
+                {/* Si aprovecha ingredientes recién cargados por el usuario, indicarlo sutilmente */}
+                {recipe.recentIngredientsUsed != null && recipe.recentIngredientsUsed > 0 && (
+                  <div className="mt-1">
+                    <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#5D7A56]/15 text-[#3b4e37] inline-flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#5D7A56]" />
+                      Prioriza tus ingredientes recién cargados
+                    </span>
+                  </div>
+                )}
+
                 {/* Ingredientes que utiliza */}
                 <div className="mt-2 text-xs leading-relaxed">
                   <p className="text-[#766153] font-medium mb-0.5">
-                    Utiliza de tu despensa:
+                    Utiliza:
                   </p>
                   <div className="space-y-0.5">
                     {recipe.matchedIngredients.length > 0 ? (
-                      recipe.matchedIngredients.map((ing, i) => (
-                        <p key={i} className="capitalize text-[#2F2A26]">
-                          {ing}
-                        </p>
-                      ))
+                      recipe.matchedIngredients.map((ing, i) => {
+                        const isRecent = recentIngredients.some(rec => isIngredientMatch(rec, ing) || isIngredientMatch(ing, rec))
+                        return (
+                          <p key={i} className="text-[#2F2A26] flex items-center gap-1.5">
+                            <span className="capitalize font-medium">{ing}</span>
+                            {isRecent && (
+                              <span className="text-[10px] text-[#5D7A56] font-normal">
+                                · recién añadido
+                              </span>
+                            )}
+                          </p>
+                        )
+                      })
                     ) : (
                       <p className="text-[#766153] italic">Ninguno disponible actualmente</p>
                     )}
@@ -380,3 +457,4 @@ export default function VaciarNeveraPage() {
     </div>
   )
 }
+

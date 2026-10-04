@@ -32,7 +32,8 @@ export interface RecipeWithScore {
   prep_time: number | null // minutos
   instructions: string | null
   servings: number | null
-  score: number // score = ingredientes_urgentes_utilizados + ingredientes_totales_utilizados
+  score: number
+  recentIngredientsUsed?: number
   urgentIngredientsUsed: number
   totalIngredientsUsed: number
   matchPercentage?: number

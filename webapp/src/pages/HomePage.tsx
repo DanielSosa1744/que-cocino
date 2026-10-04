@@ -25,6 +25,12 @@ export default function HomePage() {
 
   const currentVoiceText = (transcript + (interimTranscript ? ` ${interimTranscript}` : '')).trim()
 
+  // Al volver a la pantalla principal, limpiar el texto y dictado anterior para comenzar fresco
+  useEffect(() => {
+    setInputText('')
+    resetTranscript()
+  }, [])
+
   // Si termina de escuchar y hay transcripción, autocompletar en el input
   useEffect(() => {
     if (!isListening && transcript) {
@@ -38,7 +44,16 @@ export default function HomePage() {
 
     setIsProcessing(true)
     try {
+      // Guardar recetas de la tanda anterior como "vistas" para que la nueva carga no las repita
+      const currentSeen = sessionStorage.getItem('que_cocino_current_recipe_ids')
+      if (currentSeen) {
+        sessionStorage.setItem('que_cocino_previous_recipe_ids', currentSeen)
+      }
+      sessionStorage.removeItem('que_cocino_current_recipe_ids')
+
       const parsed = extractIngredients(trimmed)
+      let addedNames: string[] = []
+
       if (parsed.length > 0) {
         // Guardar ingredientes en la despensa
         const items = parsed.map(p => ({
@@ -49,6 +64,7 @@ export default function HomePage() {
           expires_at: p.expiryDays != null ? defaultExpiryDate(p.expiryDays) : null,
         }))
         await addIngredients(items)
+        addedNames = items.map(i => i.name)
       } else {
         // Asegurar que cualquier ingrediente introducido quede registrado
         await addIngredients([{
@@ -58,8 +74,18 @@ export default function HomePage() {
           category: guessCategory(trimmed),
           expires_at: defaultExpiryDate(7),
         }])
+        addedNames = [trimmed]
       }
-      navigate('/recetas')
+
+      // Guardar los ingredientes recientes para darles máxima prioridad al publicar recetas
+      sessionStorage.setItem('que_cocino_recent_ingredients', JSON.stringify(addedNames))
+      navigate('/recetas', {
+        state: {
+          recentIngredients: addedNames,
+          isNewBatch: true,
+          timestamp: Date.now(),
+        },
+      })
     } catch (err) {
       console.error('Error procesando ingredientes:', err)
       navigate('/recetas')

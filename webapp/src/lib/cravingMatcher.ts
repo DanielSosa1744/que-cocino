@@ -34,13 +34,15 @@ function singularizeTerm(term: string): string {
 
 function scoreAndFormatRecipes(
   recipes: RawRecipe[],
-  inventory: InventoryItem[]
+  inventory: InventoryItem[],
+  recentIngredientNames: string[] = []
 ): RecipeWithCost[] {
   const scored = recipes.map(recipe => {
     const recipeIngredientNames = (recipe.recipe_ingredients || []).map(ri => ri.ingredient_name)
-    const { score, urgentUsed, totalUsed, priority, matched, missing } = scoreRecipe(
+    const { score, recentUsed, urgentUsed, totalUsed, priority, matched, missing } = scoreRecipe(
       recipeIngredientNames,
-      inventory.map(i => ({ name: i.name, urgency: i.urgency }))
+      inventory.map(i => ({ name: i.name, urgency: i.urgency })),
+      recentIngredientNames
     )
     const additionalCostARS = missing.reduce((sum, ing) => sum + estimateItemValueARS(ing, 1), 0)
 
@@ -53,6 +55,7 @@ function scoreAndFormatRecipes(
       instructions: recipe.instructions,
       servings: recipe.servings || 2,
       score,
+      recentIngredientsUsed: recentUsed,
       urgentIngredientsUsed: urgentUsed,
       totalIngredientsUsed: totalUsed,
       matchPercentage: recipeIngredientNames.length > 0 ? Math.round((matched.length / recipeIngredientNames.length) * 100) : 0,
@@ -64,11 +67,17 @@ function scoreAndFormatRecipes(
   })
 
   // Prioridad:
-  // 1. Mayor cantidad de ingredientes disponibles
-  // 2. Mayor aprovechamiento de ingredientes próximos a vencer
-  // 3. Menor coste adicional en ARS
-  // 4. Menor tiempo de preparación
+  // 1. Mayor cantidad de ingredientes RECIENTES utilizados
+  // 2. Mayor cantidad de ingredientes disponibles en despensa
+  // 3. Mayor aprovechamiento de ingredientes próximos a vencer
+  // 4. Menor coste adicional en ARS
+  // 5. Menor tiempo de preparación
   return scored.sort((a, b) => {
+    const recentA = a.recentIngredientsUsed ?? 0
+    const recentB = b.recentIngredientsUsed ?? 0
+    if (recentB !== recentA) {
+      return recentB - recentA
+    }
     if (b.totalIngredientsUsed !== a.totalIngredientsUsed) {
       return b.totalIngredientsUsed - a.totalIngredientsUsed
     }
@@ -92,12 +101,13 @@ function scoreAndFormatRecipes(
 export function matchCravingRecipes(
   query: string,
   allRawRecipes: RawRecipe[],
-  inventory: InventoryItem[]
+  inventory: InventoryItem[],
+  recentIngredientNames: string[] = []
 ): CravingResult {
   const cleanTerm = query.trim()
   if (!cleanTerm) {
     // Si no hay término aún, devolver las 4 recetas más compatibles de la despensa como sugerencia inicial
-    const formatted = scoreAndFormatRecipes(allRawRecipes, inventory).slice(0, 4)
+    const formatted = scoreAndFormatRecipes(allRawRecipes, inventory, recentIngredientNames).slice(0, 4)
     return {
       recipes: formatted,
       isAlternative: false,
@@ -117,7 +127,7 @@ export function matchCravingRecipes(
   })
 
   if (exactMatches.length > 0) {
-    const formatted = scoreAndFormatRecipes(exactMatches, inventory).slice(0, 4)
+    const formatted = scoreAndFormatRecipes(exactMatches, inventory, recentIngredientNames).slice(0, 4)
     return {
       recipes: formatted,
       isAlternative: false,
@@ -163,7 +173,7 @@ export function matchCravingRecipes(
     finalCandidates = [...allRawRecipes]
   }
 
-  const formatted = scoreAndFormatRecipes(finalCandidates, inventory).slice(0, 4)
+  const formatted = scoreAndFormatRecipes(finalCandidates, inventory, recentIngredientNames).slice(0, 4)
 
   return {
     recipes: formatted,

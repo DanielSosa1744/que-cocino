@@ -556,14 +556,16 @@ export function defaultExpiryDate(shelfLifeDays: number): string {
 
 /**
  * MOTOR VACIAR NEVERA
- * Fórmula requerida:
- * score = ingredientes_urgentes_utilizados + ingredientes_totales_utilizados
+ * Prioriza primero los ingredientes recientes introducidos por el usuario, luego los de la despensa.
+ * Fórmula requerida: score = (ingredientes_recientes * 10) + ingredientes_urgentes + ingredientes_totales
  */
 export function scoreRecipe(
   recipeIngredients: string[],
-  inventory: { name: string; urgency: 'critical' | 'warning' | 'ok' }[]
+  inventory: { name: string; urgency: 'critical' | 'warning' | 'ok' }[],
+  recentIngredientNames: string[] = []
 ): {
   score: number
+  recentUsed: number
   urgentUsed: number
   totalUsed: number
   priority: PriorityLevel
@@ -579,6 +581,7 @@ export function scoreRecipe(
   const matched: string[] = []
   const missing: string[] = []
   let urgentUsed = 0
+  let recentUsed = 0
 
   for (const recipeIng of recipeIngredients) {
     const match = inventoryNames.find(item => isIngredientMatch(item.raw, recipeIng))
@@ -588,6 +591,12 @@ export function scoreRecipe(
       if (match.urgency === 'critical' || match.urgency === 'warning') {
         urgentUsed += 1
       }
+      if (
+        recentIngredientNames.length > 0 &&
+        recentIngredientNames.some(rec => isIngredientMatch(rec, recipeIng) || isIngredientMatch(recipeIng, rec))
+      ) {
+        recentUsed += 1
+      }
     } else {
       missing.push(recipeIng)
     }
@@ -595,16 +604,16 @@ export function scoreRecipe(
 
   const totalUsed = matched.length
   
-  // Fórmula requerida: score = ingredientes_urgentes_utilizados + ingredientes_totales_utilizados
-  const score = urgentUsed + totalUsed
+  // Priorizar ingredientes recientes por encima de la despensa general
+  const score = (recentUsed * 10) + urgentUsed + totalUsed
 
   // Nivel de prioridad
   let priority: PriorityLevel = 'Baja'
-  if (urgentUsed >= 1 && totalUsed >= 2) {
+  if (recentUsed >= 1 || (urgentUsed >= 1 && totalUsed >= 2)) {
     priority = 'Alta'
   } else if (urgentUsed >= 1 || totalUsed >= 2) {
     priority = 'Media'
   }
 
-  return { score, urgentUsed, totalUsed, priority, matched, missing }
+  return { score, recentUsed, urgentUsed, totalUsed, priority, matched, missing }
 }

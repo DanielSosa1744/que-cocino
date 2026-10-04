@@ -132,67 +132,86 @@ export function singularize(name: string): string {
 }
 
 /**
- * Comprueba si dos ingredientes coinciden por raíz, palabra o sinónimo.
- * Ej: 'pechuga de pollo' coincide con 'pollo', 'tomates maduros' coincide con 'tomate',
- * 'papa' coincide con 'patata'.
+ * Comprueba si dos ingredientes coinciden por raíz, palabra exacta o sinónimo culinario directo.
+ * Evita estrictamente falsos positivos (como 'pan' con 'panceta', 'sal' con 'salmón', o 'atún' con 'salmón').
  */
 export function isIngredientMatch(a: string, b: string): boolean {
   const normA = singularize(a)
   const normB = singularize(b)
 
   if (normA === normB) return true
-  if (normA.includes(normB) || normB.includes(normA)) return true
 
-  // Sinónimos comunes en cocina española e hispanoamericana (especialmente cortes y términos argentinos)
-  const synonyms: Array<string[]> = [
-    // Carnes vacunas y cortes argentinos
-    ['carne', 'ternera', 'vacuna', 'vaca', 'bife', 'bife de chorizo', 'ojo de bife', 'bife angosto', 'bife ancho', 'asado', 'asado de tira', 'tira de asado', 'vacio', 'vacio vacuno', 'matambre', 'entrana', 'entraña', 'lomo', 'lomo vacuno', 'colita de cuadril', 'cuadril', 'tapa de asado', 'peceto', 'nalga', 'bola de lomo', 'cuadrada', 'tortuguita', 'paleta', 'roast beef', 'osobuco', 'falda', 'azotillo', 'marucha', 'carnaza', 'picada', 'carne picada'],
-    // Cerdo y cortes
-    ['cerdo', 'pechito', 'pechito de cerdo', 'bondiola', 'bondiola de cerdo', 'matambrito', 'matambre de cerdo', 'matambrito de cerdo', 'solomillo', 'solomillo de cerdo', 'carre de cerdo', 'costillita de cerdo', 'costillas de cerdo', 'panceta', 'tocino', 'bacon'],
-    // Achuras y embutidos argentinos
-    ['achura', 'achuras', 'molleja', 'mollejas', 'chinchulin', 'chinchulines', 'rinon', 'riñon', 'riñones', 'morcilla', 'morcillas', 'chorizo', 'chorizos', 'chorizo criollo', 'salchicha parrillera', 'salchicha'],
-    // Pollo y aves
-    ['pollo', 'pechuga', 'pechuga de pollo', 'pata muslo', 'muslo', 'suprema', 'suprema de pollo', 'alitas', 'alitas de pollo', 'pavo'],
-    // Pescados y mariscos
-    ['pescado', 'merluza', 'filet de merluza', 'salmon', 'salmón', 'atun', 'atún', 'corvina', 'boga', 'pejerrey', 'dorado', 'surubi', 'surubí', 'calamar', 'tubo de calamar', 'rabas', 'langostino', 'langostinos', 'camaron', 'camarones', 'mejillon', 'mejillones'],
-    // Verduras y hortalizas
-    ['patata', 'patatas', 'papa', 'papas', 'papa blanca', 'papa negra'],
-    ['pimiento', 'pimientos', 'morron', 'morrón', 'morron rojo', 'morron verde', 'morron amarillo', 'aji', 'ají'],
-    ['maiz', 'maíz', 'choclo', 'granos de choclo'],
-    ['aguacate', 'palta', 'paltas'],
-    ['fresa', 'fresas', 'frutilla', 'frutillas'],
-    ['guisante', 'guisantes', 'arveja', 'arvejas'],
-    ['judia', 'judias', 'chaucha', 'chauchas', 'alubia', 'alubias', 'poroto', 'porotos', 'frijol', 'frijoles'],
-    ['calabacin', 'calabacín', 'zucchini', 'zapallito', 'zapallito verde', 'zapallitos'],
-    ['calabaza', 'zapallo', 'zapallo anco', 'zapallo cabutia', 'anco'],
-    ['camote', 'batata', 'batatas', 'boniato'],
-    ['platano', 'plátano', 'banana', 'bananas'],
-    ['seta', 'setas', 'champinon', 'champiñon', 'champiñones', 'hongo', 'hongos', 'girgola', 'gírgola', 'portobello'],
+  // Sinónimos estrictos y equivalencias dialectales directas (1 a 1 o variantes del mismo producto)
+  const strictSynonyms: Array<string[]> = [
+    // Verduras y hortalizas equivalentes
+    ['papa', 'patata'],
+    ['morron', 'pimiento', 'aji'],
+    ['choclo', 'maiz'],
+    ['palta', 'aguacate'],
+    ['frutilla', 'fresa'],
+    ['arveja', 'guisante'],
+    ['chaucha', 'judia verde'],
+    ['poroto', 'alubia', 'frijol'],
+    ['zapallito', 'calabacin', 'zucchini'],
+    ['zapallo', 'calabaza', 'anco', 'cabutia'],
+    ['batata', 'camote', 'boniato'],
+    ['banana', 'platano'],
+    ['champinon', 'seta', 'hongo'],
     ['cebolla de verdeo', 'verdeo', 'cebollino', 'ciboulette'],
-    ['ajo', 'ajos', 'diente de ajo', 'dientes de ajo'],
-    ['lechuga', 'rucula', 'rúcula', 'radicheta', 'escarola', 'berro'],
-    // Lácteos, quesos y masas
-    ['queso', 'queso cremoso', 'cremoso', 'cuartirolo', 'mozzarella', 'muzarella', 'provoleta', 'provolone', 'reggianito', 'parmesano', 'sardo', 'roquefort', 'queso azul', 'queso crema', 'ricota'],
-    ['leche', 'crema', 'crema de leche', 'nata'],
-    ['tapa de empanada', 'tapas de empanadas', 'masa de tarta', 'pascualina', 'disco de empanada', 'masa'],
-    ['fideos', 'pasta', 'tallarines', 'spaghetti', 'ñoquis', 'ravioles', 'sorrentinos', 'canelones', 'lasana', 'lasaña'],
+    // Carnes y cortes específicos (cortes con nombres sinónimos directos)
+    ['asado', 'asado de tira', 'tira de asado'],
+    ['vacio', 'vacio vacuno'],
+    ['carne picada', 'picada'],
+    ['bife de chorizo', 'bife angosto'],
+    ['ojo de bife', 'bife ancho'],
+    ['lomo', 'lomo vacuno'],
+    ['pechito de cerdo', 'costillita de cerdo', 'costillas de cerdo'],
+    ['matambrito', 'matambre de cerdo', 'matambrito de cerdo'],
+    ['bondiola', 'bondiola de cerdo'],
+    ['solomillo', 'solomillo de cerdo'],
+    ['panceta', 'bacon', 'tocino'],
+    ['pechuga', 'pechuga de pollo'],
+    ['suprema', 'suprema de pollo'],
+    ['alitas', 'alitas de pollo'],
+    ['pata muslo', 'muslo de pollo'],
+    ['merluza', 'filet de merluza'],
+    ['chorizo', 'chorizo criollo'],
+    ['salchicha parrillera', 'salchicha'],
+    // Lácteos y masas
+    ['crema', 'crema de leche', 'nata'],
+    ['queso cremoso', 'cremoso', 'cuartirolo'],
+    ['mozzarella', 'muzarella'],
+    ['queso azul', 'roquefort'],
+    ['tapa de empanada', 'disco de empanada', 'tapas de empanada', 'tapas de empanadas'],
+    ['masa de tarta', 'pascualina'],
+    ['fideos', 'pasta', 'tallarines', 'spaghetti'],
   ]
 
-  for (const group of synonyms) {
-    const hasA = group.some(w => normA.includes(w) || w.includes(normA))
-    const hasB = group.some(w => normB.includes(w) || w.includes(normB))
+  for (const group of strictSynonyms) {
+    const hasA = group.some(w => normA === w || normA.includes(w))
+    const hasB = group.some(w => normB === w || normB.includes(w))
     if (hasA && hasB) return true
   }
 
-  // Token overlap (al menos una palabra significativa coincide)
+  // Token exact matching con palabras clave significativas
   const wordsA = normA.split(/\s+/).filter(w => w.length > 2 && !SKIP_WORDS.has(w))
   const wordsB = normB.split(/\s+/).filter(w => w.length > 2 && !SKIP_WORDS.has(w))
 
+  // Si ambos términos tienen tokens significativos y comparten al menos un token idéntico
   for (const wa of wordsA) {
     for (const wb of wordsB) {
-      if (wa === wb || (wa.length > 3 && wb.length > 3 && (wa.startsWith(wb) || wb.startsWith(wa)))) {
+      if (wa === wb) {
         return true
       }
+    }
+  }
+
+  // Substring solo permitido si la palabra más corta tiene al menos 4 caracteres y está delimitada por palabra completa
+  if (normA.length >= 4 && normB.length >= 4) {
+    const regexA = new RegExp(`\\b${normA}\\b`, 'i')
+    const regexB = new RegExp(`\\b${normB}\\b`, 'i')
+    if (regexA.test(normB) || regexB.test(normA)) {
+      return true
     }
   }
 

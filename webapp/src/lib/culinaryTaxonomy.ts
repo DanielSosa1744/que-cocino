@@ -130,9 +130,49 @@ export const CULINARY_INTENT_MAP: Record<string, {
     relatedCategories: ['Sushi y Cocina Japonesa', 'Sopas y Cremas'],
   },
   asado: {
-    tokens: ['asado', 'parrillada', 'bife', 'vacío', 'costilla', 'choripán', 'chimichurri'],
-    canonicalCategory: 'Parrilla y Asados',
-    relatedCategories: ['Cocina Criolla y Argentina', 'Carnes Rojas'],
+    tokens: ['asado', 'parrillada', 'bife', 'vacío', 'costilla', 'choripán', 'choripan', 'chimichurri', 'achuras', 'chinchulin', 'chinchulines', 'chorizo'],
+    canonicalCategory: 'Parrilla, Asados y Achuras',
+    relatedCategories: ['Cocina Criolla y Argentina', 'Carnes Rojas', 'Carnes y Parrilla'],
+  },
+  parrillada: {
+    tokens: ['parrillada', 'asado', 'chorizo', 'chinchulin', 'chinchulines', 'achuras', 'mollejas', 'morcilla', 'vacio', 'entrana', 'tira de asado'],
+    canonicalCategory: 'Parrilla, Asados y Achuras',
+    relatedCategories: ['Cocina Criolla y Argentina', 'Carnes y Parrilla'],
+  },
+  chorizo: {
+    tokens: ['chorizo', 'choripan', 'choripán', 'chinchulin', 'chinchulines', 'achuras', 'parrillada', 'asado', 'morcilla'],
+    canonicalCategory: 'Parrilla, Asados y Achuras',
+    relatedCategories: ['Cocina Criolla y Argentina', 'Carnes y Parrilla'],
+  },
+  chinchulines: {
+    tokens: ['chinchulines', 'chinchulin', 'achuras', 'chorizo', 'mollejas', 'parrillada', 'asado', 'limon'],
+    canonicalCategory: 'Parrilla, Asados y Achuras',
+    relatedCategories: ['Cocina Criolla y Argentina', 'Carnes y Parrilla'],
+  },
+  chinchulin: {
+    tokens: ['chinchulin', 'chinchulines', 'achuras', 'chorizo', 'mollejas', 'parrillada', 'asado', 'limon'],
+    canonicalCategory: 'Parrilla, Asados y Achuras',
+    relatedCategories: ['Cocina Criolla y Argentina', 'Carnes y Parrilla'],
+  },
+  achuras: {
+    tokens: ['achuras', 'chinchulin', 'chinchulines', 'molleja', 'mollejas', 'chorizo', 'morcilla', 'parrilla', 'asado', 'limon'],
+    canonicalCategory: 'Parrilla, Asados y Achuras',
+    relatedCategories: ['Cocina Criolla y Argentina', 'Carnes y Parrilla'],
+  },
+  mollejas: {
+    tokens: ['mollejas', 'molleja', 'achuras', 'chinchulin', 'chinchulines', 'chorizo', 'asado', 'limon'],
+    canonicalCategory: 'Parrilla, Asados y Achuras',
+    relatedCategories: ['Cocina Criolla y Argentina', 'Carnes y Parrilla'],
+  },
+  pollo: {
+    tokens: ['pollo', 'suprema', 'pechuga', 'alitas', 'pata muslo', 'pollo al horno', 'milanesa de pollo'],
+    canonicalCategory: 'Milanesas y Rebozados',
+    relatedCategories: ['Carnes y Aves', 'Minutas y Rebozados'],
+  },
+  pescado: {
+    tokens: ['pescado', 'merluza', 'salmon', 'atun', 'filet de merluza', 'corvina'],
+    canonicalCategory: 'Pescados y Mariscos',
+    relatedCategories: ['Pescados y Mariscos'],
   },
   guiso: {
     tokens: ['guiso', 'estofado', 'locro', 'cazuela', 'lentejas', 'carbonada'],
@@ -176,6 +216,7 @@ export const CULINARY_CATEGORIES: CulinaryCategory[] = []
 
 // Añadir categorías ancla indispensables
 const ANCHOR_CATEGORIES = [
+  { id: 'cat-parrilla', name: 'Parrilla, Asados y Achuras', supercategory: 'Carnes y Parrilla', cultureOrRegion: 'Argentina / Rioplatense', description: 'Cortes clásicos a las brasas, tiras de asado, vacío, chorizos, chinchulines y achuras crujientes.', representativeKeywords: ['asado', 'parrillada', 'chorizo', 'chinchulin', 'chinchulines', 'achuras', 'vacio', 'entrana', 'molleja', 'morcilla'] },
   { id: 'cat-sushi', name: 'Sushi y Cocina Japonesa', supercategory: 'Japonesa y Asiática Oriental', cultureOrRegion: 'Japón', description: 'Rolls, maki, nigiri, onigiri y técnicas tradicionales con arroz y algas.', representativeKeywords: ['sushi', 'maki', 'nigiri', 'onigiri', 'sashimi', 'roll'] },
   { id: 'cat-pizza', name: 'Pizzas y Masas Italianas', supercategory: 'Italiana y Mediterránea', cultureOrRegion: 'Italia', description: 'Pizzas a la piedra, calzones, focaccias y panes planos horneados.', representativeKeywords: ['pizza', 'calzone', 'focaccia', 'stromboli'] },
   { id: 'cat-burger', name: 'Hamburguesas y Bocados', supercategory: 'Comida Rápida y Street Food', cultureOrRegion: 'Internacional', description: 'Medallones caseros, hamburguesas smash y sándwiches gourmet.', representativeKeywords: ['hamburguesa', 'burger', 'cheeseburger', 'lomito'] },

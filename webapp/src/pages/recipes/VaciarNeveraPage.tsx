@@ -64,6 +64,13 @@ export default function VaciarNeveraPage() {
   // 7. Menor coste adicional en ARS
   // 8. Menor tiempo de preparación
   const sortPriority = (a: RecipeWithCost, b: RecipeWithCost) => {
+    // Evitar estrictamente conflictos de proteína (nunca proponer pollo si el usuario tiene chorizo/chinchulines)
+    const confA = a.hasProteinConflict ? 1 : 0
+    const confB = b.hasProteinConflict ? 1 : 0
+    if (confA !== confB) {
+      return confA - confB
+    }
+
     const recentA = a.recentIngredientsUsed ?? 0
     const recentB = b.recentIngredientsUsed ?? 0
     if (recentB !== recentA) {
@@ -117,31 +124,34 @@ export default function VaciarNeveraPage() {
       }
     })
 
-    const exactReady = withCost
+    // Filtrar recetas sin conflicto de proteínas y asegurar que usen ingredientes del inventario
+    const eligibleWithCost = withCost.filter(r => !r.hasProteinConflict && (inventory.length === 0 || r.totalIngredientsUsed > 0))
+
+    const exactReady = eligibleWithCost
       .filter(r => r.missingIngredients.length === 0 && r.totalIngredientsUsed > 0)
       .sort(sortPriority)
 
-    const exactOneMissing = withCost
+    const exactOneMissing = eligibleWithCost
       .filter(r => r.missingIngredients.length === 1 && r.totalIngredientsUsed > 0)
       .sort(sortPriority)
 
-    const exactSpecial = withCost
+    const exactSpecial = eligibleWithCost
       .filter(r => r.missingIngredients.length >= 2 && r.missingIngredients.length <= 3 && r.totalIngredientsUsed > 0)
       .sort(sortPriority)
 
-    // Si no hay recetas con 0 faltantes exactos, ofrecer las más cercanas con menor faltante
+    // Si no hay recetas con 0 faltantes exactos, ofrecer las más cercanas con menor faltante siempre coherentes
     const isFallback = exactReady.length === 0
     const ready = exactReady.length > 0
       ? exactReady
-      : (exactOneMissing.length > 0 ? exactOneMissing : withCost.slice(0, 4))
+      : (exactOneMissing.length > 0 ? exactOneMissing : (exactSpecial.length > 0 ? exactSpecial : eligibleWithCost.slice(0, 4)))
 
     const oneMissing = exactOneMissing.length > 0
       ? exactOneMissing
-      : (exactSpecial.length > 0 ? exactSpecial : withCost.slice(0, 4))
+      : (exactSpecial.length > 0 ? exactSpecial : eligibleWithCost.slice(0, 4))
 
     const special = exactSpecial.length > 0
       ? exactSpecial
-      : withCost.slice(0, 4)
+      : eligibleWithCost.slice(0, 4)
 
     return {
       readyRecipes: ready,
@@ -149,7 +159,7 @@ export default function VaciarNeveraPage() {
       specialRecipes: special,
       isReadyFallback: isFallback && exactReady.length === 0,
     }
-  }, [scoredRecipes, previousRecipeIds, recentIngredients])
+  }, [scoredRecipes, previousRecipeIds, recentIngredients, inventory.length])
 
   // Categoría 4: Tengo un antojo con búsqueda multinivel y alternativas garantizadas
   const cravingResult = useMemo(() => {

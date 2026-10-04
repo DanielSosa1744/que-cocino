@@ -85,7 +85,7 @@ export function useVaciarNevera(inventory: InventoryItem[], recentIngredientName
         )
         const totalRequired = recipeIngredientNames.length
 
-        const { score, recentUsed, importanceScore, dominantImportance, urgentUsed, totalUsed, priority, matched, missing } = scoreRecipe(
+        const { score, recentUsed, importanceScore, dominantImportance, urgentUsed, totalUsed, priority, matched, missing, hasProteinConflict } = scoreRecipe(
           recipeIngredientNames,
           inventory.map(i => ({ name: i.name, urgency: i.urgency })),
           recentIngredientNames
@@ -113,16 +113,24 @@ export function useVaciarNevera(inventory: InventoryItem[], recentIngredientName
           priority,
           matchedIngredients: matched,
           missingIngredients: missing,
+          hasProteinConflict,
         }
       })
 
       // Ordenar por afinidad con el inventario priorizando:
-      // 1. Ingredientes recientes
-      // 2. Jerarquía e importancia de los ingredientes (carne/proteína > verdura/cebolla)
-      // 3. Score ponderado
-      // 4. Porcentaje de coincidencia
-      // 5. Urgentes
+      // 1. Evitar conflictos de proteína (no proponer pollo si el usuario tiene chorizo/chinchulines)
+      // 2. Ingredientes recientes
+      // 3. Jerarquía e importancia de los ingredientes (carne/proteína > verdura/cebolla)
+      // 4. Score ponderado
+      // 5. Porcentaje de coincidencia
+      // 6. Urgentes
       const sorted = scored.sort((a, b) => {
+        const conflictA = a.hasProteinConflict ? 1 : 0
+        const conflictB = b.hasProteinConflict ? 1 : 0
+        if (conflictA !== conflictB) {
+          return conflictA - conflictB
+        }
+
         const recentA = a.recentIngredientsUsed ?? 0
         const recentB = b.recentIngredientsUsed ?? 0
         if (recentB !== recentA) {
@@ -143,14 +151,20 @@ export function useVaciarNevera(inventory: InventoryItem[], recentIngredientName
         return (a.prep_time ?? 15) - (b.prep_time ?? 15)
       })
 
-      // Si hay compatibles con el inventario, devolverlos
+      // Si hay compatibles con el inventario sin conflicto proteico, devolverlos
+      const compatibleNoConflict = sorted.filter(r => r.totalIngredientsUsed > 0 && !r.hasProteinConflict)
+      if (compatibleNoConflict.length > 0) {
+        return compatibleNoConflict
+      }
+
+      // Si hay compatibles generales con ingredientes usados
       const compatible = sorted.filter(r => r.totalIngredientsUsed > 0)
       if (compatible.length > 0) {
         return compatible
       }
 
-      // Si el inventario está vacío o no hay match total, garantizar que siempre se devuelvan alternativas útiles
-      return sorted
+      // Si el inventario está vacío, devolver alternativas sin conflicto de proteína
+      return sorted.filter(r => !r.hasProteinConflict)
     },
     enabled: true,
   })

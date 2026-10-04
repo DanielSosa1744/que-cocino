@@ -42,6 +42,7 @@ export interface RecipeWithScore {
   priority: PriorityLevel
   matchedIngredients: string[]
   missingIngredients: string[]
+  hasProteinConflict?: boolean
 }
 
 export interface ImpactStats {

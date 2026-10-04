@@ -1,7 +1,7 @@
 import type { InventoryItem, RecipeWithScore } from '../types/app.types'
 import type { RawRecipe } from '../hooks/useRecipes'
-import { scoreRecipe, estimateItemValueARS } from './ingredientParser'
-import { resolveCulinaryIntent } from './culinaryTaxonomy'
+import { scoreRecipe, estimateItemValueARS } from './ingredientParser.ts'
+import { resolveCulinaryIntent } from './culinaryTaxonomy.ts'
 
 export interface RecipeWithCost extends RecipeWithScore {
   additionalCostARS: number
@@ -39,7 +39,7 @@ function scoreAndFormatRecipes(
 ): RecipeWithCost[] {
   const scored = recipes.map(recipe => {
     const recipeIngredientNames = (recipe.recipe_ingredients || []).map(ri => ri.ingredient_name)
-    const { score, recentUsed, importanceScore, dominantImportance, urgentUsed, totalUsed, priority, matched, missing } = scoreRecipe(
+    const { score, recentUsed, importanceScore, dominantImportance, urgentUsed, totalUsed, priority, matched, missing, hasProteinConflict } = scoreRecipe(
       recipeIngredientNames,
       inventory.map(i => ({ name: i.name, urgency: i.urgency })),
       recentIngredientNames
@@ -65,18 +65,26 @@ function scoreAndFormatRecipes(
       matchedIngredients: matched,
       missingIngredients: missing,
       additionalCostARS,
+      hasProteinConflict,
     }
   })
 
   // Prioridad:
-  // 1. Mayor cantidad de ingredientes RECIENTES utilizados
-  // 2. Jerarquía e importancia culinaria (carne/proteína > verdura/cebolla)
-  // 3. Score ponderado
-  // 4. Mayor cantidad de ingredientes disponibles en despensa
-  // 5. Mayor aprovechamiento de ingredientes próximos a vencer
-  // 6. Menor coste adicional en ARS
-  // 7. Menor tiempo de preparación
+  // 1. Evitar conflictos de proteínas
+  // 2. Mayor cantidad de ingredientes RECIENTES utilizados
+  // 3. Jerarquía e importancia culinaria (carne/proteína > verdura/cebolla)
+  // 4. Score ponderado
+  // 5. Mayor cantidad de ingredientes disponibles en despensa
+  // 6. Mayor aprovechamiento de ingredientes próximos a vencer
+  // 7. Menor coste adicional en ARS
+  // 8. Menor tiempo de preparación
   return scored.sort((a, b) => {
+    const confA = a.hasProteinConflict ? 1 : 0
+    const confB = b.hasProteinConflict ? 1 : 0
+    if (confA !== confB) {
+      return confA - confB
+    }
+
     const recentA = a.recentIngredientsUsed ?? 0
     const recentB = b.recentIngredientsUsed ?? 0
     if (recentB !== recentA) {
@@ -190,10 +198,12 @@ export function matchCravingRecipes(
     finalCandidates = [...allRawRecipes]
   }
 
-  const formatted = scoreAndFormatRecipes(finalCandidates, inventory, recentIngredientNames).slice(0, 4)
+  const formatted = scoreAndFormatRecipes(finalCandidates, inventory, recentIngredientNames)
+  const nonConflicting = formatted.filter(r => !r.hasProteinConflict)
+  const finalFormatted = (nonConflicting.length > 0 ? nonConflicting : formatted).slice(0, 4)
 
   return {
-    recipes: formatted,
+    recipes: finalFormatted,
     isAlternative: true,
     displayTerm: cleanTerm,
     notice: {

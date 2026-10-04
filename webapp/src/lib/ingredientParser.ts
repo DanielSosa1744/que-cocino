@@ -141,6 +141,32 @@ export function isIngredientMatch(a: string, b: string): boolean {
 
   if (normA === normB) return true
 
+  // CASOS EXCLUYENTES ESTRICTOS (Prevenir colisiones semánticas y falsos positivos)
+  // 1. "bife de chorizo" es un corte vacuno (steak), NO es "chorizo" (embutido/sausage)
+  const isBifeDeChorizoA = normA.includes('bife de chorizo') || normA.includes('bife angosto')
+  const isBifeDeChorizoB = normB.includes('bife de chorizo') || normB.includes('bife angosto')
+  const isChorizoEmbutidoA = (normA === 'chorizo' || normA === 'chorizo criollo' || normA === 'chorizo parrillero') && !isBifeDeChorizoA
+  const isChorizoEmbutidoB = (normB === 'chorizo' || normB === 'chorizo criollo' || normB === 'chorizo parrillero') && !isBifeDeChorizoB
+  if ((isBifeDeChorizoA && isChorizoEmbutidoB) || (isBifeDeChorizoB && isChorizoEmbutidoA)) {
+    return false
+  }
+
+  // 2. "dulce de leche" y "leche condensada" NO son "leche" líquida común
+  const isMilkSweetA = normA.includes('dulce de leche') || normA.includes('leche condensada')
+  const isMilkSweetB = normB.includes('dulce de leche') || normB.includes('leche condensada')
+  const isPlainMilkA = (normA === 'leche' || normA === 'leche entera' || normA === 'leche descremada') && !isMilkSweetA
+  const isPlainMilkB = (normB === 'leche' || normB === 'leche entera' || normB === 'leche descremada') && !isMilkSweetB
+  if ((isMilkSweetA && isPlainMilkB) || (isMilkSweetB && isPlainMilkA)) {
+    return false
+  }
+
+  // 3. Caldos (caldo de pollo, caldo de verdura) no equivalen a la proteína fresca
+  const isBrothA = normA.startsWith('caldo')
+  const isBrothB = normB.startsWith('caldo')
+  if (isBrothA !== isBrothB) {
+    return false
+  }
+
   // Sinónimos estrictos y equivalencias dialectales directas (1 a 1 o variantes del mismo producto)
   const strictSynonyms: Array<string[]> = [
     // Verduras y hortalizas equivalentes
@@ -677,6 +703,7 @@ export function scoreRecipe(
   priority: PriorityLevel
   matched: string[]
   missing: string[]
+  hasProteinConflict: boolean
 } {
   const inventoryNames = inventory.map(i => ({
     raw: i.name,
@@ -719,21 +746,40 @@ export function scoreRecipe(
   }
 
   const totalUsed = matched.length
-  
+
+  // DETECCIÓN DE CONFLICTO DE PROTEÍNAS
+  // Identificar si el usuario tiene proteínas principales (Nivel 4: carnes, achuras, pescados, pollo, cerdo)
+  const userProteins = inventoryNames.filter(i => getIngredientImportance(i.raw) === 4)
+  const recentProteins = recentIngredientNames.filter(r => getIngredientImportance(r) === 4)
+  const hasUserProteins = userProteins.length > 0 || recentProteins.length > 0
+
+  const matchedProteins = matched.filter(ing => getIngredientImportance(ing) === 4)
+  const missingProteins = missing.filter(ing => getIngredientImportance(ing) === 4)
+
+  // Existe conflicto si el usuario dispone de proteínas principales (ej. chorizo, chinchulines, cuadril, asado),
+  // pero esta receta NO utiliza ninguna de sus proteínas y exige comprar una proteína principal ausente (ej. pollo, merluza)
+  const hasProteinConflict = hasUserProteins && matchedProteins.length === 0 && missingProteins.length > 0
+
   // Puntuación integral ponderada:
   // - recentUsed * 15: impulso base para lo recién ingresado
   // - importanceScore * 4: peso culinario (carne/pescado nivel 4 > pasta/arroz nivel 3 > verdura nivel 2 > cebolla/ajo nivel 1)
   // - urgentUsed * 3: ingredientes que vencen pronto
   // - totalUsed: total de ítems de la despensa
-  const score = (recentUsed * 15) + (importanceScore * 4) + (urgentUsed * 3) + totalUsed
+  let score = (recentUsed * 15) + (importanceScore * 4) + (urgentUsed * 3) + totalUsed
+
+  if (hasProteinConflict) {
+    score -= 1000
+  }
 
   // Nivel de prioridad
   let priority: PriorityLevel = 'Baja'
-  if (recentUsed >= 1 || (urgentUsed >= 1 && totalUsed >= 2) || dominantImportance >= 4) {
-    priority = 'Alta'
-  } else if (urgentUsed >= 1 || totalUsed >= 2 || dominantImportance >= 3) {
-    priority = 'Media'
+  if (!hasProteinConflict) {
+    if (recentUsed >= 1 || (urgentUsed >= 1 && totalUsed >= 2) || dominantImportance >= 4) {
+      priority = 'Alta'
+    } else if (urgentUsed >= 1 || totalUsed >= 2 || dominantImportance >= 3) {
+      priority = 'Media'
+    }
   }
 
-  return { score, recentUsed, importanceScore, dominantImportance, urgentUsed, totalUsed, priority, matched, missing }
+  return { score, recentUsed, importanceScore, dominantImportance, urgentUsed, totalUsed, priority, matched, missing, hasProteinConflict }
 }

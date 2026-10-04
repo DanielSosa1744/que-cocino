@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition'
 import { useAddIngredients } from '../hooks/useInventory'
-import { extractIngredients, guessCategory, defaultExpiryDate } from '../lib/ingredientParser'
+import { extractIngredients, guessCategory, defaultExpiryDate, getIngredientImportance } from '../lib/ingredientParser'
 import GoogleIcon from '../components/GoogleIcon'
 
 export default function HomePage() {
@@ -55,8 +55,15 @@ export default function HomePage() {
       let addedNames: string[] = []
 
       if (parsed.length > 0) {
+        // Ordenar los ingredientes ingresados por jerarquía culinaria (la carne, pescado y proteína van primero; la cebolla, ajo y aromáticos van después)
+        const sortedParsed = [...parsed].sort((a, b) => {
+          const impA = getIngredientImportance(a.name)
+          const impB = getIngredientImportance(b.name)
+          return impB - impA
+        })
+
         // Guardar ingredientes en la despensa
-        const items = parsed.map(p => ({
+        const items = sortedParsed.map(p => ({
           name: p.name,
           quantity: p.quantity ?? 1,
           unit: p.unit ?? 'ud',

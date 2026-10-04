@@ -39,7 +39,7 @@ function scoreAndFormatRecipes(
 ): RecipeWithCost[] {
   const scored = recipes.map(recipe => {
     const recipeIngredientNames = (recipe.recipe_ingredients || []).map(ri => ri.ingredient_name)
-    const { score, recentUsed, urgentUsed, totalUsed, priority, matched, missing } = scoreRecipe(
+    const { score, recentUsed, importanceScore, dominantImportance, urgentUsed, totalUsed, priority, matched, missing } = scoreRecipe(
       recipeIngredientNames,
       inventory.map(i => ({ name: i.name, urgency: i.urgency })),
       recentIngredientNames
@@ -56,6 +56,8 @@ function scoreAndFormatRecipes(
       servings: recipe.servings || 2,
       score,
       recentIngredientsUsed: recentUsed,
+      importanceScore,
+      dominantImportance,
       urgentIngredientsUsed: urgentUsed,
       totalIngredientsUsed: totalUsed,
       matchPercentage: recipeIngredientNames.length > 0 ? Math.round((matched.length / recipeIngredientNames.length) * 100) : 0,
@@ -68,15 +70,30 @@ function scoreAndFormatRecipes(
 
   // Prioridad:
   // 1. Mayor cantidad de ingredientes RECIENTES utilizados
-  // 2. Mayor cantidad de ingredientes disponibles en despensa
-  // 3. Mayor aprovechamiento de ingredientes próximos a vencer
-  // 4. Menor coste adicional en ARS
-  // 5. Menor tiempo de preparación
+  // 2. Jerarquía e importancia culinaria (carne/proteína > verdura/cebolla)
+  // 3. Score ponderado
+  // 4. Mayor cantidad de ingredientes disponibles en despensa
+  // 5. Mayor aprovechamiento de ingredientes próximos a vencer
+  // 6. Menor coste adicional en ARS
+  // 7. Menor tiempo de preparación
   return scored.sort((a, b) => {
     const recentA = a.recentIngredientsUsed ?? 0
     const recentB = b.recentIngredientsUsed ?? 0
     if (recentB !== recentA) {
       return recentB - recentA
+    }
+    const domA = a.dominantImportance ?? 0
+    const domB = b.dominantImportance ?? 0
+    if (domB !== domA) {
+      return domB - domA
+    }
+    const impA = a.importanceScore ?? 0
+    const impB = b.importanceScore ?? 0
+    if (impB !== impA) {
+      return impB - impA
+    }
+    if (b.score !== a.score) {
+      return b.score - a.score
     }
     if (b.totalIngredientsUsed !== a.totalIngredientsUsed) {
       return b.totalIngredientsUsed - a.totalIngredientsUsed

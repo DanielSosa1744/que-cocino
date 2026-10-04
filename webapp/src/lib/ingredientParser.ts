@@ -241,9 +241,91 @@ export function collapseRepeats(text: string): string {
 export function guessCategory(name: string): string {
   const norm = normalizeIngredientName(name)
   for (const [key, cat] of Object.entries(INGREDIENT_CATEGORIES)) {
-    if (norm.includes(key) || key.includes(norm)) return cat
+    if (norm === key || norm.includes(key) || key.includes(norm)) return cat
   }
   return 'despensa'
+}
+
+/**
+ * Jerarquía culinaria de ingredientes (Importancia / Rol en el plato):
+ * Nivel 4 (Principal / Proteico / Centro del plato): Carnes vacunas, cerdo, pollo, pescados, mariscos, achuras, cortes argentinos, legumbres principales.
+ * Nivel 3 (Estructural / Base calórica / Lácteo noble): Pasta, arroz, harinas, huevos, quesos, masas, polenta, papas.
+ * Nivel 2 (Vegetal destacado / Acompañamiento): Verduras y hortalizas principales (tomate, calabaza, zapallito, espinaca, acelga, morrón, berenjena, etc.).
+ * Nivel 1 (Aromático / Base de sofrito / Complemento): Cebolla, ajo, cebolla de verdeo, puerro, perejil, apio, hierbas, especias, condimentos.
+ */
+export function getIngredientImportance(name: string): number {
+  const norm = normalizeIngredientName(name)
+
+  // 1. Aromáticos, condimentos y sofrito (Nivel 1: complementarios)
+  const aromatics = [
+    'cebolla', 'cebollas', 'cebolla morada', 'cebolla de verdeo', 'verdeo',
+    'ajo', 'ajos', 'diente de ajo', 'puerro', 'ciboulette', 'cebollino',
+    'apio', 'perejil', 'albahaca', 'romero', 'tomillo', 'oregano', 'laurel',
+    'sal', 'pimienta', 'comino', 'pimenton', 'aji molido', 'nuez moscada',
+    'vinagre', 'aceite', 'aceite de oliva', 'chimichurri', 'salsa criolla',
+    'limon', 'mostaza', 'mayonesa', 'ketchup', 'soja', 'salsa de soja'
+  ]
+  if (aromatics.some(a => norm === a || norm.startsWith(a + ' ') || norm.endsWith(' ' + a))) {
+    return 1
+  }
+
+  // 2. Proteínas, carnes, pescados y achuras (Nivel 4: máxima jerarquía protagónica)
+  const proteins = [
+    // Carnes vacunas y cortes argentinos
+    'carne', 'ternera', 'vacuna', 'vaca', 'bife', 'bife de chorizo', 'ojo de bife',
+    'bife angosto', 'bife ancho', 'asado', 'asado de tira', 'tira de asado', 'vacio',
+    'matambre', 'entrana', 'lomo', 'colita de cuadril', 'cuadril', 'tapa de asado',
+    'tapa de nalga', 'peceto', 'nalga', 'bola de lomo', 'cuadrada', 'tortuguita',
+    'paleta', 'roast beef', 'osobuco', 'falda', 'azotillo', 'marucha', 'carnaza',
+    'carne picada', 'picada',
+    // Cerdo y cortes
+    'cerdo', 'bondiola', 'pechito de cerdo', 'pechito', 'matambrito', 'matambrito de cerdo',
+    'solomillo', 'carre de cerdo', 'costillita de cerdo', 'costilla de cerdo', 'panceta',
+    // Pollo y aves
+    'pollo', 'pechuga', 'pechuga de pollo', 'pata muslo', 'muslo', 'suprema', 'alitas', 'pavo',
+    // Achuras y embutidos
+    'molleja', 'mollejas', 'chinchulin', 'chinchulines', 'rinon', 'riñones',
+    'morcilla', 'chorizo', 'chorizo criollo', 'salchicha parrillera',
+    // Pescados y mariscos
+    'pescado', 'merluza', 'filet de merluza', 'salmon', 'atun', 'corvina', 'boga',
+    'pejerrey', 'dorado', 'surubi', 'calamar', 'rabas', 'langostino', 'langostinos',
+    'camaron', 'camarones', 'mejillon', 'mejillones',
+    // Legumbres secas proteicas
+    'lentejas', 'garbanzos', 'porotos'
+  ]
+  if (proteins.some(p => norm === p || norm.includes(p))) {
+    return 4
+  }
+
+  // 3. Bases estructurales, huevos, lácteos y carbohidratos (Nivel 3)
+  const structural = [
+    'huevo', 'huevos', 'pasta', 'fideos', 'tallarines', 'spaghetti', 'noquis', 'ravioles',
+    'arroz', 'polenta', 'harina', 'queso', 'queso cremoso', 'cremoso', 'cuartirolo',
+    'mozzarella', 'provoleta', 'ricota', 'tapa de empanada', 'tapas de empanada',
+    'masa de tarta', 'papa', 'papas', 'patata', 'batata', 'pan'
+  ]
+  if (structural.some(s => norm === s || norm.includes(s))) {
+    return 3
+  }
+
+  // 4. Verduras y hortalizas protagonistas / de volumen (Nivel 2)
+  const veggies = [
+    'tomate', 'tomates', 'morron', 'pimiento', 'calabaza', 'zapallo', 'anco',
+    'zapallito', 'zucchini', 'calabacin', 'espinaca', 'acelga', 'berenjena',
+    'choclo', 'arveja', 'arvejas', 'chaucha', 'chauchas', 'zanahoria', 'champiñon',
+    'champinon', 'lechuga', 'rucula', 'brocoli', 'coliflor', 'remolacha', 'pepino',
+    'palta', 'aguacate'
+  ]
+  if (veggies.some(v => norm === v || norm.includes(v))) {
+    return 2
+  }
+
+  // Por defecto, evaluar categoría
+  const cat = guessCategory(name)
+  if (cat === 'proteína' || cat === 'pescado') return 4
+  if (cat === 'lácteo' || cat === 'despensa') return 3
+  if (cat === 'verdura') return 2
+  return 2
 }
 
 export function guessShelfLife(name: string): number {
@@ -575,8 +657,10 @@ export function defaultExpiryDate(shelfLifeDays: number): string {
 
 /**
  * MOTOR VACIAR NEVERA
- * Prioriza primero los ingredientes recientes introducidos por el usuario, luego los de la despensa.
- * Fórmula requerida: score = (ingredientes_recientes * 10) + ingredientes_urgentes + ingredientes_totales
+ * Prioriza los ingredientes según:
+ * 1. Ingredientes recientes y su jerarquía culinaria (la carne, pescado o proteína tiene mayor peso protagónico que la cebolla o aromáticos).
+ * 2. Ingredientes urgentes próximos a vencer.
+ * 3. Total de ingredientes aprovechados.
  */
 export function scoreRecipe(
   recipeIngredients: string[],
@@ -585,6 +669,8 @@ export function scoreRecipe(
 ): {
   score: number
   recentUsed: number
+  importanceScore: number
+  dominantImportance: number
   urgentUsed: number
   totalUsed: number
   priority: PriorityLevel
@@ -601,12 +687,20 @@ export function scoreRecipe(
   const missing: string[] = []
   let urgentUsed = 0
   let recentUsed = 0
+  let importanceScore = 0
+  let dominantImportance = 0
 
   for (const recipeIng of recipeIngredients) {
     const match = inventoryNames.find(item => isIngredientMatch(item.raw, recipeIng))
 
     if (match) {
       matched.push(recipeIng)
+      const ingImportance = getIngredientImportance(recipeIng)
+      if (ingImportance > dominantImportance) {
+        dominantImportance = ingImportance
+      }
+      importanceScore += ingImportance
+
       if (match.urgency === 'critical' || match.urgency === 'warning') {
         urgentUsed += 1
       }
@@ -615,6 +709,8 @@ export function scoreRecipe(
         recentIngredientNames.some(rec => isIngredientMatch(rec, recipeIng) || isIngredientMatch(recipeIng, rec))
       ) {
         recentUsed += 1
+        // Bonus culinario sustancial si el ingrediente recién cargado es protagonista (ej. carne vs cebolla)
+        importanceScore += ingImportance * 5
       }
     } else {
       missing.push(recipeIng)
@@ -623,16 +719,20 @@ export function scoreRecipe(
 
   const totalUsed = matched.length
   
-  // Priorizar ingredientes recientes por encima de la despensa general
-  const score = (recentUsed * 10) + urgentUsed + totalUsed
+  // Puntuación integral ponderada:
+  // - recentUsed * 15: impulso base para lo recién ingresado
+  // - importanceScore * 4: peso culinario (carne/pescado nivel 4 > pasta/arroz nivel 3 > verdura nivel 2 > cebolla/ajo nivel 1)
+  // - urgentUsed * 3: ingredientes que vencen pronto
+  // - totalUsed: total de ítems de la despensa
+  const score = (recentUsed * 15) + (importanceScore * 4) + (urgentUsed * 3) + totalUsed
 
   // Nivel de prioridad
   let priority: PriorityLevel = 'Baja'
-  if (recentUsed >= 1 || (urgentUsed >= 1 && totalUsed >= 2)) {
+  if (recentUsed >= 1 || (urgentUsed >= 1 && totalUsed >= 2) || dominantImportance >= 4) {
     priority = 'Alta'
-  } else if (urgentUsed >= 1 || totalUsed >= 2) {
+  } else if (urgentUsed >= 1 || totalUsed >= 2 || dominantImportance >= 3) {
     priority = 'Media'
   }
 
-  return { score, recentUsed, urgentUsed, totalUsed, priority, matched, missing }
+  return { score, recentUsed, importanceScore, dominantImportance, urgentUsed, totalUsed, priority, matched, missing }
 }

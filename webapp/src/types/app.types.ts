@@ -34,6 +34,8 @@ export interface RecipeWithScore {
   servings: number | null
   score: number
   recentIngredientsUsed?: number
+  importanceScore?: number
+  dominantImportance?: number
   urgentIngredientsUsed: number
   totalIngredientsUsed: number
   matchPercentage?: number

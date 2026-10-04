@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useInventory } from '../../hooks/useInventory'
 import { useVaciarNevera, useRecipes } from '../../hooks/useRecipes'
-import { estimateItemValueARS, isIngredientMatch } from '../../lib/ingredientParser'
+import { estimateItemValueARS, isIngredientMatch, getIngredientImportance } from '../../lib/ingredientParser'
 import { matchCravingRecipes, type RecipeWithCost } from '../../lib/cravingMatcher'
 
 type CategoryChoice = 'ready' | 'one_missing' | 'special' | 'craving'
@@ -56,11 +56,13 @@ export default function VaciarNeveraPage() {
 
   // Criterios de prioridad requeridos:
   // 1. Mayor cantidad de ingredientes RECIENTES utilizados (priorizar lo recién cargado)
-  // 2. Menor presencia en tandas anteriores (evitar recetas repetitivas)
-  // 3. Mayor cantidad de ingredientes disponibles en la despensa
-  // 4. Mayor aprovechamiento de ingredientes próximos a vencer
-  // 5. Menor coste adicional en ARS
-  // 6. Menor tiempo de preparación
+  // 2. Jerarquía e importancia culinaria (no es igual cebolla que carne: la proteína/plato fuerte prima sobre aromáticos)
+  // 3. Menor presencia en tandas anteriores (evitar recetas repetitivas)
+  // 4. Score de afinidad ponderado
+  // 5. Mayor cantidad de ingredientes disponibles en la despensa
+  // 6. Mayor aprovechamiento de ingredientes próximos a vencer
+  // 7. Menor coste adicional en ARS
+  // 8. Menor tiempo de preparación
   const sortPriority = (a: RecipeWithCost, b: RecipeWithCost) => {
     const recentA = a.recentIngredientsUsed ?? 0
     const recentB = b.recentIngredientsUsed ?? 0
@@ -68,10 +70,27 @@ export default function VaciarNeveraPage() {
       return recentB - recentA
     }
 
+    // Jerarquía culinaria de los ingredientes utilizados (carne nivel 4 > pasta nivel 3 > verdura nivel 2 > cebolla nivel 1)
+    const domA = a.dominantImportance ?? 0
+    const domB = b.dominantImportance ?? 0
+    if (domB !== domA) {
+      return domB - domA
+    }
+
+    const impScoreA = a.importanceScore ?? 0
+    const impScoreB = b.importanceScore ?? 0
+    if (impScoreB !== impScoreA) {
+      return impScoreB - impScoreA
+    }
+
     const aPrev = previousRecipeIds.includes(a.id) ? 1 : 0
     const bPrev = previousRecipeIds.includes(b.id) ? 1 : 0
     if (aPrev !== bPrev) {
       return aPrev - bPrev
+    }
+
+    if (b.score !== a.score) {
+      return b.score - a.score
     }
 
     if (b.totalIngredientsUsed !== a.totalIngredientsUsed) {
@@ -410,19 +429,21 @@ export default function VaciarNeveraPage() {
                   </p>
                   <div className="space-y-0.5">
                     {recipe.matchedIngredients.length > 0 ? (
-                      recipe.matchedIngredients.map((ing, i) => {
-                        const isRecent = recentIngredients.some(rec => isIngredientMatch(rec, ing) || isIngredientMatch(ing, rec))
-                        return (
-                          <p key={i} className="text-[#2F2A26] flex items-center gap-1.5">
-                            <span className="capitalize font-medium">{ing}</span>
-                            {isRecent && (
-                              <span className="text-[10px] text-[#5D7A56] font-normal">
-                                · recién añadido
-                              </span>
-                            )}
-                          </p>
-                        )
-                      })
+                      [...recipe.matchedIngredients]
+                        .sort((a, b) => getIngredientImportance(b) - getIngredientImportance(a))
+                        .map((ing, i) => {
+                          const isRecent = recentIngredients.some(rec => isIngredientMatch(rec, ing) || isIngredientMatch(ing, rec))
+                          return (
+                            <p key={i} className="text-[#2F2A26] flex items-center gap-1.5">
+                              <span className="capitalize font-medium">{ing}</span>
+                              {isRecent && (
+                                <span className="text-[10px] text-[#5D7A56] font-normal">
+                                  · recién añadido
+                                </span>
+                              )}
+                            </p>
+                          )
+                        })
                     ) : (
                       <p className="text-[#766153] italic">Ninguno disponible actualmente</p>
                     )}
@@ -436,7 +457,9 @@ export default function VaciarNeveraPage() {
                       {recipe.missingIngredients.length === 1 ? 'Falta: ' : 'Faltan: '}
                     </span>
                     <span className="text-[#A68A64] font-medium capitalize">
-                      {recipe.missingIngredients.join(', ')}
+                      {[...recipe.missingIngredients]
+                        .sort((a, b) => getIngredientImportance(b) - getIngredientImportance(a))
+                        .join(', ')}
                     </span>
                     <span className="text-[#766153] font-mono ml-1.5">
                       · ARS {recipe.additionalCostARS.toLocaleString('es-AR')} est.

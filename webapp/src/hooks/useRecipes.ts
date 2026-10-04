@@ -85,7 +85,7 @@ export function useVaciarNevera(inventory: InventoryItem[], recentIngredientName
         )
         const totalRequired = recipeIngredientNames.length
 
-        const { score, recentUsed, urgentUsed, totalUsed, priority, matched, missing } = scoreRecipe(
+        const { score, recentUsed, importanceScore, dominantImportance, urgentUsed, totalUsed, priority, matched, missing } = scoreRecipe(
           recipeIngredientNames,
           inventory.map(i => ({ name: i.name, urgency: i.urgency })),
           recentIngredientNames
@@ -105,6 +105,8 @@ export function useVaciarNevera(inventory: InventoryItem[], recentIngredientName
           servings: recipe.servings ?? 2,
           score,
           recentIngredientsUsed: recentUsed,
+          importanceScore,
+          dominantImportance,
           urgentIngredientsUsed: urgentUsed,
           totalIngredientsUsed: totalUsed,
           matchPercentage,
@@ -114,12 +116,22 @@ export function useVaciarNevera(inventory: InventoryItem[], recentIngredientName
         }
       })
 
-      // Ordenar por afinidad con el inventario priorizando primero ingredientes recientes
+      // Ordenar por afinidad con el inventario priorizando:
+      // 1. Ingredientes recientes
+      // 2. Jerarquía e importancia de los ingredientes (carne/proteína > verdura/cebolla)
+      // 3. Score ponderado
+      // 4. Porcentaje de coincidencia
+      // 5. Urgentes
       const sorted = scored.sort((a, b) => {
         const recentA = a.recentIngredientsUsed ?? 0
         const recentB = b.recentIngredientsUsed ?? 0
         if (recentB !== recentA) {
           return recentB - recentA
+        }
+        const domA = a.dominantImportance ?? 0
+        const domB = b.dominantImportance ?? 0
+        if (domB !== domA) {
+          return domB - domA
         }
         if (b.score !== a.score) return b.score - a.score
         if ((b.matchPercentage ?? 0) !== (a.matchPercentage ?? 0)) {

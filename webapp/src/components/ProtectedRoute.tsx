@@ -10,10 +10,10 @@ export default function ProtectedRoute({ children }: Props) {
 
   if (loading) {
     return (
-      <div className="min-h-app flex items-center justify-center bg-white">
+      <div className="min-h-screen h-full flex items-center justify-center bg-[#F7F3EC]">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-400 text-sm">Cargando...</p>
+          <div className="w-7 h-7 border-2 border-[#5D7A56] border-t-transparent rounded-full animate-spin" />
+          <p className="text-[#766153] text-xs font-mono">Abriendo cocina...</p>
         </div>
       </div>
     )

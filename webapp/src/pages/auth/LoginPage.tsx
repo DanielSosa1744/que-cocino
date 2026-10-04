@@ -35,18 +35,18 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="h-full max-h-full bg-stone-50/50 flex flex-col justify-center px-5 py-2 overflow-y-auto">
+    <div className="h-full max-h-full bg-[#F7F3EC] flex flex-col justify-center px-5 py-4 overflow-y-auto">
       {showEntrance && <LoginEntranceAnimation onComplete={() => navigate('/home')} />}
 
       <div className="max-w-sm mx-auto w-full">
         {/* Logo */}
-        <div className="text-center mb-5">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-emerald-50 mb-2 shadow-xs border border-emerald-100/80">
-            <GoogleIcon name="eco" className="text-emerald-700 text-2xl" filled />
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#EFF4EC] mb-2 shadow-xs border border-[#5D7A56]/25">
+            <GoogleIcon name="eco" className="text-[#5D7A56] text-2xl" filled />
           </div>
-          <h1 className="text-xl font-extrabold text-stone-900 tracking-tight leading-tight">¿Qué Cocino?</h1>
-          <p className="text-stone-400 mt-0.5 text-xs">
-            Asistente para no tirar comida
+          <h1 className="text-xl font-serif font-medium text-[#2F2A26] tracking-tight leading-tight">¿Qué Cocino?</h1>
+          <p className="text-[#766153] mt-0.5 text-xs">
+            Cuaderno inteligente para tu cocina
           </p>
         </div>
 
@@ -55,17 +55,17 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={handleDemoAccess}
-            className="w-full py-2.5 px-4 bg-emerald-50/80 hover:bg-emerald-100/80 border border-emerald-200/60 text-emerald-800 font-bold rounded-xl transition flex items-center justify-center gap-1.5 text-xs shadow-xs tap-subtle cursor-pointer"
+            className="w-full py-2.5 px-4 bg-[#EFF4EC] hover:bg-[#E2ECE0] border border-[#5D7A56]/30 text-[#2F2A26] font-medium rounded-2xl transition flex items-center justify-center gap-1.5 text-xs shadow-xs tap-subtle cursor-pointer"
           >
-            <GoogleIcon name="auto_awesome" className="text-emerald-700 text-base" />
-            Acceso Rápido Demo (Probar ahora)
+            <GoogleIcon name="auto_awesome" className="text-[#5D7A56] text-base" />
+            Acceso Rápido Demo (Entrar directo)
           </button>
-          <div className="relative my-3">
+          <div className="relative my-3.5">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-stone-200/60"></div>
+              <div className="w-full border-t border-[#766153]/15"></div>
             </div>
             <div className="relative flex justify-center text-[11px]">
-              <span className="bg-stone-50/80 px-2.5 text-stone-400">o accede con tu cuenta</span>
+              <span className="bg-[#F7F3EC] px-2.5 text-[#766153]">o accede con tu cuenta</span>
             </div>
           </div>
         </div>
@@ -73,19 +73,19 @@ export default function LoginPage() {
         {/* Formulario */}
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <label className="block text-xs font-semibold text-stone-600 mb-0.5">Email</label>
+            <label className="block text-xs font-medium text-[#2F2A26] mb-1">Email</label>
             <input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
               placeholder="tuemail@ejemplo.com"
-              className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-white text-stone-900 placeholder-stone-400 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-600 transition"
+              className="w-full px-3 py-2.5 rounded-xl border border-[#766153]/20 bg-[#FCFAF7] text-[#2F2A26] placeholder-[#766153]/50 text-xs focus:outline-none focus:border-[#5D7A56] transition"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-stone-600 mb-1">Contraseña</label>
+            <label className="block text-xs font-medium text-[#2F2A26] mb-1">Contraseña</label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -93,26 +93,26 @@ export default function LoginPage() {
                 onChange={e => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-stone-900 placeholder-stone-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-600 transition pr-12"
+                className="w-full px-3 py-2.5 rounded-xl border border-[#766153]/20 bg-[#FCFAF7] text-[#2F2A26] placeholder-[#766153]/50 text-xs focus:outline-none focus:border-[#5D7A56] transition pr-10"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 cursor-pointer"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#766153] hover:text-[#2F2A26] cursor-pointer"
               >
-                <GoogleIcon name={showPassword ? 'visibility_off' : 'visibility'} className="text-lg text-stone-400" />
+                <GoogleIcon name={showPassword ? 'visibility_off' : 'visibility'} className="text-base text-[#766153]" />
               </button>
             </div>
           </div>
 
           {error && (
-            <p className="text-red-600 text-xs bg-red-50 p-3 rounded-xl border border-red-100">{error}</p>
+            <p className="text-[#A68A64] text-xs bg-[#FCFAF7] p-2.5 rounded-xl border border-[#A68A64]/30">{error}</p>
           )}
 
-          <div className="flex justify-between items-center text-xs">
+          <div className="flex justify-between items-center text-xs pt-1">
             <Link
               to="/forgot-password"
-              className="text-stone-400 hover:text-emerald-700 transition"
+              className="text-[#766153] hover:text-[#2F2A26] transition"
             >
               ¿Olvidaste tu contraseña?
             </Link>
@@ -121,22 +121,22 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-2xl transition disabled:opacity-60 text-sm shadow-md tap-subtle cursor-pointer"
+            className="w-full py-2.5 bg-[#2F2A26] hover:bg-black text-[#F7F3EC] font-medium rounded-2xl transition disabled:opacity-60 text-xs shadow-sm tap-subtle cursor-pointer mt-1"
           >
             {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
           </button>
         </form>
 
-        <p className="text-center text-xs text-stone-500 mt-5">
+        <p className="text-center text-xs text-[#766153] mt-5">
           ¿No tienes cuenta?{' '}
-          <Link to="/register" className="text-emerald-700 font-bold hover:underline">
+          <Link to="/register" className="text-[#5D7A56] font-medium hover:underline">
             Crear cuenta gratuita
           </Link>
         </p>
 
         {isDemoMode && (
-          <p className="text-[11px] text-stone-400 text-center mt-4 bg-white p-2.5 rounded-xl border border-stone-200/60">
-            <GoogleIcon name="info" className="text-stone-400 text-xs mr-1 align-middle" /> Base de datos local activa.
+          <p className="text-[11px] text-[#766153] text-center mt-4 bg-[#FCFAF7] p-2 rounded-xl border border-[#766153]/15">
+            <GoogleIcon name="info" className="text-[#5D7A56] text-xs mr-1 align-middle" /> Modo demostración activo con base de datos local.
           </p>
         )}
       </div>

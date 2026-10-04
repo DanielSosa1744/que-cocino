@@ -215,14 +215,30 @@ export function isIngredientMatch(a: string, b: string): boolean {
   ]
 
   for (const group of strictSynonyms) {
-    const hasA = group.some(w => normA === w || normA.includes(w))
-    const hasB = group.some(w => normB === w || normB.includes(w))
+    // Comparar también contra la forma singular (singularize('fideos') = 'fideo' no contenía 'fideos')
+    const forms = Array.from(new Set(group.flatMap(w => [w, singularize(w)])))
+    const hasA = forms.some(w => normA === w || normA.includes(w))
+    const hasB = forms.some(w => normB === w || normB.includes(w))
     if (hasA && hasB) return true
   }
 
-  // Token exact matching con palabras clave significativas
-  const wordsA = normA.split(/\s+/).filter(w => w.length > 2 && !SKIP_WORDS.has(w))
-  const wordsB = normB.split(/\s+/).filter(w => w.length > 2 && !SKIP_WORDS.has(w))
+  // 4. "cebolla" común NO es "cebolla de verdeo" (hortalizas distintas)
+  const isVerdeoA = normA.includes('verdeo')
+  const isVerdeoB = normB.includes('verdeo')
+  if (isVerdeoA !== isVerdeoB && (normA.startsWith('cebolla') || normB.startsWith('cebolla'))) {
+    return false
+  }
+
+  // Token exact matching con palabras clave significativas.
+  // Se excluyen tokens genéricos que describen preparaciones/formatos y no el alimento
+  // (evita 'salsa de tomate' = 'salsa criolla', 'pure de papa' = 'pure de calabaza', 'tapa de asado' = 'tapa de empanada').
+  const GENERIC_TOKENS = new Set([
+    'salsa', 'pure', 'caldo', 'masa', 'jugo', 'polvo', 'filet', 'tapa', 'tapas', 'disco',
+    'ensalada', 'aceite', 'sopa', 'crema', 'dulce', 'harina', 'mixta', 'casero', 'casera',
+    'rustica', 'rusticas', 'frita', 'fritas', 'blanco', 'cocido', 'cocida',
+  ])
+  const wordsA = normA.split(/\s+/).filter(w => w.length > 2 && !SKIP_WORDS.has(w) && !GENERIC_TOKENS.has(w))
+  const wordsB = normB.split(/\s+/).filter(w => w.length > 2 && !SKIP_WORDS.has(w) && !GENERIC_TOKENS.has(w))
 
   // Si ambos términos tienen tokens significativos y comparten al menos un token idéntico
   for (const wa of wordsA) {
@@ -756,9 +772,13 @@ export function scoreRecipe(
   const matchedProteins = matched.filter(ing => getIngredientImportance(ing) === 4)
   const missingProteins = missing.filter(ing => getIngredientImportance(ing) === 4)
 
-  // Existe conflicto si el usuario dispone de proteínas principales (ej. chorizo, chinchulines, cuadril, asado),
-  // pero esta receta NO utiliza ninguna de sus proteínas y exige comprar una proteína principal ausente (ej. pollo, merluza)
-  const hasProteinConflict = hasUserProteins && matchedProteins.length === 0 && missingProteins.length > 0
+  // Existe conflicto si:
+  // 1. El usuario tiene proteínas declaradas pero la receta no usa ninguna y pide comprar una proteína ausente (ej. tiene chorizo, pide pollo).
+  // 2. O el usuario tiene proteínas declaradas y la receta le pide comprar OTRA proteína principal distinta no declarada (ej. tiene morcilla, pide comprar chorizo; o tiene asado, pide comprar chorizo).
+  const hasProteinConflict = hasUserProteins && (
+    (matchedProteins.length === 0 && missingProteins.length > 0) ||
+    (missingProteins.length > 0 && !missingProteins.every(mp => userProteins.some(up => isIngredientMatch(up.raw, mp))))
+  )
 
   // Puntuación integral ponderada:
   // - recentUsed * 15: impulso base para lo recién ingresado

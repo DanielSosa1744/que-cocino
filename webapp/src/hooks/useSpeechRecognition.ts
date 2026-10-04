@@ -90,6 +90,10 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
   const retryCountRef = useRef(0)
   const simulationTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const restartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Texto final de la sesión de reconocimiento en curso (aún no consolidado en accumulatedFinalRef)
+  const sessionFinalRef = useRef('')
+  // Fallos consecutivos al invocar recognition.start() para evitar bucles infinitos de reinicio
+  const startFailuresRef = useRef(0)
 
   const SpeechRecognitionAPI = typeof window !== 'undefined'
     ? (window.SpeechRecognition || window.webkitSpeechRecognition)
@@ -149,9 +153,10 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
         recognition.interimResults = true
         recognition.lang = retryCountRef.current > 0 ? 'es-ES' : (navigator.language?.startsWith('es') ? navigator.language : 'es-ES')
 
-        let sessionFinalText = ''
+        sessionFinalRef.current = ''
 
         recognition.onstart = () => {
+          startFailuresRef.current = 0
           if (isListeningRef.current) {
             setIsListening(true)
             setError(null)
@@ -160,20 +165,21 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
         }
 
         recognition.onresult = (event: SpeechRecognitionEvent) => {
-          sessionFinalText = ''
+          let sessionFinal = ''
           let interim = ''
 
           for (let i = 0; i < event.results.length; i++) {
             const res = event.results[i]
             if (res.isFinal) {
-              sessionFinalText += res[0].transcript + ' '
+              sessionFinal += res[0].transcript + ' '
             } else {
               interim += res[0].transcript
             }
           }
 
+          sessionFinalRef.current = sessionFinal
           latestInterimRef.current = interim
-          const combined = (accumulatedFinalRef.current ? accumulatedFinalRef.current + ' ' : '') + sessionFinalText
+          const combined = (accumulatedFinalRef.current ? accumulatedFinalRef.current + ' ' : '') + sessionFinal
           const cleanText = collapseRepeats(combined.trim())
           if (cleanText) {
             setTranscript(cleanText)
@@ -212,10 +218,11 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
         }
 
         recognition.onend = () => {
-          // Guardar el texto final acumulado de esta sesión antes de reiniciar
-          if (sessionFinalText.trim()) {
-            const currentCombined = (accumulatedFinalRef.current ? accumulatedFinalRef.current + ' ' : '') + sessionFinalText
+          // Consolidar el texto final de esta sesión antes de reiniciar
+          if (sessionFinalRef.current.trim()) {
+            const currentCombined = (accumulatedFinalRef.current ? accumulatedFinalRef.current + ' ' : '') + sessionFinalRef.current
             accumulatedFinalRef.current = collapseRepeats(currentCombined.trim())
+            sessionFinalRef.current = ''
             setTranscript(accumulatedFinalRef.current)
           }
 
@@ -239,6 +246,15 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
         recognition.start()
       } catch (err: any) {
         console.warn('Error iniciando sesión de reconocimiento:', err)
+        startFailuresRef.current += 1
+        // Evitar bucle infinito: tras 5 fallos consecutivos, informar y detener
+        if (startFailuresRef.current >= 5) {
+          setErrorCode('start-failed')
+          setError('No se pudo iniciar el micrófono. Puedes escribir tus ingredientes abajo.')
+          setIsListening(false)
+          isListeningRef.current = false
+          return
+        }
         if (isListeningRef.current && !userStoppedRef.current) {
           restartTimerRef.current = setTimeout(() => {
             initRecognitionSession()
@@ -247,6 +263,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
       }
     }
 
+    startFailuresRef.current = 0
     initRecognitionSession()
   }, [SpeechRecognitionAPI, cleanupRecognition])
 
@@ -264,28 +281,33 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
       simulationTimerRef.current = null
     }
 
-    // Si había texto en interim pendiente cuando el usuario pulsó detener, acumularlo
-    if (latestInterimRef.current.trim()) {
-      const combined = (accumulatedFinalRef.current ? accumulatedFinalRef.current + ' ' : '') + latestInterimRef.current.trim()
-      const clean = collapseRepeats(combined.trim())
+    // Consolidar en orden: lo acumulado + finales de la sesión actual + interim pendiente.
+    // (Antes se perdían los finales de la sesión en curso y el texto podía quedar duplicado/desordenado.)
+    const parts = [
+      accumulatedFinalRef.current,
+      sessionFinalRef.current.trim(),
+      latestInterimRef.current.trim(),
+    ].filter(Boolean)
+    if (parts.length > 0) {
+      const clean = collapseRepeats(parts.join(' ').trim())
       accumulatedFinalRef.current = clean
       setTranscript(clean)
-      latestInterimRef.current = ''
     }
+    sessionFinalRef.current = ''
+    latestInterimRef.current = ''
 
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.stop()
-      } catch {}
-    }
+    // Desconectar handlers y abortar: el texto ya fue consolidado, así evitamos que
+    // un onresult/onend tardío vuelva a añadir el mismo texto.
+    cleanupRecognition()
 
     setIsListening(false)
     setInterimTranscript('')
-  }, [])
+  }, [cleanupRecognition])
 
   const resetTranscript = useCallback(() => {
     accumulatedFinalRef.current = ''
     latestInterimRef.current = ''
+    sessionFinalRef.current = ''
     setTranscript('')
     setInterimTranscript('')
     setError(null)

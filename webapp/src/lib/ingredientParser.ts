@@ -165,6 +165,7 @@ export function isIngredientMatch(a: string, b: string): boolean {
     ['bife de chorizo', 'bife angosto'],
     ['ojo de bife', 'bife ancho'],
     ['lomo', 'lomo vacuno'],
+    ['cuadril', 'colita de cuadril'],
     ['pechito de cerdo', 'costillita de cerdo', 'costillas de cerdo'],
     ['matambrito', 'matambre de cerdo', 'matambrito de cerdo'],
     ['bondiola', 'bondiola de cerdo'],

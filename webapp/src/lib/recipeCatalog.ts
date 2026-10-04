@@ -375,6 +375,46 @@ const HANDCRAFTED_INTENT_RECIPES: LocalRecipe[] = [
     servings: 2,
     recipe_ingredients: [{ ingredient_name: 'papa' }, { ingredient_name: 'huevo' }, { ingredient_name: 'arveja' }],
   },
+  {
+    id: 'cat-asado-con-ensalada-mixta',
+    name: 'Asado criollo con ensalada de tomate y lechuga',
+    description: 'Corte tradicional de asado a las brasas o al horno servido con ensalada fresca mixta de lechuga y tomate.',
+    difficulty: 'Fácil',
+    prep_time: 35,
+    instructions: '1. Cocina el asado a la parrilla, plancha u horno hasta su punto jugoso.\n2. Lava y corta lechuga y tomates frescos.\n3. Aliña con aceite de oliva, vinagre y sal.\n4. Sirve la carne caliente acompañada de la ensalada fresca.',
+    servings: 4,
+    recipe_ingredients: [{ ingredient_name: 'asado' }, { ingredient_name: 'tomate' }, { ingredient_name: 'lechuga' }],
+  },
+  {
+    id: 'cat-cuadril-a-la-plancha-ensalada',
+    name: 'Bife de cuadril jugoso con ensalada fresca',
+    description: 'Corte tierno de cuadril sellado a fuego vivo acompañado de tomates frescos y hojas de lechuga.',
+    difficulty: 'Fácil',
+    prep_time: 15,
+    instructions: '1. Calienta bien la plancha con unas gotas de aceite.\n2. Sella los bifes de cuadril 3 a 4 minutos por lado para conservar sus jugos.\n3. Acompaña con ensalada fresca de tomate y lechuga al aliño suave.',
+    servings: 2,
+    recipe_ingredients: [{ ingredient_name: 'cuadril' }, { ingredient_name: 'tomate' }, { ingredient_name: 'lechuga' }],
+  },
+  {
+    id: 'cat-asado-de-tira-ensalada-mixta',
+    name: 'Asado de tira a la plancha con tomate y lechuga',
+    description: 'Tira de asado dorada a la plancha con costra crocante y ensalada clásica de lechuga y tomate.',
+    difficulty: 'Fácil',
+    prep_time: 25,
+    instructions: '1. Sella las tiras de asado en plancha bien caliente por ambos lados.\n2. Prepara la ensalada con hojas de lechuga crocante y gajos de tomate.\n3. Emplata la carne bien caliente junto a la ensalada.',
+    servings: 2,
+    recipe_ingredients: [{ ingredient_name: 'asado de tira' }, { ingredient_name: 'tomate' }, { ingredient_name: 'lechuga' }],
+  },
+  {
+    id: 'cat-colita-de-cuadril-con-tomate-lechuga',
+    name: 'Colita de cuadril al horno con ensalada mixta',
+    description: 'Colita de cuadril jugosa al horno terminada con fresca guarnición de tomate y lechuga crujiente.',
+    difficulty: 'Media',
+    prep_time: 40,
+    instructions: '1. Hornea la colita de cuadril a 190°C sazonada con sal y pimienta.\n2. Prepara la ensalada fresca de hojas de lechuga y rodajas de tomate.\n3. Corta la carne en rodajas y sirve con la ensalada fresca.',
+    servings: 4,
+    recipe_ingredients: [{ ingredient_name: 'colita de cuadril' }, { ingredient_name: 'tomate' }, { ingredient_name: 'lechuga' }],
+  },
 ]
 
 // 2. Generador gastronómico estructurado por afinidad culinaria real
@@ -398,16 +438,16 @@ const CULINARY_CLUSTERS: CulinaryCluster[] = [
       { verb: 'Grillado criollo de', diff: 'Fácil', time: 20, descAction: 'dorado a fuego fuerte con sal parrillera', instAction: 'Dora en plancha o parrilla caliente 5 a 7 minutos por lado.' },
     ],
     proteins: [
-      'asado de tira', 'vacio', 'entrana', 'matambre', 'bife de chorizo', 'ojo de bife',
-      'bife angosto', 'bife ancho', 'tapa de asado', 'colita de cuadril',
+      'asado de tira', 'asado', 'vacio', 'entrana', 'matambre', 'bife de chorizo', 'ojo de bife',
+      'bife angosto', 'bife ancho', 'tapa de asado', 'colita de cuadril', 'cuadril',
       'pechito de cerdo', 'bondiola', 'matambrito de cerdo', 'costillita de cerdo',
       'mollejas', 'chinchulines', 'chorizo criollo', 'provoleta'
     ],
     veggies: [
-      'morron rojo', 'morron verde', 'cebolla', 'papa', 'batata',
+      'tomate', 'lechuga', 'morron rojo', 'morron verde', 'cebolla', 'papa', 'batata',
       'choclo', 'berenjena', 'zapallito verde', 'zucchini'
     ],
-    bases: ['chimichurri', 'salsa criolla', 'papas rusticas', 'papas fritas', 'pan casero']
+    bases: ['chimichurri', 'salsa criolla', 'papas rusticas', 'papas fritas', 'pan casero', 'ensalada mixta']
   },
 
   // 2. Milanesas y rebozados crocantes
@@ -453,11 +493,11 @@ const CULINARY_CLUSTERS: CulinaryCluster[] = [
       { verb: 'Salteado a la provenzal de', diff: 'Fácil', time: 15, descAction: 'dorado a la sartén con ajo picado y perejil fresco', instAction: 'Saltea a fuego medio e incorpora ajo y perejil picado en el último minuto.' },
     ],
     proteins: [
-      'bife de chorizo', 'ojo de bife', 'lomo', 'pechuga de pollo', 'solomillo de cerdo',
+      'bife de chorizo', 'ojo de bife', 'lomo', 'cuadril', 'colita de cuadril', 'pechuga de pollo', 'solomillo de cerdo',
       'filet de merluza', 'salmon', 'atun', 'calamar', 'langostinos'
     ],
     veggies: [
-      'cebolla', 'morron rojo', 'morron verde', 'zucchini', 'zapallito verde',
+      'tomate', 'cebolla', 'morron rojo', 'morron verde', 'zucchini', 'zapallito verde',
       'champiñon', 'espinaca', 'brocoli', 'cebolla de verdeo', 'ajo'
     ],
     bases: ['arroz blanco', 'pure de papas', 'pure de calabaza', 'papas rusticas', 'pasta']

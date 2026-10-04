@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useInventory } from '../../hooks/useInventory'
 import { useVaciarNevera, useRecipes } from '../../hooks/useRecipes'
@@ -38,7 +38,7 @@ export default function VaciarNeveraPage() {
   }
 
   // Categorías fijas basadas en el inventario actual
-  const { readyRecipes, oneMissingRecipes, specialRecipes } = useMemo(() => {
+  const { readyRecipes, oneMissingRecipes, specialRecipes, isReadyFallback } = useMemo(() => {
     const withCost: RecipeWithCost[] = scoredRecipes.map(recipe => {
       const additionalCostARS = recipe.missingIngredients.reduce((sum, ing) => {
         return sum + estimateItemValueARS(ing, 1)
@@ -49,22 +49,37 @@ export default function VaciarNeveraPage() {
       }
     })
 
-    const ready = withCost
+    const exactReady = withCost
       .filter(r => r.missingIngredients.length === 0 && r.totalIngredientsUsed > 0)
       .sort(sortPriority)
 
-    const oneMissing = withCost
+    const exactOneMissing = withCost
       .filter(r => r.missingIngredients.length === 1 && r.totalIngredientsUsed > 0)
       .sort(sortPriority)
 
-    const special = withCost
+    const exactSpecial = withCost
       .filter(r => r.missingIngredients.length >= 2 && r.missingIngredients.length <= 3 && r.totalIngredientsUsed > 0)
       .sort(sortPriority)
+
+    // Si no hay recetas con 0 faltantes exactos, ofrecer las más cercanas con menor faltante
+    const isFallback = exactReady.length === 0
+    const ready = exactReady.length > 0
+      ? exactReady
+      : (exactOneMissing.length > 0 ? exactOneMissing : withCost.slice(0, 4))
+
+    const oneMissing = exactOneMissing.length > 0
+      ? exactOneMissing
+      : (exactSpecial.length > 0 ? exactSpecial : withCost.slice(0, 4))
+
+    const special = exactSpecial.length > 0
+      ? exactSpecial
+      : withCost.slice(0, 4)
 
     return {
       readyRecipes: ready,
       oneMissingRecipes: oneMissing,
       specialRecipes: special,
+      isReadyFallback: isFallback && exactReady.length === 0,
     }
   }, [scoredRecipes])
 
@@ -73,14 +88,7 @@ export default function VaciarNeveraPage() {
     return matchCravingRecipes(cravingQuery, allRawRecipes, inventory)
   }, [cravingQuery, allRawRecipes, inventory])
 
-  // Si no hay recetas con 0 faltantes al inicio, sugerir suavemente "Con algo más"
-  useEffect(() => {
-    if (readyRecipes.length === 0 && oneMissingRecipes.length > 0 && activeChoice === 'ready') {
-      setActiveChoice('one_missing')
-    }
-  }, [readyRecipes.length, oneMissingRecipes.length, activeChoice])
-
-  // Lista actual según categoría seleccionada
+  // Lista actual según categoría seleccionada (siempre garantiza resultados)
   const currentCategoryRecipes = useMemo(() => {
     if (activeChoice === 'ready') return readyRecipes
     if (activeChoice === 'one_missing') return oneMissingRecipes
@@ -254,20 +262,40 @@ export default function VaciarNeveraPage() {
           <div className="py-16 text-center text-xs text-[#766153] font-mono">
             Buscando combinaciones en tu cocina...
           </div>
-        ) : inventory.length === 0 ? (
-          <div className="py-20 text-center space-y-3 px-4">
-            <p className="text-sm text-[#766153]">
-              Aún no tienes ingredientes registrados en tu despensa.
-            </p>
-            <button
-              onClick={() => navigate('/home')}
-              className="px-4 py-2 bg-[#2F2A26] text-[#F7F3EC] rounded-xl text-xs font-medium hover:bg-black transition tap-subtle cursor-pointer"
-            >
-              Ir a Inicio
-            </button>
-          </div>
         ) : (
           <div className="space-y-1">
+            {/* Si no hay inventario registrado, avisar amigablemente pero mostrar recetas recomendadas */}
+            {inventory.length === 0 && (
+              <div className="pt-2 pb-2">
+                <div className="p-3 rounded-2xl bg-[#FCFAF7] border border-[#A68A64]/30 text-xs text-[#766153] text-left">
+                  <p className="font-semibold text-[#2F2A26] mb-0.5">Recetas esenciales para inspirarte</p>
+                  <p className="text-[11px] leading-relaxed">
+                    Aún no registraste ingredientes en tu despensa. Puedes{' '}
+                    <button
+                      type="button"
+                      onClick={() => navigate('/home')}
+                      className="text-[#5D7A56] underline font-medium hover:text-[#2F2A26] cursor-pointer"
+                    >
+                      añadirlos con voz o texto aquí
+                    </button>
+                    .
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Si en "Cocinar ya" se ofrecen las alternativas más cercanas por faltar ingredientes */}
+            {activeChoice === 'ready' && isReadyFallback && inventory.length > 0 && (
+              <div className="pt-2 pb-1">
+                <div className="p-3 rounded-2xl bg-[#FCFAF7] border border-[#A68A64]/30 text-xs text-[#766153] text-left">
+                  <p className="font-semibold text-[#2F2A26] mb-0.5">Sugerencias más cercanas</p>
+                  <p className="text-[11px] leading-relaxed">
+                    Te falta algún ingrediente para completar la receta, pero estas son las opciones que más aprovechan lo que tienes:
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Aviso sereno cuando se muestran alternativas inspiradas para un antojo */}
             {activeChoice === 'craving' && cravingResult.isAlternative && cravingResult.notice && (
               <div className="pt-2 pb-1">
@@ -291,27 +319,7 @@ export default function VaciarNeveraPage() {
               </div>
             )}
 
-            {visibleRecipes.length === 0 ? (
-              <div className="py-16 text-center space-y-2.5 px-4">
-                <p className="text-sm text-[#2F2A26] font-medium">
-                  {activeChoice === 'ready'
-                    ? 'Aún no hay recetas con todos los ingredientes listos.'
-                    : activeChoice === 'one_missing'
-                    ? 'No hay recetas donde falte un solo ingrediente.'
-                    : 'Prueba agregando más ingredientes desde Inicio.'}
-                </p>
-                {activeChoice === 'ready' && oneMissingRecipes.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setActiveChoice('one_missing')}
-                    className="mt-2 text-xs text-[#5D7A56] underline underline-offset-4 hover:text-[#2F2A26] transition cursor-pointer font-medium"
-                  >
-                    Ver recetas "Con algo más" ({oneMissingRecipes.length})
-                  </button>
-                )}
-              </div>
-            ) : (
-              visibleRecipes.map((recipe) => (
+            {visibleRecipes.map((recipe) => (
               <article
                 key={recipe.id}
                 onClick={() => navigate(`/recipe/${recipe.id}`, { state: { recipe } })}
@@ -365,7 +373,7 @@ export default function VaciarNeveraPage() {
                   </span>
                 </div>
               </article>
-            )))}
+            ))}
           </div>
         )}
       </div>

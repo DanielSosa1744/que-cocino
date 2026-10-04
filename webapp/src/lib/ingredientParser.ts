@@ -143,14 +143,39 @@ export function isIngredientMatch(a: string, b: string): boolean {
   if (normA === normB) return true
   if (normA.includes(normB) || normB.includes(normA)) return true
 
-  // Sinónimos comunes en cocina
+  // Sinónimos comunes en cocina española e hispanoamericana (especialmente cortes y términos argentinos)
   const synonyms: Array<string[]> = [
-    ['patata', 'papa'],
-    ['pollo', 'pechuga'],
-    ['carne', 'ternera', 'cerdo', 'picada'],
-    ['seta', 'champinon', 'hongos'],
-    ['platano', 'banana'],
-    ['alubia', 'judia', 'frijol', 'habichuela'],
+    // Carnes vacunas y cortes argentinos
+    ['carne', 'ternera', 'vacuna', 'vaca', 'bife', 'bife de chorizo', 'ojo de bife', 'bife angosto', 'bife ancho', 'asado', 'asado de tira', 'tira de asado', 'vacio', 'vacio vacuno', 'matambre', 'entrana', 'entraña', 'lomo', 'lomo vacuno', 'colita de cuadril', 'cuadril', 'tapa de asado', 'peceto', 'nalga', 'bola de lomo', 'cuadrada', 'tortuguita', 'paleta', 'roast beef', 'osobuco', 'falda', 'azotillo', 'marucha', 'carnaza', 'picada', 'carne picada'],
+    // Cerdo y cortes
+    ['cerdo', 'pechito', 'pechito de cerdo', 'bondiola', 'bondiola de cerdo', 'matambrito', 'matambre de cerdo', 'matambrito de cerdo', 'solomillo', 'solomillo de cerdo', 'carre de cerdo', 'costillita de cerdo', 'costillas de cerdo', 'panceta', 'tocino', 'bacon'],
+    // Achuras y embutidos argentinos
+    ['achura', 'achuras', 'molleja', 'mollejas', 'chinchulin', 'chinchulines', 'rinon', 'riñon', 'riñones', 'morcilla', 'morcillas', 'chorizo', 'chorizos', 'chorizo criollo', 'salchicha parrillera', 'salchicha'],
+    // Pollo y aves
+    ['pollo', 'pechuga', 'pechuga de pollo', 'pata muslo', 'muslo', 'suprema', 'suprema de pollo', 'alitas', 'alitas de pollo', 'pavo'],
+    // Pescados y mariscos
+    ['pescado', 'merluza', 'filet de merluza', 'salmon', 'salmón', 'atun', 'atún', 'corvina', 'boga', 'pejerrey', 'dorado', 'surubi', 'surubí', 'calamar', 'tubo de calamar', 'rabas', 'langostino', 'langostinos', 'camaron', 'camarones', 'mejillon', 'mejillones'],
+    // Verduras y hortalizas
+    ['patata', 'patatas', 'papa', 'papas', 'papa blanca', 'papa negra'],
+    ['pimiento', 'pimientos', 'morron', 'morrón', 'morron rojo', 'morron verde', 'morron amarillo', 'aji', 'ají'],
+    ['maiz', 'maíz', 'choclo', 'granos de choclo'],
+    ['aguacate', 'palta', 'paltas'],
+    ['fresa', 'fresas', 'frutilla', 'frutillas'],
+    ['guisante', 'guisantes', 'arveja', 'arvejas'],
+    ['judia', 'judias', 'chaucha', 'chauchas', 'alubia', 'alubias', 'poroto', 'porotos', 'frijol', 'frijoles'],
+    ['calabacin', 'calabacín', 'zucchini', 'zapallito', 'zapallito verde', 'zapallitos'],
+    ['calabaza', 'zapallo', 'zapallo anco', 'zapallo cabutia', 'anco'],
+    ['camote', 'batata', 'batatas', 'boniato'],
+    ['platano', 'plátano', 'banana', 'bananas'],
+    ['seta', 'setas', 'champinon', 'champiñon', 'champiñones', 'hongo', 'hongos', 'girgola', 'gírgola', 'portobello'],
+    ['cebolla de verdeo', 'verdeo', 'cebollino', 'ciboulette'],
+    ['ajo', 'ajos', 'diente de ajo', 'dientes de ajo'],
+    ['lechuga', 'rucula', 'rúcula', 'radicheta', 'escarola', 'berro'],
+    // Lácteos, quesos y masas
+    ['queso', 'queso cremoso', 'cremoso', 'cuartirolo', 'mozzarella', 'muzarella', 'provoleta', 'provolone', 'reggianito', 'parmesano', 'sardo', 'roquefort', 'queso azul', 'queso crema', 'ricota'],
+    ['leche', 'crema', 'crema de leche', 'nata'],
+    ['tapa de empanada', 'tapas de empanadas', 'masa de tarta', 'pascualina', 'disco de empanada', 'masa'],
+    ['fideos', 'pasta', 'tallarines', 'spaghetti', 'ñoquis', 'ravioles', 'sorrentinos', 'canelones', 'lasana', 'lasaña'],
   ]
 
   for (const group of synonyms) {
@@ -282,6 +307,35 @@ export function estimateItemValueARS(name: string, quantity: number = 1, unit?: 
     ajo: 350,
     aceite: 3500,
     carne: 4500,
+    asado: 3800,
+    vacio: 4200,
+    entrana: 4500,
+    matambre: 4000,
+    bife: 4200,
+    lomo: 5500,
+    cuadril: 3900,
+    nalga: 3600,
+    peceto: 4400,
+    osobuco: 2600,
+    falda: 2200,
+    bondiola: 3400,
+    pechito: 3200,
+    matambrito: 4100,
+    molleja: 4800,
+    chinchulin: 2100,
+    morcilla: 1600,
+    chorizo: 1900,
+    morron: 850,
+    choclo: 600,
+    palta: 1100,
+    zapallito: 500,
+    zapallo: 700,
+    batata: 650,
+    arveja: 800,
+    chaucha: 900,
+    acelga: 600,
+    rucula: 550,
+    verdeo: 450,
     espinaca: 1200,
     manzana: 650,
     platano: 550,
@@ -404,6 +458,20 @@ export function extractIngredients(text: string): ParsedIngredient[] {
       if (unitMatch && quantity !== null) {
         unit = unitMatch
         continue
+      }
+
+      if (token === 'de' || token === 'del') {
+        const last = ingredientTokens[ingredientTokens.length - 1]
+        const allowedPre = [
+          'asado', 'bife', 'ojo', 'colita', 'bola', 'tapa', 'pechito', 'bondiola',
+          'matambre', 'matambrito', 'solomillo', 'costillita', 'pechuga', 'alitas',
+          'cebolla', 'dulce', 'crema', 'pure', 'puré', 'tapas', 'aceite', 'salsa',
+          'filet', 'diente', 'pata', 'cuadril', 'nalga'
+        ]
+        if (last && allowedPre.some(p => last.includes(p))) {
+          ingredientTokens.push(token)
+          continue
+        }
       }
 
       if (SKIP_WORDS.has(token)) continue

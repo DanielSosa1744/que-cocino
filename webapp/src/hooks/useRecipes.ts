@@ -53,8 +53,6 @@ export function useVaciarNevera(inventory: InventoryItem[]) {
   return useQuery<RecipeWithScore[]>({
     queryKey: ['vaciar-nevera', inventory.map(i => `${i.id}-${i.name}-${i.urgency}`).join(',')],
     queryFn: async () => {
-      if (inventory.length === 0) return []
-
       let rawRecipes: RawRecipe[] = []
 
       if (!isSupabaseConfigured) {
@@ -71,6 +69,10 @@ export function useVaciarNevera(inventory: InventoryItem[]) {
           console.warn('Error fetching Supabase recipes, fallback a localStore:', err)
           rawRecipes = localStore.getRecipes()
         }
+      }
+
+      if (rawRecipes.length === 0) {
+        rawRecipes = localStore.getRecipes()
       }
 
       const scored: RecipeWithScore[] = rawRecipes.map((recipe) => {
@@ -106,21 +108,28 @@ export function useVaciarNevera(inventory: InventoryItem[]) {
         }
       })
 
-      // Únicamente recetas reales de la base de datos compatibles con el inventario
-      // Ordenadas descendentemente por score y porcentaje de coincidencia
-      const compatible = scored
-        .filter(r => r.totalIngredientsUsed > 0)
-        .sort((a, b) => {
-          if (b.score !== a.score) return b.score - a.score
-          if ((b.matchPercentage ?? 0) !== (a.matchPercentage ?? 0)) {
-            return (b.matchPercentage ?? 0) - (a.matchPercentage ?? 0)
-          }
+      // Ordenar por afinidad con el inventario
+      const sorted = scored.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score
+        if ((b.matchPercentage ?? 0) !== (a.matchPercentage ?? 0)) {
+          return (b.matchPercentage ?? 0) - (a.matchPercentage ?? 0)
+        }
+        if (b.urgentIngredientsUsed !== a.urgentIngredientsUsed) {
           return b.urgentIngredientsUsed - a.urgentIngredientsUsed
-        })
+        }
+        return (a.prep_time ?? 15) - (b.prep_time ?? 15)
+      })
 
-      return compatible
+      // Si hay compatibles con el inventario, devolverlos
+      const compatible = sorted.filter(r => r.totalIngredientsUsed > 0)
+      if (compatible.length > 0) {
+        return compatible
+      }
+
+      // Si el inventario está vacío o no hay match total, garantizar que siempre se devuelvan alternativas útiles
+      return sorted
     },
-    enabled: inventory.length > 0,
+    enabled: true,
   })
 }
 

@@ -15,9 +15,12 @@ export default function HomePage() {
     transcript,
     interimTranscript,
     isListening,
+    isSupported,
+    error,
     startListening,
     stopListening,
     resetTranscript,
+    simulateVoiceInput,
   } = useSpeechRecognition()
 
   const currentVoiceText = (transcript + (interimTranscript ? ` ${interimTranscript}` : '')).trim()
@@ -46,6 +49,15 @@ export default function HomePage() {
           expires_at: p.expiryDays != null ? defaultExpiryDate(p.expiryDays) : null,
         }))
         await addIngredients(items)
+      } else {
+        // Asegurar que cualquier ingrediente introducido quede registrado
+        await addIngredients([{
+          name: trimmed,
+          quantity: 1,
+          unit: 'ud',
+          category: guessCategory(trimmed),
+          expires_at: defaultExpiryDate(7),
+        }])
       }
       navigate('/recetas')
     } catch (err) {
@@ -144,8 +156,28 @@ export default function HomePage() {
             </div>
           </div>
         ) : (
-          /* Formulario de entrada limpio */
-          <form onSubmit={handleTextSubmit} className="space-y-4">
+          <>
+            {/* Aviso amigable y discreto si el micrófono tiene error o no está disponible */}
+            {(!isSupported || error) && (
+              <div className="mb-4 p-3.5 rounded-2xl bg-[#FCFAF7] border border-[#A68A64]/30 text-xs text-[#766153] text-left animate-fade-in shadow-2xs">
+                <p className="font-semibold text-[#2F2A26] mb-1">
+                  Micrófono no disponible
+                </p>
+                <p className="leading-relaxed text-[11px]">
+                  Puedes escribir tus ingredientes abajo o usar un dictado de prueba.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => simulateVoiceInput('asado de tira, papas, morrón y cebolla')}
+                  className="mt-2 text-[11px] font-medium text-[#5D7A56] hover:underline block cursor-pointer"
+                >
+                  Usar ingredientes de ejemplo →
+                </button>
+              </div>
+            )}
+
+            {/* Formulario de entrada limpio */}
+            <form onSubmit={handleTextSubmit} className="space-y-4">
             <div>
               <input
                 type="text"
@@ -176,7 +208,8 @@ export default function HomePage() {
               </button>
             </div>
           </form>
-        )}
+        </>
+      )}
 
         {/* Ejemplo sugerido */}
         <div className="mt-8 pt-4 border-t border-[#766153]/15 text-xs text-[#766153]">

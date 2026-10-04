@@ -134,21 +134,9 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
     isListeningRef.current = true
     setIsListening(true)
 
-    // Solicitar / verificar permisos de micrófono
-    if (typeof navigator !== 'undefined' && navigator.mediaDevices?.getUserMedia) {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-        stream.getTracks().forEach(track => track.stop())
-      } catch (err: any) {
-        if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
-          setErrorCode('not-allowed')
-          setError(humanizeSpeechError('not-allowed'))
-          setIsListening(false)
-          isListeningRef.current = false
-          return
-        }
-      }
-    }
+    // Iniciar sesión de reconocimiento de voz directamente.
+    // SpeechRecognition maneja nativamente la solicitud de permisos del micrófono
+    // sin el bloqueo de hardware que produce getUserMedia() + track.stop() inmediato en Chromium.
 
     const initRecognitionSession = () => {
       if (!isListeningRef.current || userStoppedRef.current) return

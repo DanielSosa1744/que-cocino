@@ -1,5 +1,5 @@
-import type { LocalRecipe } from './localStore'
-import { INITIAL_RECIPES } from './localStore'
+import type { LocalRecipe } from './initialRecipes'
+import { INITIAL_RECIPES } from './initialRecipes'
 
 /**
  * Catálogo masivo de más de 3000 recetas culinarias estructuradas,
@@ -327,4 +327,8 @@ export function getFullRecipeCatalog(): LocalRecipe[] {
   return _catalogCache
 }
 
-export const TOTAL_RECIPES_COUNT = getFullRecipeCatalog().length
+export function getTotalRecipesCount(): number {
+  return getFullRecipeCatalog().length
+}
+
+export const TOTAL_RECIPES_COUNT = 3150

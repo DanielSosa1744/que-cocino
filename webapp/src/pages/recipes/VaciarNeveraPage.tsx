@@ -195,41 +195,41 @@ export default function VaciarNeveraPage() {
         {/* Filigrana superior con rombos y filetes */}
         <div className="flex items-center justify-center gap-2 mb-1 opacity-80">
           <span className="h-[1px] w-6 sm:w-10 bg-gradient-to-r from-transparent to-[#A88B57]" />
-          <span className="text-[#A88B57] text-[10px]">✦</span>
-          <span className="text-[10px] tracking-[0.22em] uppercase font-semibold text-[#8F7347]">
+          <span className="text-[#A88B57] text-xs">✦</span>
+          <span className="text-xs sm:text-sm tracking-[0.22em] uppercase font-semibold text-[#8F7347]">
             Menu du Jour · Selección del Chef
           </span>
-          <span className="text-[#A88B57] text-[10px]">✦</span>
+          <span className="text-[#A88B57] text-xs">✦</span>
           <span className="h-[1px] w-6 sm:w-10 bg-gradient-to-l from-transparent to-[#A88B57]" />
         </div>
 
         <h1 className="font-menu-title text-2xl sm:text-3xl font-bold text-[#1C1917] tracking-tight">
           Carta de Temporada
         </h1>
-        <p className="font-menu-serif italic text-xs sm:text-sm text-[#766153] mt-0.5">
+        <p className="font-menu-serif italic text-sm sm:text-base text-[#766153] mt-1">
           Propuestas de alta cocina elaboradas con los ingredientes de tu despensa
         </p>
 
         {/* Selector de Pliegos / Categorías de la Carta */}
-        <div className="pt-2.5 pb-1">
-          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+        <div className="pt-3 pb-1">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-2">
             {/* Botón 1: Servicio Directo (Cocinar ya) */}
             <button
               type="button"
               onClick={() => setActiveChoice('ready')}
-              className={`relative px-3 py-2 rounded-xl transition-all duration-300 tap-subtle cursor-pointer select-none flex items-center justify-between sm:justify-start gap-1.5 text-left border ${
+              className={`relative px-3.5 py-2.5 rounded-xl transition-all duration-300 tap-subtle cursor-pointer select-none flex items-center justify-between sm:justify-start gap-2 text-left border ${
                 activeChoice === 'ready'
                   ? 'bg-[#FAF7F2] border-[#A88B57] text-[#1C1917] shadow-[0_2px_12px_rgba(168,139,87,0.18)] font-semibold ring-1 ring-[#A88B57]/40'
                   : 'bg-[#FCFAF7]/90 border-[#A88B57]/20 text-[#766153] hover:border-[#A88B57]/50 hover:bg-[#FAF7F2] font-medium'
               }`}
             >
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] text-[#A88B57] font-serif">I.</span>
-                <span className="font-menu-serif text-xs sm:text-sm tracking-wide">Servicio Directo</span>
+                <span className="text-xs text-[#A88B57] font-serif font-semibold">I.</span>
+                <span className="font-menu-serif text-sm sm:text-base tracking-wide">Servicio Directo</span>
               </div>
               {readyRecipes.length > 0 && (
                 <span
-                  className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                  className={`text-xs font-mono px-2 py-0.5 rounded-full ${
                     activeChoice === 'ready'
                       ? 'bg-[#A88B57]/20 text-[#8F7347] font-bold'
                       : 'bg-[#766153]/10 text-[#766153]'
@@ -244,19 +244,19 @@ export default function VaciarNeveraPage() {
             <button
               type="button"
               onClick={() => setActiveChoice('one_missing')}
-              className={`relative px-3 py-2 rounded-xl transition-all duration-300 tap-subtle cursor-pointer select-none flex items-center justify-between sm:justify-start gap-1.5 text-left border ${
+              className={`relative px-3.5 py-2.5 rounded-xl transition-all duration-300 tap-subtle cursor-pointer select-none flex items-center justify-between sm:justify-start gap-2 text-left border ${
                 activeChoice === 'one_missing'
                   ? 'bg-[#FAF7F2] border-[#A88B57] text-[#1C1917] shadow-[0_2px_12px_rgba(168,139,87,0.18)] font-semibold ring-1 ring-[#A88B57]/40'
                   : 'bg-[#FCFAF7]/90 border-[#A88B57]/20 text-[#766153] hover:border-[#A88B57]/50 hover:bg-[#FAF7F2] font-medium'
               }`}
             >
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] text-[#A88B57] font-serif">II.</span>
-                <span className="font-menu-serif text-xs sm:text-sm tracking-wide">Toque del Chef</span>
+                <span className="text-xs text-[#A88B57] font-serif font-semibold">II.</span>
+                <span className="font-menu-serif text-sm sm:text-base tracking-wide">Toque del Chef</span>
               </div>
               {oneMissingRecipes.length > 0 && (
                 <span
-                  className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                  className={`text-xs font-mono px-2 py-0.5 rounded-full ${
                     activeChoice === 'one_missing'
                       ? 'bg-[#A88B57]/20 text-[#8F7347] font-bold'
                       : 'bg-[#766153]/10 text-[#766153]'
@@ -271,19 +271,19 @@ export default function VaciarNeveraPage() {
             <button
               type="button"
               onClick={() => setActiveChoice('special')}
-              className={`relative px-3 py-2 rounded-xl transition-all duration-300 tap-subtle cursor-pointer select-none flex items-center justify-between sm:justify-start gap-1.5 text-left border ${
+              className={`relative px-3.5 py-2.5 rounded-xl transition-all duration-300 tap-subtle cursor-pointer select-none flex items-center justify-between sm:justify-start gap-2 text-left border ${
                 activeChoice === 'special'
                   ? 'bg-[#FAF7F2] border-[#A88B57] text-[#1C1917] shadow-[0_2px_12px_rgba(168,139,87,0.18)] font-semibold ring-1 ring-[#A88B57]/40'
                   : 'bg-[#FCFAF7]/90 border-[#A88B57]/20 text-[#766153] hover:border-[#A88B57]/50 hover:bg-[#FAF7F2] font-medium'
               }`}
             >
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] text-[#A88B57] font-serif">III.</span>
-                <span className="font-menu-serif text-xs sm:text-sm tracking-wide">Platos de Autor</span>
+                <span className="text-xs text-[#A88B57] font-serif font-semibold">III.</span>
+                <span className="font-menu-serif text-sm sm:text-base tracking-wide">Platos de Autor</span>
               </div>
               {specialRecipes.length > 0 && (
                 <span
-                  className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
+                  className={`text-xs font-mono px-2 py-0.5 rounded-full ${
                     activeChoice === 'special'
                       ? 'bg-[#A88B57]/20 text-[#8F7347] font-bold'
                       : 'bg-[#766153]/10 text-[#766153]'
@@ -298,15 +298,15 @@ export default function VaciarNeveraPage() {
             <button
               type="button"
               onClick={() => setActiveChoice('craving')}
-              className={`relative px-3 py-2 rounded-xl transition-all duration-300 tap-subtle cursor-pointer select-none flex items-center justify-between sm:justify-start gap-1.5 text-left border ${
+              className={`relative px-3.5 py-2.5 rounded-xl transition-all duration-300 tap-subtle cursor-pointer select-none flex items-center justify-between sm:justify-start gap-2 text-left border ${
                 activeChoice === 'craving'
                   ? 'bg-[#FAF7F2] border-[#A88B57] text-[#1C1917] shadow-[0_2px_12px_rgba(168,139,87,0.18)] font-semibold ring-1 ring-[#A88B57]/40'
                   : 'bg-[#FCFAF7]/90 border-[#A88B57]/20 text-[#766153] hover:border-[#A88B57]/50 hover:bg-[#FAF7F2] font-medium'
               }`}
             >
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] text-[#A88B57] font-serif">IV.</span>
-                <span className="font-menu-serif text-xs sm:text-sm tracking-wide">A la Carta</span>
+                <span className="text-xs text-[#A88B57] font-serif font-semibold">IV.</span>
+                <span className="font-menu-serif text-sm sm:text-base tracking-wide">A la Carta</span>
               </div>
             </button>
           </div>
@@ -314,20 +314,20 @@ export default function VaciarNeveraPage() {
 
         {/* Sección interactiva de "A la Carta" */}
         {activeChoice === 'craving' && (
-          <div className="pt-2 pb-2 space-y-2 max-w-md mx-auto animate-fade-in text-left">
+          <div className="pt-2.5 pb-2 space-y-2.5 max-w-md mx-auto animate-fade-in text-left">
             <div className="relative">
               <input
                 type="text"
                 value={cravingQuery}
                 onChange={e => setCravingQuery(e.target.value)}
                 placeholder="¿Qué plato o antojo desea degustar hoy? (ej. pasta, lomo, pizza...)"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF7F2] border border-[#A88B57]/40 focus:border-[#8F7347] focus:outline-none text-xs text-[#1C1917] placeholder:text-[#766153]/60 transition shadow-inner font-menu-serif"
+                className="w-full px-4 py-3 rounded-xl bg-[#FAF7F2] border border-[#A88B57]/40 focus:border-[#8F7347] focus:outline-none text-sm text-[#1C1917] placeholder:text-[#766153]/60 transition shadow-inner font-menu-serif"
               />
               {cravingQuery && (
                 <button
                   type="button"
                   onClick={() => setCravingQuery('')}
-                  className="absolute right-3 top-2.5 text-xs text-[#766153] hover:text-[#1C1917]"
+                  className="absolute right-3 top-3 text-sm text-[#766153] hover:text-[#1C1917]"
                 >
                   ✕
                 </button>
@@ -335,14 +335,14 @@ export default function VaciarNeveraPage() {
             </div>
 
             {/* Píldoras de sugerencias gastronómicas */}
-            <div className="flex flex-wrap items-center gap-1.5">
-              <span className="text-[11px] font-menu-serif text-[#8F7347] italic mr-1">Inspiración:</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-menu-serif text-[#8F7347] italic mr-1">Inspiración:</span>
               {CRAVING_SUGGESTIONS.map((item) => (
                 <button
                   key={item}
                   type="button"
                   onClick={() => setCravingQuery(item)}
-                  className={`px-2.5 py-1 rounded-full text-[11px] transition tap-subtle cursor-pointer font-menu-serif ${
+                  className={`px-3 py-1.5 rounded-full text-xs sm:text-sm transition tap-subtle cursor-pointer font-menu-serif ${
                     cravingQuery.toLowerCase() === item.toLowerCase()
                       ? 'bg-[#8F7347] text-[#FAF7F2] font-medium shadow-xs'
                       : 'bg-[#FCFAF7] border border-[#A88B57]/30 text-[#1C1917] hover:border-[#8F7347] hover:bg-[#FAF7F2]'
@@ -357,7 +357,7 @@ export default function VaciarNeveraPage() {
       </div>
 
       {/* Catálogo de la Carta: Pliegos editoriales de alta cocina */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 pb-8 space-y-3">
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 pb-8 space-y-3.5">
         {isLoading ? (
           <CookingPotAnimation
             inline
@@ -365,15 +365,15 @@ export default function VaciarNeveraPage() {
             subMessage="Combinando sabores y armonizando ingredientes..."
           />
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             {/* Si no hay inventario registrado */}
             {inventory.length === 0 && (
               <div className="pt-2 pb-1">
-                <div className="p-4 rounded-2xl menu-card-frame text-xs text-[#766153] text-left">
-                  <p className="font-menu-title font-semibold text-[#1C1917] mb-1 text-sm">
+                <div className="p-4 rounded-2xl menu-card-frame text-sm text-[#766153] text-left">
+                  <p className="font-menu-title font-semibold text-[#1C1917] mb-1 text-base">
                     ✦ Selección del Chef para su inspiración
                   </p>
-                  <p className="font-menu-serif leading-relaxed text-xs">
+                  <p className="font-menu-serif leading-relaxed text-sm">
                     Su despensa está libre de ingredientes en este momento. Puede{' '}
                     <button
                       type="button"
@@ -391,11 +391,11 @@ export default function VaciarNeveraPage() {
             {/* Si en "Servicio Directo" se ofrecen las alternativas más cercanas */}
             {activeChoice === 'ready' && isReadyFallback && inventory.length > 0 && (
               <div className="pt-1 pb-1">
-                <div className="p-3.5 rounded-2xl bg-[#FCFAF7] border border-[#A88B57]/30 text-xs text-[#766153] text-left">
-                  <p className="font-menu-title font-semibold text-[#1C1917] mb-0.5 text-xs">
+                <div className="p-4 rounded-2xl bg-[#FCFAF7] border border-[#A88B57]/30 text-sm text-[#766153] text-left">
+                  <p className="font-menu-title font-semibold text-[#1C1917] mb-1 text-sm">
                     ✦ Propuestas más afines a su selección
                   </p>
-                  <p className="font-menu-serif text-xs leading-relaxed">
+                  <p className="font-menu-serif text-sm leading-relaxed">
                     Estas alternativas maximizan el uso de los ingredientes presentes en su mesa:
                   </p>
                 </div>
@@ -406,10 +406,10 @@ export default function VaciarNeveraPage() {
             {activeChoice === 'craving' && cravingResult.isAlternative && cravingResult.notice && (
               <div className="pt-1 pb-1">
                 <div className="p-4 rounded-2xl menu-card-frame text-left">
-                  <p className="font-menu-title text-sm font-semibold text-[#1C1917] leading-snug">
+                  <p className="font-menu-title text-base font-semibold text-[#1C1917] leading-snug">
                     ✦ {cravingResult.notice.title}
                   </p>
-                  <p className="font-menu-serif text-xs text-[#766153] mt-1 leading-relaxed">
+                  <p className="font-menu-serif text-sm text-[#766153] mt-1.5 leading-relaxed">
                     {cravingResult.notice.subtitle}
                   </p>
                 </div>
@@ -419,7 +419,7 @@ export default function VaciarNeveraPage() {
             {/* Encabezado suave para antojos */}
             {activeChoice === 'craving' && !cravingQuery.trim() && (
               <div className="pt-1 pb-1 text-center">
-                <p className="font-menu-serif italic text-xs text-[#8F7347]">
+                <p className="font-menu-serif italic text-sm text-[#8F7347]">
                   — Selección gastronómica para tentar al paladar —
                 </p>
               </div>
@@ -439,34 +439,34 @@ export default function VaciarNeveraPage() {
                 <div className="absolute bottom-2.5 right-2.5 w-2 h-2 border-b border-r border-[#A88B57]/60 pointer-events-none" />
 
                 {/* Encabezado del plato: Pase y tiempo */}
-                <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] tracking-[0.2em] uppercase font-serif text-[#A88B57] font-semibold">
+                    <span className="text-xs tracking-[0.2em] uppercase font-serif text-[#A88B57] font-semibold">
                       PASE Nº 0{index + 1}
                     </span>
                     {recipe.recentIngredientsUsed != null && recipe.recentIngredientsUsed > 0 && (
-                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#EBF1E8] border border-[#5D7A56]/30 text-[#385333] inline-flex items-center gap-1">
+                      <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[#EBF1E8] border border-[#5D7A56]/30 text-[#385333] inline-flex items-center gap-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#5D7A56]" />
                         ✦ Cosecha prioritaria
                       </span>
                     )}
                   </div>
-                  <span className="text-[11px] font-menu-serif text-[#766153] italic tracking-wider">
+                  <span className="text-xs sm:text-sm font-menu-serif text-[#766153] italic tracking-wider">
                     · {recipe.prep_time || 15} min de elaboración ·
                   </span>
                 </div>
 
                 {/* Título noble del plato */}
-                <h2 className="font-menu-title text-lg sm:text-xl font-bold text-[#1C1917] tracking-tight group-hover:text-[#8F7347] transition leading-snug">
+                <h2 className="font-menu-title text-xl sm:text-2xl font-bold text-[#1C1917] tracking-tight group-hover:text-[#8F7347] transition leading-snug">
                   {recipe.name}
                 </h2>
 
                 {/* Composición del plato (Ingredientes disponibles) */}
-                <div className="mt-3 pt-2 border-t border-[#A88B57]/15">
-                  <p className="font-menu-serif italic text-xs text-[#766153] mb-1">
+                <div className="mt-3 pt-2.5 border-t border-[#A88B57]/15">
+                  <p className="font-menu-serif italic text-xs sm:text-sm text-[#766153] mb-1.5">
                     Composición del plato:
                   </p>
-                  <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
+                  <div className="flex flex-wrap gap-x-3.5 gap-y-1.5 text-sm sm:text-base">
                     {recipe.matchedIngredients.length > 0 ? (
                       [...recipe.matchedIngredients]
                         .sort((a, b) => getIngredientImportance(b) - getIngredientImportance(a))
@@ -474,10 +474,10 @@ export default function VaciarNeveraPage() {
                           const isRecent = recentIngredients.some(rec => isIngredientMatch(rec, ing) || isIngredientMatch(ing, rec))
                           return (
                             <span key={i} className="text-[#2F2A26] inline-flex items-center gap-1 font-medium">
-                              <span className="text-[#A88B57] text-[8px]">✦</span>
+                              <span className="text-[#A88B57] text-[9px]">✦</span>
                               <span className="capitalize">{ing}</span>
                               {isRecent && (
-                                <span className="text-[10px] text-[#5D7A56] font-normal">
+                                <span className="text-xs text-[#5D7A56] font-normal">
                                   (fresco)
                                 </span>
                               )}
@@ -485,16 +485,16 @@ export default function VaciarNeveraPage() {
                           )
                         })
                     ) : (
-                      <span className="text-[#766153] italic text-xs">Propuesta gourmet sugerida</span>
+                      <span className="text-[#766153] italic text-sm">Propuesta gourmet sugerida</span>
                     )}
                   </div>
                 </div>
 
                 {/* Ingredientes faltantes / suplementos sugeridos */}
                 {recipe.missingIngredients.length > 0 && (
-                  <div className="mt-2.5 pt-2 border-t border-dashed border-[#A88B57]/20 text-xs text-[#766153] flex flex-wrap items-baseline justify-between gap-1">
+                  <div className="mt-3 pt-2.5 border-t border-dashed border-[#A88B57]/20 text-xs sm:text-sm text-[#766153] flex flex-wrap items-baseline justify-between gap-1.5">
                     <div>
-                      <span className="font-menu-serif italic text-[#8F7347]">
+                      <span className="font-menu-serif italic text-[#8F7347] font-medium">
                         {recipe.missingIngredients.length === 1 ? 'Aporte sugerido: ' : 'Aportes sugeridos: '}
                       </span>
                       <span className="text-[#2F2A26] font-medium capitalize">
@@ -503,20 +503,20 @@ export default function VaciarNeveraPage() {
                           .join(', ')}
                       </span>
                     </div>
-                    <span className="text-[11px] font-mono text-[#8F7347] bg-[#A88B57]/10 px-2 py-0.5 rounded-md">
+                    <span className="text-xs font-mono text-[#8F7347] bg-[#A88B57]/10 px-2 py-0.5 rounded-md font-semibold">
                       est. ARS {recipe.additionalCostARS.toLocaleString('es-AR')}
                     </span>
                   </div>
                 )}
 
                 {/* Pie del plato con adorno refinado y llamada a la acción */}
-                <div className="mt-3.5 pt-2 flex items-center justify-between text-xs border-t border-[#A88B57]/15">
-                  <div className="flex items-center gap-1 text-[#A88B57]/60 text-[10px]">
+                <div className="mt-4 pt-2.5 flex items-center justify-between text-xs sm:text-sm border-t border-[#A88B57]/15">
+                  <div className="flex items-center gap-1 text-[#A88B57]/60 text-xs">
                     <span>—</span>
                     <span>❖</span>
                     <span>—</span>
                   </div>
-                  <span className="font-menu-serif text-sm text-[#8F7347] group-hover:text-[#1C1917] transition inline-flex items-center gap-1 font-semibold">
+                  <span className="font-menu-serif text-sm sm:text-base text-[#8F7347] group-hover:text-[#1C1917] transition inline-flex items-center gap-1 font-semibold">
                     Consultar elaboración del Chef
                     <span className="group-hover:translate-x-1 transition-transform">→</span>
                   </span>

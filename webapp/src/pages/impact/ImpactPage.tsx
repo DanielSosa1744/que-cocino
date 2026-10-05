@@ -46,41 +46,41 @@ export default function ImpactPage() {
           <>
             {/* Tres pliegos métricos gourmet */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="menu-card-frame rounded-2xl p-4 text-center relative">
-                <span className="text-[#A88B57] text-[10px] block mb-1">✦</span>
-                <p className="text-2xl font-bold text-[#1C1917] font-mono tracking-tight">
+              <div className="menu-card-frame rounded-2xl p-4 sm:p-5 text-center relative">
+                <span className="text-[#A88B57] text-xs block mb-1">✦</span>
+                <p className="text-3xl font-bold text-[#1C1917] font-mono tracking-tight">
                   {cookedCount}
                 </p>
-                <p className="font-menu-serif font-semibold text-xs text-[#8F7347] uppercase tracking-wider mt-1">
+                <p className="font-menu-serif font-bold text-sm sm:text-base text-[#8F7347] uppercase tracking-wider mt-1.5">
                   Platos Servidos
                 </p>
-                <p className="font-menu-serif italic text-[11px] text-[#766153] mt-0.5">
+                <p className="font-menu-serif italic text-xs sm:text-sm text-[#766153] mt-0.5">
                   Elaboraciones culminadas
                 </p>
               </div>
 
-              <div className="menu-card-frame rounded-2xl p-4 text-center relative">
-                <span className="text-[#A88B57] text-[10px] block mb-1">✦</span>
-                <p className="text-2xl font-bold text-[#1C1917] font-mono tracking-tight">
+              <div className="menu-card-frame rounded-2xl p-4 sm:p-5 text-center relative">
+                <span className="text-[#A88B57] text-xs block mb-1">✦</span>
+                <p className="text-3xl font-bold text-[#1C1917] font-mono tracking-tight">
                   {ingredientsCount}
                 </p>
-                <p className="font-menu-serif font-semibold text-xs text-[#8F7347] uppercase tracking-wider mt-1">
+                <p className="font-menu-serif font-bold text-sm sm:text-base text-[#8F7347] uppercase tracking-wider mt-1.5">
                   Materias Honradas
                 </p>
-                <p className="font-menu-serif italic text-[11px] text-[#766153] mt-0.5">
+                <p className="font-menu-serif italic text-xs sm:text-sm text-[#766153] mt-0.5">
                   Aprovechadas a tiempo
                 </p>
               </div>
 
-              <div className="menu-card-frame rounded-2xl p-4 text-center relative">
-                <span className="text-[#A88B57] text-[10px] block mb-1">✦</span>
-                <p className="text-2xl font-bold text-[#4A6B44] font-mono tracking-tight">
+              <div className="menu-card-frame rounded-2xl p-4 sm:p-5 text-center relative">
+                <span className="text-[#A88B57] text-xs block mb-1">✦</span>
+                <p className="text-3xl font-bold text-[#4A6B44] font-mono tracking-tight">
                   ARS {savingsARS.toLocaleString('es-AR')}
                 </p>
-                <p className="font-menu-serif font-semibold text-xs text-[#8F7347] uppercase tracking-wider mt-1">
+                <p className="font-menu-serif font-bold text-sm sm:text-base text-[#8F7347] uppercase tracking-wider mt-1.5">
                   Valor Preservado
                 </p>
-                <p className="font-menu-serif italic text-[11px] text-[#766153] mt-0.5">
+                <p className="font-menu-serif italic text-xs sm:text-sm text-[#766153] mt-0.5">
                   Ahorro en comanda
                 </p>
               </div>
@@ -94,33 +94,33 @@ export default function ImpactPage() {
               <div className="absolute bottom-2 left-2 w-2 h-2 border-b border-l border-[#A88B57]/60 pointer-events-none" />
               <div className="absolute bottom-2 right-2 w-2 h-2 border-b border-r border-[#A88B57]/60 pointer-events-none" />
 
-              <div className="pb-2 mb-2 border-b border-[#A88B57]/20 flex items-center justify-between">
-                <h2 className="font-menu-title text-xs font-bold text-[#1C1917] uppercase tracking-wider flex items-center gap-1.5">
+              <div className="pb-2.5 mb-2.5 border-b border-[#A88B57]/20 flex items-center justify-between">
+                <h2 className="font-menu-title text-sm sm:text-base font-bold text-[#1C1917] uppercase tracking-wider flex items-center gap-1.5">
                   <span className="text-[#A88B57]">✦</span>
                   <span>Libro de Servicios Recientes</span>
                 </h2>
-                <span className="font-menu-serif text-[11px] text-[#8F7347] italic">
+                <span className="font-menu-serif text-xs sm:text-sm text-[#8F7347] italic">
                   Últimos pases
                 </span>
               </div>
 
               {history.length === 0 ? (
-                <div className="py-8 text-center text-xs text-[#766153] font-menu-serif italic">
+                <div className="py-8 text-center text-sm text-[#766153] font-menu-serif italic">
                   Aún no se han anotado platos elaborados. Al preparar una receta de La Carta, quedará registrada aquí.
                 </div>
               ) : (
                 <div className="divide-y divide-[#A88B57]/10">
                   {history.slice(0, 8).map((item, idx) => (
-                    <div key={item.id} className="py-2.5 flex items-baseline justify-between text-xs">
+                    <div key={item.id} className="py-3 flex items-baseline justify-between text-sm sm:text-base">
                       <div className="flex items-baseline gap-2">
-                        <span className="text-[10px] font-mono text-[#8F7347]">
+                        <span className="text-xs font-mono text-[#8F7347] font-semibold">
                           Nº {idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
                         </span>
                         <span className="font-menu-title font-semibold text-[#1C1917]">
                           {item.recipe_name}
                         </span>
                       </div>
-                      <span className="text-[#8F7347] font-menu-serif italic text-[11px] whitespace-nowrap ml-2">
+                      <span className="text-[#8F7347] font-menu-serif italic text-xs sm:text-sm whitespace-nowrap ml-2">
                         {new Date(item.cooked_at).toLocaleDateString('es-AR', {
                           day: 'numeric',
                           month: 'short',

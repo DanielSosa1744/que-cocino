@@ -42,37 +42,37 @@ export default function ResetPasswordPage() {
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-2 opacity-80 mb-1">
             <span className="h-[1px] w-5 bg-gradient-to-r from-transparent to-[#A88B57]" />
-            <span className="text-[#A88B57] text-[9px]">✦</span>
-            <span className="text-[9px] tracking-[0.22em] uppercase font-semibold text-[#8F7347]">
+            <span className="text-[#A88B57] text-xs">✦</span>
+            <span className="text-xs tracking-[0.22em] uppercase font-semibold text-[#8F7347]">
               Maison Culinaria
             </span>
-            <span className="text-[#A88B57] text-[9px]">✦</span>
+            <span className="text-[#A88B57] text-xs">✦</span>
             <span className="h-[1px] w-5 bg-gradient-to-l from-transparent to-[#A88B57]" />
           </div>
 
-          <h1 className="font-menu-title text-2xl font-bold text-[#1C1917] tracking-tight leading-tight">
+          <h1 className="font-menu-title text-2xl sm:text-3xl font-bold text-[#1C1917] tracking-tight leading-tight">
             Nueva Clave
           </h1>
-          <p className="font-menu-serif italic text-xs text-[#766153] mt-1">
+          <p className="font-menu-serif italic text-sm text-[#766153] mt-1">
             Defina su nueva credencial privada de acceso
           </p>
         </div>
 
         {success ? (
           <div className="bg-[#EBF1E8] rounded-2xl p-5 text-center border border-[#4A6B44]/25">
-            <CheckCircle className="w-8 h-8 text-[#4A6B44] mx-auto mb-2" />
-            <h3 className="font-menu-title font-bold text-[#1C1917] mb-1 text-sm">✦ Clave Actualizada ✦</h3>
-            <p className="font-menu-serif text-xs text-[#4A6B44]">Redirigiendo a la entrada principal...</p>
+            <CheckCircle className="w-10 h-10 text-[#4A6B44] mx-auto mb-2" />
+            <h3 className="font-menu-title font-bold text-[#1C1917] mb-1 text-base">✦ Clave Actualizada ✦</h3>
+            <p className="font-menu-serif text-sm text-[#4A6B44]">Redirigiendo a la entrada principal...</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="p-2.5 rounded-xl bg-red-50/90 border border-red-200/80 text-red-700 text-xs text-center font-menu-serif">
+              <div className="p-2.5 rounded-xl bg-red-50/90 border border-red-200/80 text-red-700 text-xs sm:text-sm text-center font-menu-serif">
                 {error}
               </div>
             )}
             <div>
-              <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#766153] mb-1">
+              <label className="block text-sm font-semibold uppercase tracking-wider text-[#766153] mb-1">
                 Nueva Contraseña
               </label>
               <input
@@ -82,20 +82,20 @@ export default function ResetPasswordPage() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="Mínimo 6 caracteres"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#A88B57]/30 bg-white/80 text-sm text-[#1C1917] placeholder-[#A89F91] focus:outline-none focus:ring-1 focus:ring-[#A88B57] focus:border-[#A88B57] transition font-menu-serif"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#A88B57]/30 bg-white/80 text-sm sm:text-base text-[#1C1917] placeholder-[#A89F91] focus:outline-none focus:ring-1 focus:ring-[#A88B57] focus:border-[#A88B57] transition font-menu-serif"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-[#1C1917] hover:bg-[#2F2A26] text-[#FAF7F2] font-medium rounded-xl text-xs uppercase tracking-widest transition shadow-sm disabled:opacity-60 border border-[#A88B57]/40"
+              className="w-full py-3 bg-[#1C1917] hover:bg-[#2F2A26] text-[#FAF7F2] font-semibold rounded-xl text-sm sm:text-base uppercase tracking-widest transition shadow-sm disabled:opacity-60 border border-[#A88B57]/40"
             >
               {loading ? 'Guardando...' : '✦ Actualizar Credencial ✦'}
             </button>
 
             <div className="text-center pt-2">
-              <Link to="/login" className="text-xs font-menu-serif text-[#8F7347] hover:text-[#1C1917] hover:underline">
+              <Link to="/login" className="text-sm font-menu-serif text-[#8F7347] hover:text-[#1C1917] hover:underline">
                 Cancelar y regresar
               </Link>
             </div>

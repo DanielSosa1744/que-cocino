@@ -23,7 +23,7 @@ export default function BottomTabBar() {
 
   return (
     <div className="flex-shrink-0 w-full z-40 bg-[#FAF7F2]/95 backdrop-blur-xl border-t border-[#A88B57]/30 pb-safe shadow-[0_-2px_12px_rgba(168,139,87,0.06)]">
-      <nav className="flex justify-around items-center h-14 px-3 max-w-sm mx-auto">
+      <nav className="flex justify-around items-center h-16 px-3 max-w-md mx-auto">
         {MAIN_TABS.map((tab) => {
           const isActive = location.pathname === tab.path || (tab.path === '/recetas' && location.pathname === '/vaciar-nevera')
 
@@ -39,21 +39,21 @@ export default function BottomTabBar() {
                 <GoogleIcon
                   name={tab.icon}
                   filled={isActive}
-                  className={`text-[20px] transition-all duration-200 ${
-                    isActive ? 'text-[#8F7347] scale-105' : 'text-[#766153]/75'
+                  className={`text-[23px] transition-all duration-200 ${
+                    isActive ? 'text-[#8F7347] scale-105' : 'text-[#766153]/80'
                   }`}
                 />
                 {tab.path === '/inventory' && inventory.length > 0 && (
-                  <span className="absolute -top-0.5 -right-1.5 w-1.5 h-1.5 rounded-full bg-[#A88B57]" />
+                  <span className="absolute -top-0.5 -right-1.5 w-2 h-2 rounded-full bg-[#A88B57]" />
                 )}
               </div>
-              <span className={`text-[10px] mt-0.5 tracking-wider font-menu-serif transition-colors ${
-                isActive ? 'text-[#1C1917] font-bold' : 'text-[#766153]/75 font-normal'
+              <span className={`text-[12px] sm:text-[13px] mt-0.5 tracking-wider font-menu-serif transition-colors ${
+                isActive ? 'text-[#1C1917] font-bold' : 'text-[#766153] font-medium'
               }`}>
                 {tab.label}
               </span>
               {isActive && (
-                <span className="absolute bottom-0 w-4 h-[2px] rounded-full bg-[#A88B57]" />
+                <span className="absolute bottom-0 w-5 h-[2.5px] rounded-full bg-[#A88B57]" />
               )}
             </button>
           )

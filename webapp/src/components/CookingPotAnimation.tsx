@@ -40,11 +40,11 @@ export default function CookingPotAnimation({
       {/* Emblema superior */}
       <div className="flex items-center justify-center gap-2 opacity-80 mb-2">
         <span className="h-[1px] w-6 bg-gradient-to-r from-transparent to-[#A88B57]" />
-        <span className="text-[#A88B57] text-[9px]">✦</span>
-        <span className="text-[9px] tracking-[0.22em] uppercase font-semibold text-[#8F7347]">
+        <span className="text-[#A88B57] text-xs">✦</span>
+        <span className="text-xs tracking-[0.22em] uppercase font-semibold text-[#8F7347]">
           Atelier de Cuisine
         </span>
-        <span className="text-[#A88B57] text-[9px]">✦</span>
+        <span className="text-[#A88B57] text-xs">✦</span>
         <span className="h-[1px] w-6 bg-gradient-to-l from-transparent to-[#A88B57]" />
       </div>
 
@@ -416,21 +416,21 @@ export default function CookingPotAnimation({
       {/* ========================================================
           TIPOGRAFÍA EDITORIAL DE CARTA GOURMET
           ======================================================== */}
-      <div className="mt-3 text-center max-w-xs mx-auto">
-        <h3 className="font-menu-title text-lg sm:text-xl font-bold text-[#1C1917] tracking-tight leading-snug">
+      <div className="mt-3.5 text-center max-w-xs mx-auto">
+        <h3 className="font-menu-title text-xl sm:text-2xl font-bold text-[#1C1917] tracking-tight leading-snug">
           {message}
         </h3>
-        <p className="font-menu-serif italic text-xs text-[#766153] mt-1.5 transition-all duration-300 min-h-[1.5rem]">
+        <p className="font-menu-serif italic text-sm sm:text-base text-[#766153] mt-2 transition-all duration-300 min-h-[1.75rem]">
           {currentSub}
         </p>
 
         {/* Fina línea de latón con indicador de brillo */}
-        <div className="w-40 h-[2px] bg-[#A88B57]/20 rounded-full mx-auto mt-3 overflow-hidden relative">
+        <div className="w-44 h-[2.5px] bg-[#A88B57]/20 rounded-full mx-auto mt-3.5 overflow-hidden relative">
           <div className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-[#A88B57] to-transparent animate-pulse rounded-full" />
         </div>
 
         {/* Florón discreto */}
-        <div className="text-[10px] text-[#A88B57]/60 mt-3 select-none">
+        <div className="text-xs text-[#A88B57]/70 mt-3 select-none">
           — ❖ —
         </div>
       </div>

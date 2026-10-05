@@ -64,32 +64,32 @@ export default function RegisterPage() {
         <div className="text-center mb-5">
           <div className="flex items-center justify-center gap-2 opacity-80 mb-1">
             <span className="h-[1px] w-5 bg-gradient-to-r from-transparent to-[#A88B57]" />
-            <span className="text-[#A88B57] text-[9px]">✦</span>
-            <span className="text-[9px] tracking-[0.22em] uppercase font-semibold text-[#8F7347]">
+            <span className="text-[#A88B57] text-xs">✦</span>
+            <span className="text-xs tracking-[0.22em] uppercase font-semibold text-[#8F7347]">
               Maison Culinaria
             </span>
-            <span className="text-[#A88B57] text-[9px]">✦</span>
+            <span className="text-[#A88B57] text-xs">✦</span>
             <span className="h-[1px] w-5 bg-gradient-to-l from-transparent to-[#A88B57]" />
           </div>
-          <h1 className="font-menu-title text-2xl font-bold text-[#1C1917] leading-tight">Registro de Cortesía</h1>
-          <p className="font-menu-serif italic text-[#766153] mt-0.5 text-xs">Acceda a su cuaderno de cocina y despensa</p>
+          <h1 className="font-menu-title text-2xl sm:text-3xl font-bold text-[#1C1917] leading-tight">Registro de Cortesía</h1>
+          <p className="font-menu-serif italic text-[#766153] mt-1 text-sm">Acceda a su cuaderno de cocina y despensa</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-3 font-menu-serif">
+        <form onSubmit={handleSubmit} className="space-y-3.5 font-menu-serif">
           <div>
-            <label className="block text-xs font-semibold text-[#1C1917] mb-1">Correo electrónico</label>
+            <label className="block text-sm font-semibold text-[#1C1917] mb-1">Correo electrónico</label>
             <input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
               placeholder="su.nombre@gastronomia.com"
-              className="w-full px-3 py-2 rounded-xl border border-[#A88B57]/30 bg-white/90 text-[#1C1917] placeholder-[#766153]/50 text-xs focus:outline-none focus:border-[#8F7347] transition font-sans"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#A88B57]/30 bg-white/90 text-[#1C1917] placeholder-[#766153]/50 text-sm sm:text-base focus:outline-none focus:border-[#8F7347] transition font-sans"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#1C1917] mb-1">Clave de acceso</label>
+            <label className="block text-sm font-semibold text-[#1C1917] mb-1">Clave de acceso</label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -97,12 +97,12 @@ export default function RegisterPage() {
                 onChange={e => setPassword(e.target.value)}
                 required
                 placeholder="Mínimo 6 caracteres"
-                className="w-full px-3 py-2 rounded-xl border border-[#A88B57]/30 bg-white/90 text-[#1C1917] placeholder-[#766153]/50 text-xs focus:outline-none focus:border-[#8F7347] transition pr-10 font-sans"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#A88B57]/30 bg-white/90 text-[#1C1917] placeholder-[#766153]/50 text-sm sm:text-base focus:outline-none focus:border-[#8F7347] transition pr-10 font-sans"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#766153] hover:text-[#1C1917] cursor-pointer"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#766153] hover:text-[#1C1917] cursor-pointer"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -110,31 +110,31 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#1C1917] mb-1">Confirmar clave</label>
+            <label className="block text-sm font-semibold text-[#1C1917] mb-1">Confirmar clave</label>
             <input
               type={showPassword ? 'text' : 'password'}
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
               required
               placeholder="Repita la clave"
-              className="w-full px-3 py-2 rounded-xl border border-[#A88B57]/30 bg-white/90 text-[#1C1917] placeholder-[#766153]/50 text-xs focus:outline-none focus:border-[#8F7347] transition font-sans"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[#A88B57]/30 bg-white/90 text-[#1C1917] placeholder-[#766153]/50 text-sm sm:text-base focus:outline-none focus:border-[#8F7347] transition font-sans"
             />
           </div>
 
           {error && (
-            <p className="text-[#C84B31] text-xs bg-[#FAF7F2] p-2 rounded-xl border border-[#C84B31]/30">{error}</p>
+            <p className="text-[#C84B31] text-xs sm:text-sm bg-[#FAF7F2] p-2.5 rounded-xl border border-[#C84B31]/30">{error}</p>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 bg-[#1C1917] hover:bg-black text-[#FAF7F2] font-semibold tracking-wider rounded-xl transition disabled:opacity-60 disabled:cursor-not-allowed text-xs shadow-sm cursor-pointer border border-[#A88B57]/40"
+            className="w-full py-3 bg-[#1C1917] hover:bg-black text-[#FAF7F2] font-semibold tracking-wider rounded-xl transition disabled:opacity-60 disabled:cursor-not-allowed text-sm sm:text-base shadow-sm cursor-pointer border border-[#A88B57]/40"
           >
             {loading ? 'Creando registro...' : '✦ Crear Cuenta en el Atelier ✦'}
           </button>
         </form>
 
-        <p className="text-center text-xs text-[#766153] mt-4 font-menu-serif">
+        <p className="text-center text-xs sm:text-sm text-[#766153] mt-4 font-menu-serif">
           ¿Ya tiene registro?{' '}
           <Link to="/login" className="text-[#8F7347] font-semibold hover:underline">
             Acceder

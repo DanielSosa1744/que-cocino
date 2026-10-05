@@ -26,6 +26,8 @@
     -moz-osx-font-smoothing: grayscale;
     background-color: #F7F3EC;
     color: #2F2A26;
+    font-size: 16px;
+    line-height: 1.5;
   }
 
   input, textarea, button, select {
@@ -37,7 +39,7 @@
   font-family: 'Material Symbols Rounded', sans-serif;
   font-weight: normal;
   font-style: normal;
-  font-size: 20px;
+  font-size: 22px;
   line-height: 1;
   letter-spacing: normal;
   text-transform: none;
@@ -92,6 +94,7 @@
 /* Tipografía de Restaurante de Alta Cocina */
 .font-menu-title {
   font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: -0.01em;
 }
 
 .font-menu-serif {

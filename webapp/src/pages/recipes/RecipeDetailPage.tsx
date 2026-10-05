@@ -95,15 +95,15 @@ export default function RecipeDetailPage() {
   return (
     <div className="h-full max-h-full bg-transparent flex flex-col justify-between overflow-hidden animate-fade-in text-[#2F2A26]">
       {/* Botón volver discreto */}
-      <div className="px-5 pt-safe pb-2.5 flex-shrink-0 flex items-center justify-between border-b border-[#A88B57]/15">
+      <div className="px-5 pt-safe pb-2.5 flex-shrink-0 flex items-center justify-between border-b border-[#A88B57]/20">
         <button
           onClick={() => navigate(-1)}
-          className="font-menu-serif text-sm text-[#8F7347] hover:text-[#1C1917] transition cursor-pointer font-medium flex items-center gap-1.5 tap-subtle"
+          className="font-menu-serif text-base text-[#8F7347] hover:text-[#1C1917] transition cursor-pointer font-bold flex items-center gap-1.5 tap-subtle"
         >
           <span>←</span>
           <span>Volver a la Carta</span>
         </button>
-        <div className="flex items-center gap-1 text-[#A88B57] text-xs">
+        <div className="flex items-center gap-1.5 text-[#A88B57] text-sm">
           <span>—</span>
           <span>✦</span>
           <span>—</span>
@@ -114,45 +114,45 @@ export default function RecipeDetailPage() {
       <div className="flex-1 min-h-0 overflow-y-auto px-5 py-4 space-y-6">
         {/* Encabezado: Título y tiempo */}
         <div className="text-center pb-3 border-b border-[#A88B57]/20">
-          <p className="text-xs tracking-[0.25em] uppercase font-semibold text-[#8F7347] mb-1">
+          <p className="text-xs sm:text-sm tracking-[0.25em] uppercase font-bold text-[#8F7347] mb-1.5">
             ✦ Ficha de Elaboración Gastronómica ✦
           </p>
-          <h1 className="font-menu-title text-2xl sm:text-3xl font-bold text-[#1C1917] tracking-tight leading-snug">
+          <h1 className="font-menu-title text-3xl sm:text-4xl font-extrabold text-[#1C1917] tracking-tight leading-snug">
             {rawRecipe.name}
           </h1>
-          <p className="font-menu-serif italic text-sm sm:text-base text-[#766153] mt-1.5">
+          <p className="font-menu-serif text-base sm:text-lg text-[#5A483D] mt-2 font-medium">
             · Tiempo estimado de cocina: {rawRecipe.prep_time || 15} minutos ·
           </p>
         </div>
 
         {/* Comanda de Ingredientes */}
-        <section className="menu-card-frame rounded-2xl p-4 sm:p-5 relative">
+        <section className="menu-card-frame rounded-2xl p-5 sm:p-6 relative">
           {/* Esquinas ornamentales */}
-          <div className="absolute top-2.5 left-2.5 w-2 h-2 border-t border-l border-[#A88B57]/60 pointer-events-none" />
-          <div className="absolute top-2.5 right-2.5 w-2 h-2 border-t border-r border-[#A88B57]/60 pointer-events-none" />
-          <div className="absolute bottom-2.5 left-2.5 w-2 h-2 border-b border-l border-[#A88B57]/60 pointer-events-none" />
-          <div className="absolute bottom-2.5 right-2.5 w-2 h-2 border-b border-r border-[#A88B57]/60 pointer-events-none" />
+          <div className="absolute top-2.5 left-2.5 w-2.5 h-2.5 border-t border-l border-[#A88B57]/60 pointer-events-none" />
+          <div className="absolute top-2.5 right-2.5 w-2.5 h-2.5 border-t border-r border-[#A88B57]/60 pointer-events-none" />
+          <div className="absolute bottom-2.5 left-2.5 w-2.5 h-2.5 border-b border-l border-[#A88B57]/60 pointer-events-none" />
+          <div className="absolute bottom-2.5 right-2.5 w-2.5 h-2.5 border-b border-r border-[#A88B57]/60 pointer-events-none" />
 
-          <h2 className="font-menu-title text-base font-bold text-[#1C1917] tracking-wider uppercase mb-2.5 flex items-center gap-2">
+          <h2 className="font-menu-title text-lg sm:text-xl font-extrabold text-[#1C1917] tracking-wider uppercase mb-3 flex items-center gap-2">
             <span className="text-[#A88B57]">✦</span>
             <span>Comanda de Ingredientes</span>
           </h2>
-          <ul className="text-sm sm:text-base text-[#2F2A26] leading-relaxed divide-y divide-[#A88B57]/10">
+          <ul className="text-base sm:text-lg text-[#2F2A26] leading-relaxed divide-y divide-[#A88B57]/15">
             {allIngredients.length > 0 ? (
               allIngredients.map((ing: string, i: number) => {
                 const isAvailable = matchedIngredients.some(m => isIngredientMatch(m, ing))
                 return (
-                  <li key={i} className="py-2 flex items-center justify-between">
-                    <span className="capitalize font-medium text-[#1C1917] flex items-center gap-2">
-                      <span className="text-[#A88B57] text-[10px]">●</span>
+                  <li key={i} className="py-2.5 flex items-center justify-between">
+                    <span className="capitalize font-semibold text-[#1C1917] flex items-center gap-2">
+                      <span className="text-[#A88B57] text-xs">●</span>
                       {ing}
                     </span>
                     {isAvailable ? (
-                      <span className="text-xs text-[#4A6B44] bg-[#EBF1E8] px-2.5 py-0.5 rounded-full font-serif border border-[#4A6B44]/20 font-medium">
+                      <span className="text-xs sm:text-sm text-[#385333] bg-[#EBF1E8] px-3 py-1 rounded-full border border-[#5D7A56]/30 font-bold">
                         En tu despensa
                       </span>
                     ) : (
-                      <span className="text-xs text-[#A68A64] italic font-serif">
+                      <span className="text-xs sm:text-sm text-[#8F7347] font-semibold font-serif">
                         A completar
                       </span>
                     )}
@@ -160,30 +160,30 @@ export default function RecipeDetailPage() {
                 )
               })
             ) : (
-              <li className="text-[#766153] italic py-2 text-sm">Ingredientes de temporada</li>
+              <li className="text-[#766153] italic py-2 text-base">Ingredientes de temporada</li>
             )}
           </ul>
         </section>
 
         {/* Guía de Elaboración del Chef */}
-        <section className="space-y-3.5">
+        <section className="space-y-4">
           <div className="flex items-center gap-2">
-            <span className="h-[1px] w-6 bg-[#A88B57]/40" />
-            <h2 className="font-menu-title text-sm font-bold text-[#8F7347] uppercase tracking-wider">
+            <span className="h-[1.5px] w-8 bg-[#A88B57]/40" />
+            <h2 className="font-menu-title text-base sm:text-lg font-extrabold text-[#8F7347] uppercase tracking-wider">
               Pasos de Elaboración
             </h2>
-            <span className="h-[1px] flex-1 bg-[#A88B57]/20" />
+            <span className="h-[1.5px] flex-1 bg-[#A88B57]/20" />
           </div>
 
-          <ol className="text-sm sm:text-base text-[#2F2A26] leading-relaxed space-y-3">
+          <ol className="text-base sm:text-lg text-[#2F2A26] leading-relaxed space-y-3.5">
             {steps.map((step, i) => {
               const cleanStep = step.replace(/^\d+[\.\)]\s*/, '')
               return (
-                <li key={i} className="flex gap-3 bg-[#FCFAF7]/90 p-3.5 rounded-xl border border-[#A88B57]/15">
-                  <span className="w-6 h-6 rounded-full bg-[#FAF7F2] border border-[#A88B57]/40 text-[#8F7347] font-serif text-xs sm:text-sm font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                <li key={i} className="flex gap-3.5 bg-[#FCFAF7]/95 p-4 rounded-xl border border-[#A88B57]/20">
+                  <span className="w-7 h-7 rounded-full bg-[#FAF7F2] border-2 border-[#A88B57]/50 text-[#8F7347] font-serif text-sm sm:text-base font-extrabold flex items-center justify-center flex-shrink-0 mt-0.5">
                     {i + 1}
                   </span>
-                  <span className="font-normal text-[#24201D] leading-relaxed pt-0.5">{cleanStep}</span>
+                  <span className="font-medium text-[#1C1917] leading-relaxed pt-0.5">{cleanStep}</span>
                 </li>
               )
             })}
@@ -192,11 +192,11 @@ export default function RecipeDetailPage() {
       </div>
 
       {/* Botón de servicio gastronómico */}
-      <div className="px-5 py-3.5 border-t border-[#A88B57]/20 flex-shrink-0 bg-[#FAF7F2]/90 backdrop-blur-xs pb-safe">
+      <div className="px-5 py-4 border-t border-[#A88B57]/25 flex-shrink-0 bg-[#FAF7F2]/95 backdrop-blur-xs pb-safe">
         <button
           onClick={handleCooked}
           disabled={isPending || hasCooked}
-          className="w-full py-3.5 px-4 bg-[#24201D] hover:bg-black text-[#FAF7F2] text-sm sm:text-base font-menu-serif tracking-wider font-semibold rounded-xl transition disabled:opacity-40 disabled:cursor-not-allowed tap-subtle cursor-pointer text-center border border-[#A88B57]/40 shadow-sm"
+          className="w-full py-4 px-5 bg-[#1C1917] hover:bg-black text-[#FAF7F2] text-base sm:text-lg font-menu-serif tracking-wider font-bold rounded-2xl transition disabled:opacity-45 disabled:cursor-not-allowed tap-subtle cursor-pointer text-center border-2 border-[#A88B57]/50 shadow-md"
         >
           {hasCooked
             ? '✦ Plato Servido y Registrado con Éxito ✦'

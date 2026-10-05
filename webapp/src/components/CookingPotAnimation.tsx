@@ -416,21 +416,21 @@ export default function CookingPotAnimation({
       {/* ========================================================
           TIPOGRAFÍA EDITORIAL DE CARTA GOURMET
           ======================================================== */}
-      <div className="mt-3.5 text-center max-w-xs mx-auto">
-        <h3 className="font-menu-title text-xl sm:text-2xl font-bold text-[#1C1917] tracking-tight leading-snug">
+      <div className="mt-4 text-center max-w-sm mx-auto">
+        <h3 className="font-menu-title text-2xl sm:text-3xl font-extrabold text-[#1C1917] tracking-tight leading-snug">
           {message}
         </h3>
-        <p className="font-menu-serif italic text-sm sm:text-base text-[#766153] mt-2 transition-all duration-300 min-h-[1.75rem]">
+        <p className="font-menu-serif text-base sm:text-lg text-[#44382F] mt-2 transition-all duration-300 min-h-[1.75rem] font-medium leading-relaxed">
           {currentSub}
         </p>
 
         {/* Fina línea de latón con indicador de brillo */}
-        <div className="w-44 h-[2.5px] bg-[#A88B57]/20 rounded-full mx-auto mt-3.5 overflow-hidden relative">
+        <div className="w-48 h-[2.5px] bg-[#A88B57]/25 rounded-full mx-auto mt-4 overflow-hidden relative">
           <div className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-[#A88B57] to-transparent animate-pulse rounded-full" />
         </div>
 
         {/* Florón discreto */}
-        <div className="text-xs text-[#A88B57]/70 mt-3 select-none">
+        <div className="text-sm text-[#8F7347] mt-3 select-none">
           — ❖ —
         </div>
       </div>

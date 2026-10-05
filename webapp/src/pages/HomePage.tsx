@@ -130,44 +130,44 @@ export default function HomePage() {
   }
 
   return (
-    <div className="h-full max-h-full bg-transparent flex flex-col justify-center items-center px-6 py-8 overflow-y-auto select-none animate-fade-in text-[#2F2A26]">
-      <div className="w-full max-w-sm mx-auto text-center">
+    <div className="h-full max-h-full bg-transparent flex flex-col justify-center items-center px-4 sm:px-6 py-6 sm:py-8 overflow-y-auto select-none animate-fade-in text-[#2F2A26]">
+      <div className="w-full max-w-md mx-auto text-center">
         {/* Filigrana superior gourmet */}
-        <div className="flex items-center justify-center gap-2 mb-2 opacity-80">
-          <span className="h-[1px] w-6 bg-gradient-to-r from-transparent to-[#A88B57]" />
-          <span className="text-[#A88B57] text-xs">✦</span>
-          <span className="text-xs tracking-[0.22em] uppercase font-semibold text-[#8F7347]">
+        <div className="flex items-center justify-center gap-2.5 mb-2.5 opacity-90">
+          <span className="h-[1.5px] w-8 bg-gradient-to-r from-transparent to-[#A88B57]" />
+          <span className="text-[#A88B57] text-sm">✦</span>
+          <span className="text-sm sm:text-base tracking-[0.25em] uppercase font-bold text-[#8F7347]">
             Atelier Gastronómico
           </span>
-          <span className="text-[#A88B57] text-xs">✦</span>
-          <span className="h-[1px] w-6 bg-gradient-to-l from-transparent to-[#A88B57]" />
+          <span className="text-[#A88B57] text-sm">✦</span>
+          <span className="h-[1.5px] w-8 bg-gradient-to-l from-transparent to-[#A88B57]" />
         </div>
 
         {/* Título principal de la casa */}
-        <h1 className="font-menu-title text-3xl sm:text-4xl font-bold tracking-tight text-[#1C1917] mb-2 leading-tight">
+        <h1 className="font-menu-title text-4xl sm:text-5xl font-extrabold tracking-tight text-[#1C1917] mb-3 leading-tight">
           ¿Qué Cocinamos Hoy?
         </h1>
 
         {/* Subtítulo elegante */}
-        <p className="font-menu-serif italic text-sm sm:text-base text-[#766153] max-w-sm mx-auto leading-relaxed mb-6 font-normal">
+        <p className="font-menu-serif text-base sm:text-lg text-[#44382F] max-w-md mx-auto leading-relaxed mb-6 font-normal">
           Dicte o indique los ingredientes disponibles en su cocina para componer una carta a su medida.
         </p>
 
         {/* Micrófono flotante con halo dorado refinado */}
-        <div className="relative my-6 flex items-center justify-center">
+        <div className="relative my-7 flex items-center justify-center">
           {/* Halos dorados suaves */}
           <div
-            className={`absolute w-32 h-32 rounded-full pointer-events-none transition-all duration-700 ${
+            className={`absolute w-36 h-36 rounded-full pointer-events-none transition-all duration-700 ${
               isListening
-                ? 'bg-[#A88B57]/30 blur-xl scale-125'
-                : 'bg-[#A88B57]/15 blur-xl animate-halo-warm'
+                ? 'bg-[#A88B57]/35 blur-xl scale-125'
+                : 'bg-[#A88B57]/20 blur-xl animate-halo-warm'
             }`}
           />
           <div
-            className={`absolute w-24 h-24 rounded-full pointer-events-none transition-all duration-500 ${
+            className={`absolute w-28 h-28 rounded-full pointer-events-none transition-all duration-500 ${
               isListening
-                ? 'bg-[#A88B57]/40 animate-pulse'
-                : 'bg-[#8F7347]/10 animate-halo-warm-inner'
+                ? 'bg-[#A88B57]/45 animate-pulse'
+                : 'bg-[#8F7347]/15 animate-halo-warm-inner'
             }`}
           />
 
@@ -176,15 +176,15 @@ export default function HomePage() {
             type="button"
             onClick={handleStartVoice}
             aria-label={isListening ? 'Detener comanda de voz' : 'Dictar ingredientes'}
-            className={`animate-float-slow relative z-10 w-22 h-22 rounded-full flex items-center justify-center border-2 transition-all duration-300 tap-subtle cursor-pointer shadow-md ${
+            className={`animate-float-slow relative z-10 w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center border-2 transition-all duration-300 tap-subtle cursor-pointer shadow-lg ${
               isListening
-                ? 'bg-[#1C1917] border-[#A88B57] text-[#FAF7F2] scale-105 shadow-[#1C1917]/20'
-                : 'bg-[#FAF7F2] border-[#A88B57]/40 hover:border-[#8F7347] text-[#1C1917]'
+                ? 'bg-[#1C1917] border-[#A88B57] text-[#FAF7F2] scale-105 shadow-[#1C1917]/25'
+                : 'bg-[#FAF7F2] border-[#A88B57]/60 hover:border-[#8F7347] text-[#1C1917]'
             }`}
           >
             <GoogleIcon
               name={isListening ? 'graphic_eq' : 'mic'}
-              size={32}
+              size={42}
               className={isListening ? 'text-[#FAF7F2]' : 'text-[#8F7347]'}
             />
           </button>
@@ -192,16 +192,16 @@ export default function HomePage() {
 
         {/* Estado activo de voz si está escuchando */}
         {isListening ? (
-          <div className="py-4 space-y-3 transition-all duration-300">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF7F2] border border-[#A88B57]/40 text-[#1C1917] text-sm font-menu-serif shadow-xs">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#8F7347] animate-pulse" />
-              <span>{currentVoiceText || 'Escuchando comanda... dicte a su ritmo'}</span>
+          <div className="py-4 space-y-3.5 transition-all duration-300">
+            <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-[#FAF7F2] border border-[#A88B57]/50 text-[#1C1917] text-base font-menu-serif shadow-xs">
+              <span className="w-3 h-3 rounded-full bg-[#8F7347] animate-pulse" />
+              <span className="font-medium">{currentVoiceText || 'Escuchando comanda... dicte a su ritmo'}</span>
             </div>
             <div>
               <button
                 type="button"
                 onClick={handleStartVoice}
-                className="px-6 py-3 bg-[#1C1917] text-[#FAF7F2] text-sm font-menu-serif font-semibold tracking-wide rounded-xl hover:bg-black transition tap-subtle cursor-pointer border border-[#A88B57]/40 shadow-xs"
+                className="px-7 py-3.5 bg-[#1C1917] text-[#FAF7F2] text-base font-menu-serif font-bold tracking-wide rounded-2xl hover:bg-black transition tap-subtle cursor-pointer border border-[#A88B57]/40 shadow-sm"
               >
                 ✦ Listo, confeccionar carta ✦
               </button>
@@ -211,17 +211,17 @@ export default function HomePage() {
           <>
             {/* Aviso amigable y discreto si el micrófono tiene error o no está disponible */}
             {(!isSupported || error) && (
-              <div className="mb-4 p-4 rounded-2xl bg-[#FAF7F2] border border-[#A88B57]/30 text-sm text-[#766153] text-left animate-fade-in shadow-2xs">
-                <p className="font-menu-title font-semibold text-[#1C1917] mb-1 text-sm">
+              <div className="mb-4 p-4 rounded-2xl bg-[#FAF7F2] border border-[#A88B57]/35 text-base text-[#766153] text-left animate-fade-in shadow-2xs">
+                <p className="font-menu-title font-bold text-[#1C1917] mb-1 text-base">
                   ✦ Micrófono no disponible
                 </p>
-                <p className="font-menu-serif leading-relaxed text-xs">
+                <p className="font-menu-serif leading-relaxed text-sm text-[#44382F]">
                   Puede escribir los ingredientes disponibles a continuación.
                 </p>
                 <button
                   type="button"
                   onClick={() => simulateVoiceInput('asado de tira, papas, morrón y cebolla')}
-                  className="mt-2 text-xs font-semibold text-[#8F7347] hover:underline block cursor-pointer font-menu-serif"
+                  className="mt-2 text-sm font-bold text-[#8F7347] hover:underline block cursor-pointer font-menu-serif"
                 >
                   Usar comanda de ejemplo →
                 </button>
@@ -229,32 +229,32 @@ export default function HomePage() {
             )}
 
             {/* Formulario de entrada limpio */}
-            <form onSubmit={handleTextSubmit} className="space-y-3.5">
+            <form onSubmit={handleTextSubmit} className="space-y-4">
             <div>
               <input
                 type="text"
                 value={inputText}
                 onChange={e => setInputText(e.target.value)}
                 placeholder="Escriba sus ingredientes (ej. ternera, papas, romero...)"
-                className="w-full px-4 py-3.5 bg-[#FAF7F2] border border-[#A88B57]/35 focus:border-[#8F7347] focus:bg-white rounded-xl text-sm sm:text-base text-[#1C1917] placeholder:text-[#766153]/60 outline-none transition shadow-2xs font-menu-serif"
+                className="w-full px-5 py-4 bg-[#FAF7F2] border-2 border-[#A88B57]/40 focus:border-[#8F7347] focus:bg-white rounded-2xl text-base sm:text-lg text-[#1C1917] placeholder:text-[#766153]/70 outline-none transition shadow-2xs font-menu-serif font-medium"
               />
             </div>
 
             {/* Acciones principales: Hablar y Confeccionar Carta */}
-            <div className="flex gap-2.5">
+            <div className="flex gap-3">
               <button
                 type="button"
                 onClick={handleStartVoice}
-                className="flex-1 py-3 px-4 bg-[#FAF7F2] border border-[#A88B57]/35 hover:border-[#8F7347] text-[#1C1917] text-sm font-menu-serif font-medium rounded-xl transition flex items-center justify-center gap-1.5 tap-subtle cursor-pointer shadow-2xs"
+                className="flex-1 py-3.5 px-4 bg-[#FAF7F2] border-2 border-[#A88B57]/40 hover:border-[#8F7347] text-[#1C1917] text-base font-menu-serif font-bold rounded-2xl transition flex items-center justify-center gap-2 tap-subtle cursor-pointer shadow-2xs"
               >
-                <GoogleIcon name="mic" size={18} className="text-[#8F7347]" />
+                <GoogleIcon name="mic" size={22} className="text-[#8F7347]" />
                 Dictar comanda
               </button>
 
               <button
                 type="submit"
                 disabled={!inputText.trim() || isProcessing}
-                className="flex-1 py-3 px-4 bg-[#1C1917] hover:bg-black text-[#FAF7F2] text-sm font-menu-serif font-semibold tracking-wide rounded-xl transition disabled:opacity-30 disabled:cursor-not-allowed tap-subtle cursor-pointer shadow-2xs border border-[#A88B57]/40"
+                className="flex-1 py-3.5 px-4 bg-[#1C1917] hover:bg-black text-[#FAF7F2] text-base font-menu-serif font-bold tracking-wide rounded-2xl transition disabled:opacity-45 disabled:cursor-not-allowed tap-subtle cursor-pointer shadow-sm border border-[#A88B57]/40"
               >
                 {isProcessing ? 'Elaborando...' : 'Confeccionar carta'}
               </button>
@@ -264,15 +264,15 @@ export default function HomePage() {
       )}
 
         {/* Ejemplo sugerido con rombos de alta cocina */}
-        <div className="mt-8 pt-4 border-t border-[#A88B57]/20 text-sm text-[#766153] flex items-center justify-center gap-1.5">
-          <span className="text-[#A88B57] text-xs">✦</span>
-          <span className="font-menu-serif italic">Sugerencia de hoy: </span>
+        <div className="mt-8 pt-5 border-t border-[#A88B57]/25 text-base text-[#44382F] flex flex-wrap items-center justify-center gap-2">
+          <span className="text-[#A88B57] text-sm">✦</span>
+          <span className="font-menu-serif font-medium">Sugerencia de hoy: </span>
           <button
             type="button"
             onClick={() => {
               setInputText('Tomates, huevos, queso y cebolla')
             }}
-            className="text-[#1C1917] hover:text-[#8F7347] underline underline-offset-2 transition cursor-pointer font-menu-serif font-semibold"
+            className="text-[#1C1917] hover:text-[#8F7347] underline underline-offset-4 transition cursor-pointer font-menu-serif font-bold text-base"
           >
             Tomates, huevos, queso y cebolla.
           </button>

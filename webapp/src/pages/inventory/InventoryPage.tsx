@@ -72,63 +72,80 @@ export default function InventoryPage() {
   return (
     <div className="h-full max-h-full bg-transparent flex flex-col overflow-hidden animate-fade-in">
       {/* Encabezado limpio con acción de vaciar despensa */}
-      <div className="px-5 pt-safe pb-4 border-b border-[#766153]/15 flex-shrink-0 bg-transparent flex items-center justify-between">
+      <div className="px-5 pt-safe pb-3 border-b border-[#A88B57]/20 flex-shrink-0 bg-transparent flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-serif font-medium text-[#2F2A26] tracking-tight">
-            Mi Despensa
+          <div className="flex items-center gap-1.5 opacity-80 mb-0.5">
+            <span className="text-[#A88B57] text-[9px]">✦</span>
+            <span className="text-[9px] tracking-[0.2em] uppercase font-semibold text-[#8F7347]">
+              Reserva de Ingredientes
+            </span>
+          </div>
+          <h1 className="font-menu-title text-2xl font-bold text-[#1C1917] tracking-tight">
+            La Despensa de la Casa
           </h1>
-          <p className="text-xs text-[#766153] mt-0.5">
-            {inventory.length} {inventory.length === 1 ? 'ingrediente' : 'ingredientes'} en stock
+          <p className="font-menu-serif italic text-xs text-[#766153] mt-0.5">
+            {inventory.length} {inventory.length === 1 ? 'materia prima' : 'materias primas'} registradas en stock
           </p>
         </div>
         {inventory.length > 0 && (
           <button
             type="button"
             onClick={() => clearInventory()}
-            className="text-[11px] text-[#A68A64] hover:text-[#C84B31] transition px-2.5 py-1 rounded-md border border-[#766153]/20 hover:border-[#C84B31]/40 tap-subtle cursor-pointer"
+            className="font-menu-serif text-[11px] text-[#8F7347] hover:text-[#C84B31] transition px-3 py-1.5 rounded-lg border border-[#A88B57]/35 hover:border-[#C84B31]/40 tap-subtle cursor-pointer bg-[#FAF7F2]/80"
             title="Vaciar despensa para empezar de cero"
           >
-            Vaciar despensa
+            Vaciar reserva
           </button>
         )}
       </div>
 
       <div className="flex-1 min-h-0 overflow-y-auto px-5 py-4">
-        {/* Formulario simple para añadir */}
-        <form onSubmit={handleAddSubmit} className="flex gap-2 mb-6">
+        {/* Formulario estilizado para añadir a la despensa */}
+        <form onSubmit={handleAddSubmit} className="flex gap-2 mb-6 p-2 rounded-xl bg-[#FAF7F2]/80 border border-[#A88B57]/30 shadow-2xs">
           <input
             type="text"
             value={newName}
             onChange={e => setNewName(e.target.value)}
-            placeholder="Añadir ingrediente..."
-            className="flex-1 px-3 py-2 bg-[#FCFAF5] border border-[#766153]/20 rounded-lg text-xs text-[#2F2A26] placeholder:text-[#766153]/50 outline-none focus:border-[#5D7A56] transition"
+            placeholder="Añadir materia prima..."
+            className="flex-1 px-3 py-2 bg-white/90 border border-[#A88B57]/25 rounded-lg text-xs text-[#1C1917] placeholder:text-[#766153]/50 outline-none focus:border-[#8F7347] transition font-menu-serif"
           />
           <input
             type="number"
             min={1}
             value={newQuantity}
             onChange={e => setNewQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-            className="w-14 px-2 py-2 bg-[#FCFAF5] border border-[#766153]/20 rounded-lg text-xs text-[#2F2A26] text-center outline-none focus:border-[#5D7A56] transition font-mono"
+            className="w-14 px-2 py-2 bg-white/90 border border-[#A88B57]/25 rounded-lg text-xs text-[#1C1917] text-center outline-none focus:border-[#8F7347] transition font-mono"
             title="Cantidad"
           />
           <button
             type="submit"
             disabled={!newName.trim()}
-            className="px-3.5 py-2 bg-[#2F2A26] text-[#F7F3EC] rounded-lg text-xs font-medium hover:bg-[#5D7A56] transition disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+            className="px-3.5 py-2 bg-[#1C1917] text-[#FAF7F2] rounded-lg text-xs font-medium hover:bg-black transition disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer border border-[#A88B57]/40 shadow-2xs"
           >
             +
           </button>
         </form>
 
-        {/* Lista simple estilo libreta de cocina */}
+        {/* Lista estilo libro de bodega / despensa de alta cocina */}
         {isLoading ? (
           <CookingPotAnimation inline message="Consultando despensa..." />
         ) : inventory.length === 0 ? (
-          <div className="py-16 text-center text-[#766153] text-xs">
-            No tienes ingredientes en tu despensa. Añade uno arriba o desde Inicio.
+          <div className="py-16 text-center text-[#766153] text-xs font-menu-serif italic">
+            No hay materias primas registradas en la despensa. Añada una arriba o desde La Cocina.
           </div>
         ) : (
-          <div className="space-y-1">
+          <div className="menu-card-frame rounded-2xl p-4 sm:p-5 relative space-y-1">
+            {/* Esquinas ornamentales */}
+            <div className="absolute top-2 left-2 w-2 h-2 border-t border-l border-[#A88B57]/60 pointer-events-none" />
+            <div className="absolute top-2 right-2 w-2 h-2 border-t border-r border-[#A88B57]/60 pointer-events-none" />
+            <div className="absolute bottom-2 left-2 w-2 h-2 border-b border-l border-[#A88B57]/60 pointer-events-none" />
+            <div className="absolute bottom-2 right-2 w-2 h-2 border-b border-r border-[#A88B57]/60 pointer-events-none" />
+
+            <div className="pb-2 mb-2 border-b border-[#A88B57]/20 flex items-center justify-between text-[11px] font-menu-serif text-[#8F7347] uppercase tracking-wider">
+              <span>Materia Prima</span>
+              <span>Existencias · Valor Est.</span>
+            </div>
+
             {inventory.map((item) => {
               const qty = item.quantity ?? 1
               const priceARS = estimateItemValueARS(item.name, qty, item.unit)
@@ -136,45 +153,46 @@ export default function InventoryPage() {
               return (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between py-2.5 border-b border-[#766153]/10 group"
+                  className="flex items-center justify-between py-2 border-b border-[#A88B57]/10 group last:border-b-0"
                 >
-                  {/* Formato: Tomates ........ 4 ........ ARS 1800 */}
+                  {/* Formato: ✦ Tomates ........ 4 ........ ARS 1800 */}
                   <div className="flex items-baseline flex-1 min-w-0 mr-3">
-                    <span className="text-sm font-medium text-[#2F2A26] capitalize truncate max-w-[120px] sm:max-w-none">
+                    <span className="text-[#A88B57] text-[8px] mr-1.5 flex-shrink-0">✦</span>
+                    <span className="font-menu-serif font-semibold text-sm text-[#1C1917] capitalize truncate max-w-[120px] sm:max-w-none">
                       {item.name}
                     </span>
-                    <span className="flex-1 border-b border-dotted border-[#766153]/30 mx-2 mb-1" />
-                    <span className="text-sm text-[#766153] font-mono flex-shrink-0">
-                      {qty}
+                    <span className="flex-1 border-b border-dotted border-[#A88B57]/30 mx-2 mb-1" />
+                    <span className="text-xs text-[#1C1917] font-mono font-medium flex-shrink-0">
+                      {qty} {item.unit || 'ud'}
                     </span>
-                    <span className="flex-1 border-b border-dotted border-[#766153]/30 mx-2 mb-1" />
-                    <span className="text-xs text-[#A68A64] font-mono whitespace-nowrap flex-shrink-0">
+                    <span className="flex-1 border-b border-dotted border-[#A88B57]/30 mx-2 mb-1" />
+                    <span className="text-[11px] text-[#8F7347] font-mono whitespace-nowrap flex-shrink-0 bg-[#A88B57]/10 px-1.5 py-0.5 rounded border border-[#A88B57]/20">
                       ARS {priceARS.toLocaleString('es-AR')}
                     </span>
                   </div>
 
-                  {/* Acciones simples: +, -, Eliminar */}
+                  {/* Acciones refinadas: +, -, Eliminar */}
                   <div className="flex items-center gap-1.5 flex-shrink-0">
                     <button
                       onClick={() => handleDecrease(item)}
-                      className="w-6 h-6 flex items-center justify-center rounded border border-[#766153]/25 text-[#766153] hover:bg-[#A68A64]/10 text-xs font-mono transition cursor-pointer"
+                      className="w-6 h-6 flex items-center justify-center rounded border border-[#A88B57]/30 text-[#8F7347] hover:bg-[#A88B57]/15 text-xs font-mono transition cursor-pointer"
                       title="Restar"
                     >
                       -
                     </button>
                     <button
                       onClick={() => handleIncrease(item)}
-                      className="w-6 h-6 flex items-center justify-center rounded border border-[#766153]/25 text-[#766153] hover:bg-[#A68A64]/10 text-xs font-mono transition cursor-pointer"
+                      className="w-6 h-6 flex items-center justify-center rounded border border-[#A88B57]/30 text-[#8F7347] hover:bg-[#A88B57]/15 text-xs font-mono transition cursor-pointer"
                       title="Aumentar"
                     >
                       +
                     </button>
                     <button
                       onClick={() => handleDelete(item.id)}
-                      className="p-1 text-[#766153]/40 hover:text-[#2F2A26] transition cursor-pointer ml-1"
+                      className="p-1 text-[#766153]/40 hover:text-[#C84B31] transition cursor-pointer ml-0.5"
                       title="Eliminar"
                     >
-                      <GoogleIcon name="close" size={14} />
+                      <GoogleIcon name="close" size={13} />
                     </button>
                   </div>
                 </div>

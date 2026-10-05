@@ -17,67 +17,110 @@ export default function ImpactPage() {
   }, 0)
 
   return (
-    <div className="h-full max-h-full bg-transparent flex flex-col overflow-hidden animate-fade-in">
+    <div className="h-full max-h-full bg-transparent flex flex-col overflow-hidden animate-fade-in text-[#2F2A26]">
       {/* Encabezado editorial */}
-      <div className="px-5 pt-safe pb-4 border-b border-[#766153]/15 flex-shrink-0 bg-transparent">
-        <h1 className="text-xl font-serif font-medium text-[#2F2A26] tracking-tight">
-          Actividad
+      <div className="px-5 pt-safe pb-3 border-b border-[#A88B57]/20 flex-shrink-0 bg-transparent text-center">
+        <div className="flex items-center justify-center gap-2 opacity-80 mb-1">
+          <span className="h-[1px] w-6 bg-gradient-to-r from-transparent to-[#A88B57]" />
+          <span className="text-[#A88B57] text-[10px]">✦</span>
+          <span className="text-[10px] tracking-[0.22em] uppercase font-semibold text-[#8F7347]">
+            Cuaderno de la Casa
+          </span>
+          <span className="text-[#A88B57] text-[10px]">✦</span>
+          <span className="h-[1px] w-6 bg-gradient-to-l from-transparent to-[#A88B57]" />
+        </div>
+        <h1 className="font-menu-title text-2xl font-bold text-[#1C1917] tracking-tight">
+          Honor & Sostenibilidad
         </h1>
-        <p className="text-xs text-[#766153] mt-0.5">
-          Resumen de aprovechamiento en tu cocina
+        <p className="font-menu-serif italic text-xs text-[#766153] mt-0.5">
+          Registro de aprovechamiento gastronómico y platos servidos
         </p>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto px-5 py-8 space-y-8">
+      <div className="flex-1 min-h-0 overflow-y-auto px-5 py-5 space-y-5">
         {isLoading ? (
-          <div className="py-12 text-center text-xs text-[#766153] font-mono">
-            Cargando actividad...
+          <div className="py-12 text-center text-xs text-[#766153] font-menu-serif italic">
+            Consultando registros del chef...
           </div>
         ) : (
           <>
-            {/* Tres métricas minimalistas */}
-            <div className="space-y-4">
-              <div className="py-2 border-b border-[#766153]/10">
-                <p className="text-2xl sm:text-3xl font-semibold text-[#2F2A26] tracking-tight font-mono">
-                  {cookedCount} {cookedCount === 1 ? 'receta' : 'recetas'}
+            {/* Tres pliegos métricos gourmet */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="menu-card-frame rounded-2xl p-4 text-center relative">
+                <span className="text-[#A88B57] text-[10px] block mb-1">✦</span>
+                <p className="text-2xl font-bold text-[#1C1917] font-mono tracking-tight">
+                  {cookedCount}
                 </p>
-                <p className="text-xs text-[#766153] mt-0.5">
-                  Recetas preparadas
+                <p className="font-menu-serif font-semibold text-xs text-[#8F7347] uppercase tracking-wider mt-1">
+                  Platos Servidos
                 </p>
-              </div>
-
-              <div className="py-2 border-b border-[#766153]/10">
-                <p className="text-2xl sm:text-3xl font-semibold text-[#2F2A26] tracking-tight font-mono">
-                  {ingredientsCount} ingredientes aprovechados
-                </p>
-                <p className="text-xs text-[#766153] mt-0.5">
-                  Alimentos consumidos antes de vencer
+                <p className="font-menu-serif italic text-[11px] text-[#766153] mt-0.5">
+                  Elaboraciones culminadas
                 </p>
               </div>
 
-              <div className="py-2 border-b border-[#766153]/10">
-                <p className="text-2xl sm:text-3xl font-semibold text-[#5D7A56] tracking-tight font-mono">
-                  ARS {savingsARS.toLocaleString('es-AR')} ahorrados
+              <div className="menu-card-frame rounded-2xl p-4 text-center relative">
+                <span className="text-[#A88B57] text-[10px] block mb-1">✦</span>
+                <p className="text-2xl font-bold text-[#1C1917] font-mono tracking-tight">
+                  {ingredientsCount}
                 </p>
-                <p className="text-xs text-[#766153] mt-0.5">
-                  Ahorro estimado acumulado
+                <p className="font-menu-serif font-semibold text-xs text-[#8F7347] uppercase tracking-wider mt-1">
+                  Materias Honradas
+                </p>
+                <p className="font-menu-serif italic text-[11px] text-[#766153] mt-0.5">
+                  Aprovechadas a tiempo
+                </p>
+              </div>
+
+              <div className="menu-card-frame rounded-2xl p-4 text-center relative">
+                <span className="text-[#A88B57] text-[10px] block mb-1">✦</span>
+                <p className="text-2xl font-bold text-[#4A6B44] font-mono tracking-tight">
+                  ARS {savingsARS.toLocaleString('es-AR')}
+                </p>
+                <p className="font-menu-serif font-semibold text-xs text-[#8F7347] uppercase tracking-wider mt-1">
+                  Valor Preservado
+                </p>
+                <p className="font-menu-serif italic text-[11px] text-[#766153] mt-0.5">
+                  Ahorro en comanda
                 </p>
               </div>
             </div>
 
-            {/* Historial simple de recetas cocinadas */}
-            {history.length > 0 && (
-              <div className="pt-4 space-y-3">
-                <h2 className="text-xs font-semibold text-[#A68A64] uppercase tracking-wider">
-                  Historial reciente
+            {/* Historial de servicios elaborados */}
+            <div className="menu-card-frame rounded-2xl p-4 sm:p-5 relative">
+              {/* Esquinas ornamentales */}
+              <div className="absolute top-2 left-2 w-2 h-2 border-t border-l border-[#A88B57]/60 pointer-events-none" />
+              <div className="absolute top-2 right-2 w-2 h-2 border-t border-r border-[#A88B57]/60 pointer-events-none" />
+              <div className="absolute bottom-2 left-2 w-2 h-2 border-b border-l border-[#A88B57]/60 pointer-events-none" />
+              <div className="absolute bottom-2 right-2 w-2 h-2 border-b border-r border-[#A88B57]/60 pointer-events-none" />
+
+              <div className="pb-2 mb-2 border-b border-[#A88B57]/20 flex items-center justify-between">
+                <h2 className="font-menu-title text-xs font-bold text-[#1C1917] uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="text-[#A88B57]">✦</span>
+                  <span>Libro de Servicios Recientes</span>
                 </h2>
-                <div className="divide-y divide-[#766153]/10">
-                  {history.slice(0, 8).map((item) => (
+                <span className="font-menu-serif text-[11px] text-[#8F7347] italic">
+                  Últimos pases
+                </span>
+              </div>
+
+              {history.length === 0 ? (
+                <div className="py-8 text-center text-xs text-[#766153] font-menu-serif italic">
+                  Aún no se han anotado platos elaborados. Al preparar una receta de La Carta, quedará registrada aquí.
+                </div>
+              ) : (
+                <div className="divide-y divide-[#A88B57]/10">
+                  {history.slice(0, 8).map((item, idx) => (
                     <div key={item.id} className="py-2.5 flex items-baseline justify-between text-xs">
-                      <span className="font-medium text-[#2F2A26]">
-                        {item.recipe_name}
-                      </span>
-                      <span className="text-[#766153] font-mono text-[11px]">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-[10px] font-mono text-[#8F7347]">
+                          Nº {idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
+                        </span>
+                        <span className="font-menu-title font-semibold text-[#1C1917]">
+                          {item.recipe_name}
+                        </span>
+                      </div>
+                      <span className="text-[#8F7347] font-menu-serif italic text-[11px] whitespace-nowrap ml-2">
                         {new Date(item.cooked_at).toLocaleDateString('es-AR', {
                           day: 'numeric',
                           month: 'short',
@@ -86,8 +129,8 @@ export default function ImpactPage() {
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </>
         )}
       </div>

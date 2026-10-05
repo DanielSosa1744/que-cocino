@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
-import { ArrowLeft, Leaf } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
 export default function ForgotPasswordPage() {
   const { resetPassword } = useAuth()
@@ -26,56 +26,78 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="h-full max-h-full bg-white flex flex-col justify-center px-5 py-2 overflow-y-auto">
-      <div className="max-w-sm mx-auto w-full">
-        <Link to="/login" className="inline-flex items-center gap-1.5 text-gray-500 hover:text-gray-700 mb-3">
+    <div className="h-full max-h-full bg-transparent flex flex-col justify-center px-5 py-4 overflow-y-auto animate-fade-in text-[#2F2A26]">
+      <div className="max-w-sm mx-auto w-full menu-card-frame rounded-3xl p-6 sm:p-7 relative shadow-lg">
+        {/* Esquinas ornamentales discretas */}
+        <div className="absolute top-3 left-3 w-2.5 h-2.5 border-t border-l border-[#A88B57]/60 pointer-events-none" />
+        <div className="absolute top-3 right-3 w-2.5 h-2.5 border-t border-r border-[#A88B57]/60 pointer-events-none" />
+        <div className="absolute bottom-3 left-3 w-2.5 h-2.5 border-b border-l border-[#A88B57]/60 pointer-events-none" />
+        <div className="absolute bottom-3 right-3 w-2.5 h-2.5 border-b border-r border-[#A88B57]/60 pointer-events-none" />
+
+        <Link to="/login" className="inline-flex items-center gap-1.5 text-[#8F7347] hover:text-[#1C1917] mb-3 text-xs font-menu-serif transition">
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span className="text-xs">Volver</span>
+          <span>Volver al Atelier</span>
         </Link>
 
-        <div className="text-center mb-4">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-green-50 mb-1.5 shadow-xs">
-            <Leaf className="w-6 h-6 text-green-500" />
+        {/* Encabezado */}
+        <div className="text-center mb-6">
+          <div className="flex items-center justify-center gap-2 opacity-80 mb-1">
+            <span className="h-[1px] w-5 bg-gradient-to-r from-transparent to-[#A88B57]" />
+            <span className="text-[#A88B57] text-[9px]">✦</span>
+            <span className="text-[9px] tracking-[0.22em] uppercase font-semibold text-[#8F7347]">
+              Maison Culinaria
+            </span>
+            <span className="text-[#A88B57] text-[9px]">✦</span>
+            <span className="h-[1px] w-5 bg-gradient-to-l from-transparent to-[#A88B57]" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900 leading-tight">Recuperar contraseña</h1>
-          <p className="text-gray-400 mt-0.5 text-xs">Te enviaremos un enlace por email</p>
+
+          <h1 className="font-menu-title text-2xl font-bold text-[#1C1917] tracking-tight leading-tight">
+            Recuperar Clave
+          </h1>
+          <p className="font-menu-serif italic text-xs text-[#766153] mt-1">
+            Le enviaremos un enlace confidencial para restablecer el acceso
+          </p>
         </div>
 
         {sent ? (
-          <div className="text-center bg-green-50 rounded-2xl p-6">
-            <div className="text-3xl mb-2"><span className="material-symbols-rounded align-middle text-[1.2em] mb-0.5 inline-block">mail</span></div>
-            <h3 className="font-semibold text-gray-900 mb-1 text-sm">Email enviado</h3>
-            <p className="text-gray-500 text-xs">
-              Revisa tu bandeja de entrada y sigue las instrucciones.
+          <div className="text-center bg-[#F7F3EC] border border-[#A88B57]/20 rounded-2xl p-6">
+            <div className="text-2xl mb-2 text-[#A88B57]">✦ ✉ ✦</div>
+            <h3 className="font-menu-title text-base font-bold text-[#1C1917] mb-1">Enlace Enviado</h3>
+            <p className="font-menu-serif text-xs text-[#766153] leading-relaxed">
+              Revise su bandeja de entrada y siga las instrucciones de la Casa.
             </p>
-            <Link to="/login" className="block mt-3 text-green-600 text-xs font-semibold">
-              Volver al inicio de sesión
+            <Link to="/login" className="inline-block mt-4 text-[#8F7347] hover:text-[#1C1917] text-xs font-semibold uppercase tracking-wider underline">
+              Regresar al inicio de sesión
             </Link>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-0.5">Email</label>
+              <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#766153] mb-1">
+                Correo Electrónico
+              </label>
               <input
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
-                placeholder="tuemail@ejemplo.com"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition"
+                placeholder="chef@maison.com"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#A88B57]/30 bg-white/80 text-sm text-[#1C1917] placeholder-[#A89F91] focus:outline-none focus:ring-1 focus:ring-[#A88B57] focus:border-[#A88B57] transition font-menu-serif"
               />
             </div>
 
             {error && (
-              <p className="text-red-500 text-sm bg-red-50 px-4 py-3 rounded-xl">{error}</p>
+              <div className="p-2.5 rounded-xl bg-red-50/90 border border-red-200/80 text-red-700 text-xs text-center font-menu-serif">
+                {error}
+              </div>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl transition disabled:opacity-60"
+              className="w-full py-3 bg-[#1C1917] hover:bg-[#2F2A26] text-[#FAF7F2] font-medium rounded-xl text-xs uppercase tracking-widest transition shadow-sm disabled:opacity-60 border border-[#A88B57]/40"
             >
-              {loading ? 'Enviando...' : 'Enviar enlace'}
+              {loading ? 'Enviando...' : '✦ Enviar Enlace de Acceso ✦'}
             </button>
           </form>
         )}

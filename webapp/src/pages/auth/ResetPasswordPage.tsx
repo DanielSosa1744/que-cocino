@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase, isSupabaseConfigured } from '../../lib/supabase'
-import { Leaf, CheckCircle } from 'lucide-react'
+import { CheckCircle } from 'lucide-react'
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate()
@@ -31,31 +31,48 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="h-full max-h-full bg-white flex flex-col justify-center px-5 py-2 overflow-y-auto">
-      <div className="max-w-sm mx-auto w-full">
-        <div className="text-center mb-4">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-green-50 mb-1.5 shadow-xs">
-            <Leaf className="w-6 h-6 text-green-500" />
+    <div className="h-full max-h-full bg-transparent flex flex-col justify-center px-5 py-4 overflow-y-auto animate-fade-in text-[#2F2A26]">
+      <div className="max-w-sm mx-auto w-full menu-card-frame rounded-3xl p-6 sm:p-7 relative shadow-lg">
+        {/* Esquinas ornamentales discretas */}
+        <div className="absolute top-3 left-3 w-2.5 h-2.5 border-t border-l border-[#A88B57]/60 pointer-events-none" />
+        <div className="absolute top-3 right-3 w-2.5 h-2.5 border-t border-r border-[#A88B57]/60 pointer-events-none" />
+        <div className="absolute bottom-3 left-3 w-2.5 h-2.5 border-b border-l border-[#A88B57]/60 pointer-events-none" />
+        <div className="absolute bottom-3 right-3 w-2.5 h-2.5 border-b border-r border-[#A88B57]/60 pointer-events-none" />
+
+        <div className="text-center mb-6">
+          <div className="flex items-center justify-center gap-2 opacity-80 mb-1">
+            <span className="h-[1px] w-5 bg-gradient-to-r from-transparent to-[#A88B57]" />
+            <span className="text-[#A88B57] text-[9px]">✦</span>
+            <span className="text-[9px] tracking-[0.22em] uppercase font-semibold text-[#8F7347]">
+              Maison Culinaria
+            </span>
+            <span className="text-[#A88B57] text-[9px]">✦</span>
+            <span className="h-[1px] w-5 bg-gradient-to-l from-transparent to-[#A88B57]" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900 leading-tight">Nueva contraseña</h1>
-          <p className="text-gray-400 text-xs mt-0.5">Introduce tu nueva clave de acceso</p>
+
+          <h1 className="font-menu-title text-2xl font-bold text-[#1C1917] tracking-tight leading-tight">
+            Nueva Clave
+          </h1>
+          <p className="font-menu-serif italic text-xs text-[#766153] mt-1">
+            Defina su nueva credencial privada de acceso
+          </p>
         </div>
 
         {success ? (
-          <div className="bg-green-50 rounded-2xl p-5 text-center border border-green-100">
-            <CheckCircle className="w-10 h-10 text-green-500 mx-auto mb-2" />
-            <h3 className="font-bold text-gray-900 mb-1 text-sm">¡Contraseña actualizada!</h3>
-            <p className="text-gray-500 text-xs">Redirigiendo al inicio de sesión...</p>
+          <div className="bg-[#EBF1E8] rounded-2xl p-5 text-center border border-[#4A6B44]/25">
+            <CheckCircle className="w-8 h-8 text-[#4A6B44] mx-auto mb-2" />
+            <h3 className="font-menu-title font-bold text-[#1C1917] mb-1 text-sm">✦ Clave Actualizada ✦</h3>
+            <p className="font-menu-serif text-xs text-[#4A6B44]">Redirigiendo a la entrada principal...</p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="bg-red-50 text-red-600 text-xs p-2.5 rounded-xl border border-red-100">
+              <div className="p-2.5 rounded-xl bg-red-50/90 border border-red-200/80 text-red-700 text-xs text-center font-menu-serif">
                 {error}
               </div>
             )}
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">
+              <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#766153] mb-1">
                 Nueva Contraseña
               </label>
               <input
@@ -65,19 +82,21 @@ export default function ResetPasswordPage() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="Mínimo 6 caracteres"
-                className="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#A88B57]/30 bg-white/80 text-sm text-[#1C1917] placeholder-[#A89F91] focus:outline-none focus:ring-1 focus:ring-[#A88B57] focus:border-[#A88B57] transition font-menu-serif"
               />
             </div>
+
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl text-xs transition shadow-xs disabled:opacity-50"
+              className="w-full py-3 bg-[#1C1917] hover:bg-[#2F2A26] text-[#FAF7F2] font-medium rounded-xl text-xs uppercase tracking-widest transition shadow-sm disabled:opacity-60 border border-[#A88B57]/40"
             >
-              {loading ? 'Guardando...' : 'Actualizar contraseña'}
+              {loading ? 'Guardando...' : '✦ Actualizar Credencial ✦'}
             </button>
-            <div className="text-center mt-4">
-              <Link to="/login" className="text-xs text-gray-500 hover:underline">
-                Cancelar y volver
+
+            <div className="text-center pt-2">
+              <Link to="/login" className="text-xs font-menu-serif text-[#8F7347] hover:text-[#1C1917] hover:underline">
+                Cancelar y regresar
               </Link>
             </div>
           </form>

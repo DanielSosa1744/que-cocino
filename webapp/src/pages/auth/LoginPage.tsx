@@ -5,7 +5,7 @@ import LoginEntranceAnimation from '../../components/LoginEntranceAnimation'
 import GoogleIcon from '../../components/GoogleIcon'
 
 export default function LoginPage() {
-  const { signIn, signInDemo, isDemoMode } = useAuth()
+  const { signIn, signInDemo } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -35,18 +35,33 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="h-full max-h-full bg-[#F7F3EC] flex flex-col justify-center px-5 py-4 overflow-y-auto">
+    <div className="h-full max-h-full bg-transparent flex flex-col justify-center px-5 py-4 overflow-y-auto animate-fade-in text-[#2F2A26]">
       {showEntrance && <LoginEntranceAnimation onComplete={() => navigate('/home')} />}
 
-      <div className="max-w-sm mx-auto w-full">
-        {/* Logo */}
+      <div className="max-w-sm mx-auto w-full menu-card-frame rounded-3xl p-6 sm:p-7 relative shadow-lg">
+        {/* Esquinas ornamentales discretas */}
+        <div className="absolute top-3 left-3 w-2.5 h-2.5 border-t border-l border-[#A88B57]/60 pointer-events-none" />
+        <div className="absolute top-3 right-3 w-2.5 h-2.5 border-t border-r border-[#A88B57]/60 pointer-events-none" />
+        <div className="absolute bottom-3 left-3 w-2.5 h-2.5 border-b border-l border-[#A88B57]/60 pointer-events-none" />
+        <div className="absolute bottom-3 right-3 w-2.5 h-2.5 border-b border-r border-[#A88B57]/60 pointer-events-none" />
+
+        {/* Logo y Encabezado de la Casa */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#EFF4EC] mb-2 shadow-xs border border-[#5D7A56]/25">
-            <GoogleIcon name="eco" className="text-[#5D7A56] text-2xl" filled />
+          <div className="flex items-center justify-center gap-2 opacity-80 mb-1">
+            <span className="h-[1px] w-5 bg-gradient-to-r from-transparent to-[#A88B57]" />
+            <span className="text-[#A88B57] text-[9px]">✦</span>
+            <span className="text-[9px] tracking-[0.22em] uppercase font-semibold text-[#8F7347]">
+              Maison Culinaria
+            </span>
+            <span className="text-[#A88B57] text-[9px]">✦</span>
+            <span className="h-[1px] w-5 bg-gradient-to-l from-transparent to-[#A88B57]" />
           </div>
-          <h1 className="text-xl font-serif font-medium text-[#2F2A26] tracking-tight leading-tight">¿Qué Cocino?</h1>
-          <p className="text-[#766153] mt-0.5 text-xs">
-            Cuaderno inteligente para tu cocina
+
+          <h1 className="font-menu-title text-2xl font-bold text-[#1C1917] tracking-tight leading-tight">
+            ¿Qué Cocino?
+          </h1>
+          <p className="font-menu-serif italic text-[#766153] mt-0.5 text-xs">
+            Atelier gastronómico & carta personalizada
           </p>
         </div>
 
@@ -55,37 +70,37 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={handleDemoAccess}
-            className="w-full py-2.5 px-4 bg-[#EFF4EC] hover:bg-[#E2ECE0] border border-[#5D7A56]/30 text-[#2F2A26] font-medium rounded-2xl transition flex items-center justify-center gap-1.5 text-xs shadow-xs tap-subtle cursor-pointer"
+            className="w-full py-2.5 px-4 bg-[#FAF7F2] hover:bg-white border border-[#A88B57]/40 text-[#1C1917] font-menu-serif font-semibold rounded-xl transition flex items-center justify-center gap-1.5 text-xs shadow-2xs tap-subtle cursor-pointer"
           >
-            <GoogleIcon name="auto_awesome" className="text-[#5D7A56] text-base" />
-            Acceso Rápido Demo (Entrar directo)
+            <GoogleIcon name="auto_awesome" className="text-[#8F7347] text-base" />
+            <span>✦ Entrada Rápida · Modo Degustación ✦</span>
           </button>
           <div className="relative my-3.5">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-[#766153]/15"></div>
+              <div className="w-full border-t border-[#A88B57]/20"></div>
             </div>
             <div className="relative flex justify-center text-[11px]">
-              <span className="bg-[#F7F3EC] px-2.5 text-[#766153]">o accede con tu cuenta</span>
+              <span className="bg-[#FAF7F2] px-2.5 text-[#766153] font-menu-serif italic">o ingrese con sus credenciales</span>
             </div>
           </div>
         </div>
 
         {/* Formulario */}
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form onSubmit={handleSubmit} className="space-y-3 font-menu-serif">
           <div>
-            <label className="block text-xs font-medium text-[#2F2A26] mb-1">Email</label>
+            <label className="block text-xs font-semibold text-[#1C1917] mb-1">Correo electrónico</label>
             <input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
-              placeholder="tuemail@ejemplo.com"
-              className="w-full px-3 py-2.5 rounded-xl border border-[#766153]/20 bg-[#FCFAF7] text-[#2F2A26] placeholder-[#766153]/50 text-xs focus:outline-none focus:border-[#5D7A56] transition"
+              placeholder="su.nombre@gastronomia.com"
+              className="w-full px-3 py-2 rounded-xl border border-[#A88B57]/30 bg-white/90 text-[#1C1917] placeholder-[#766153]/50 text-xs focus:outline-none focus:border-[#8F7347] transition font-sans"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#2F2A26] mb-1">Contraseña</label>
+            <label className="block text-xs font-semibold text-[#1C1917] mb-1">Clave de acceso</label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -93,12 +108,12 @@ export default function LoginPage() {
                 onChange={e => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full px-3 py-2.5 rounded-xl border border-[#766153]/20 bg-[#FCFAF7] text-[#2F2A26] placeholder-[#766153]/50 text-xs focus:outline-none focus:border-[#5D7A56] transition pr-10"
+                className="w-full px-3 py-2 rounded-xl border border-[#A88B57]/30 bg-white/90 text-[#1C1917] placeholder-[#766153]/50 text-xs focus:outline-none focus:border-[#8F7347] transition pr-10 font-sans"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#766153] hover:text-[#2F2A26] cursor-pointer"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#766153] hover:text-[#1C1917] cursor-pointer"
               >
                 <GoogleIcon name={showPassword ? 'visibility_off' : 'visibility'} className="text-base text-[#766153]" />
               </button>
@@ -106,39 +121,33 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <p className="text-[#A68A64] text-xs bg-[#FCFAF7] p-2.5 rounded-xl border border-[#A68A64]/30">{error}</p>
+            <p className="text-[#C84B31] text-xs bg-[#FAF7F2] p-2 rounded-xl border border-[#C84B31]/30">{error}</p>
           )}
 
-          <div className="flex justify-between items-center text-xs pt-1">
+          <div className="flex justify-between items-center text-xs pt-0.5">
             <Link
               to="/forgot-password"
-              className="text-[#766153] hover:text-[#2F2A26] transition"
+              className="text-[#8F7347] hover:text-[#1C1917] italic transition"
             >
-              ¿Olvidaste tu contraseña?
+              ¿Olvidó su contraseña?
             </Link>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 bg-[#2F2A26] hover:bg-black text-[#F7F3EC] font-medium rounded-2xl transition disabled:opacity-60 text-xs shadow-sm tap-subtle cursor-pointer mt-1"
+            className="w-full py-2.5 bg-[#1C1917] hover:bg-black text-[#FAF7F2] font-semibold tracking-wider rounded-xl transition disabled:opacity-60 text-xs shadow-sm tap-subtle cursor-pointer mt-1 border border-[#A88B57]/40"
           >
-            {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+            {loading ? 'Accediendo a la casa...' : '✦ Ingresar al Atelier ✦'}
           </button>
         </form>
 
-        <p className="text-center text-xs text-[#766153] mt-5">
-          ¿No tienes cuenta?{' '}
-          <Link to="/register" className="text-[#5D7A56] font-medium hover:underline">
-            Crear cuenta gratuita
+        <p className="text-center text-xs text-[#766153] mt-4 font-menu-serif">
+          ¿Primera visita?{' '}
+          <Link to="/register" className="text-[#8F7347] font-semibold hover:underline">
+            Crear registro de cortesía
           </Link>
         </p>
-
-        {isDemoMode && (
-          <p className="text-[11px] text-[#766153] text-center mt-4 bg-[#FCFAF7] p-2 rounded-xl border border-[#766153]/15">
-            <GoogleIcon name="info" className="text-[#5D7A56] text-xs mr-1 align-middle" /> Modo demostración activo con base de datos local.
-          </p>
-        )}
       </div>
     </div>
   )

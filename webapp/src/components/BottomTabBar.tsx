@@ -6,10 +6,10 @@ export const isTabBarHidden = (pathname: string) =>
   ['/login', '/register', '/forgot-password', '/reset-password', '/voice', '/confirm-ingredients'].includes(pathname)
 
 export const MAIN_TABS = [
-  { path: '/home', label: 'Inicio', icon: 'home' },
-  { path: '/recetas', label: 'Recetas', icon: 'menu_book' },
+  { path: '/home', label: 'La Cocina', icon: 'soup_kitchen' },
+  { path: '/recetas', label: 'La Carta', icon: 'menu_book' },
   { path: '/inventory', label: 'Despensa', icon: 'inventory_2' },
-  { path: '/impact', label: 'Actividad', icon: 'history' },
+  { path: '/impact', label: 'Cuaderno', icon: 'auto_stories' },
 ]
 
 export default function BottomTabBar() {
@@ -22,7 +22,7 @@ export default function BottomTabBar() {
   if (isHidden) return null
 
   return (
-    <div className="flex-shrink-0 w-full z-40 bg-[#F7F3EC]/90 backdrop-blur-xl border-t border-[#766153]/15 pb-safe">
+    <div className="flex-shrink-0 w-full z-40 bg-[#FAF7F2]/95 backdrop-blur-xl border-t border-[#A88B57]/30 pb-safe shadow-[0_-2px_12px_rgba(168,139,87,0.06)]">
       <nav className="flex justify-around items-center h-14 px-3 max-w-sm mx-auto">
         {MAIN_TABS.map((tab) => {
           const isActive = location.pathname === tab.path || (tab.path === '/recetas' && location.pathname === '/vaciar-nevera')
@@ -32,7 +32,7 @@ export default function BottomTabBar() {
               key={tab.path}
               onClick={() => navigate(tab.path)}
               className={`flex-1 flex flex-col items-center justify-center py-1 transition-all relative tap-subtle cursor-pointer ${
-                isActive ? 'text-[#2F2A26] font-medium' : 'text-[#766153]/70 hover:text-[#2F2A26]'
+                isActive ? 'text-[#1C1917] font-semibold' : 'text-[#766153]/75 hover:text-[#1C1917]'
               }`}
             >
               <div className="relative flex items-center justify-center">
@@ -40,20 +40,20 @@ export default function BottomTabBar() {
                   name={tab.icon}
                   filled={isActive}
                   className={`text-[20px] transition-all duration-200 ${
-                    isActive ? 'text-[#5D7A56] scale-105' : 'text-[#766153]/70'
+                    isActive ? 'text-[#8F7347] scale-105' : 'text-[#766153]/75'
                   }`}
                 />
                 {tab.path === '/inventory' && inventory.length > 0 && (
-                  <span className="absolute -top-0.5 -right-1.5 w-1.5 h-1.5 rounded-full bg-[#A68A64]" />
+                  <span className="absolute -top-0.5 -right-1.5 w-1.5 h-1.5 rounded-full bg-[#A88B57]" />
                 )}
               </div>
-              <span className={`text-[10px] mt-1 tracking-tight transition-colors ${
-                isActive ? 'text-[#2F2A26] font-medium' : 'text-[#766153]/70 font-normal'
+              <span className={`text-[10px] mt-0.5 tracking-wider font-menu-serif transition-colors ${
+                isActive ? 'text-[#1C1917] font-bold' : 'text-[#766153]/75 font-normal'
               }`}>
                 {tab.label}
               </span>
               {isActive && (
-                <span className="absolute bottom-0 w-3.5 h-[2px] rounded-full bg-[#5D7A56]" />
+                <span className="absolute bottom-0 w-4 h-[2px] rounded-full bg-[#A88B57]" />
               )}
             </button>
           )

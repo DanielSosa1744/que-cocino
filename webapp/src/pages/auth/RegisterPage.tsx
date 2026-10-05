@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
-import { Eye, EyeOff, Leaf } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 
 export default function RegisterPage() {
   const { signUp } = useAuth()
@@ -53,31 +53,43 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="h-full max-h-full bg-white flex flex-col justify-center px-5 py-2 overflow-y-auto">
-      <div className="max-w-sm mx-auto w-full">
-        <div className="text-center mb-4">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-green-50 mb-1.5 shadow-xs">
-            <Leaf className="w-6 h-6 text-green-500" />
+    <div className="h-full max-h-full bg-transparent flex flex-col justify-center px-5 py-2 overflow-y-auto animate-fade-in text-[#2F2A26]">
+      <div className="max-w-sm mx-auto w-full menu-card-frame rounded-3xl p-6 sm:p-7 relative shadow-lg">
+        {/* Esquinas ornamentales discretas */}
+        <div className="absolute top-3 left-3 w-2.5 h-2.5 border-t border-l border-[#A88B57]/60 pointer-events-none" />
+        <div className="absolute top-3 right-3 w-2.5 h-2.5 border-t border-r border-[#A88B57]/60 pointer-events-none" />
+        <div className="absolute bottom-3 left-3 w-2.5 h-2.5 border-b border-l border-[#A88B57]/60 pointer-events-none" />
+        <div className="absolute bottom-3 right-3 w-2.5 h-2.5 border-b border-r border-[#A88B57]/60 pointer-events-none" />
+
+        <div className="text-center mb-5">
+          <div className="flex items-center justify-center gap-2 opacity-80 mb-1">
+            <span className="h-[1px] w-5 bg-gradient-to-r from-transparent to-[#A88B57]" />
+            <span className="text-[#A88B57] text-[9px]">✦</span>
+            <span className="text-[9px] tracking-[0.22em] uppercase font-semibold text-[#8F7347]">
+              Maison Culinaria
+            </span>
+            <span className="text-[#A88B57] text-[9px]">✦</span>
+            <span className="h-[1px] w-5 bg-gradient-to-l from-transparent to-[#A88B57]" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900 leading-tight">Crear cuenta</h1>
-          <p className="text-gray-400 mt-0.5 text-xs">Empieza a ahorrar en comida hoy</p>
+          <h1 className="font-menu-title text-2xl font-bold text-[#1C1917] leading-tight">Registro de Cortesía</h1>
+          <p className="font-menu-serif italic text-[#766153] mt-0.5 text-xs">Acceda a su cuaderno de cocina y despensa</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-2.5">
+        <form onSubmit={handleSubmit} className="space-y-3 font-menu-serif">
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-0.5">Email</label>
+            <label className="block text-xs font-semibold text-[#1C1917] mb-1">Correo electrónico</label>
             <input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
-              placeholder="tuemail@ejemplo.com"
-              className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-xs focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition"
+              placeholder="su.nombre@gastronomia.com"
+              className="w-full px-3 py-2 rounded-xl border border-[#A88B57]/30 bg-white/90 text-[#1C1917] placeholder-[#766153]/50 text-xs focus:outline-none focus:border-[#8F7347] transition font-sans"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-0.5">Contraseña</label>
+            <label className="block text-xs font-semibold text-[#1C1917] mb-1">Clave de acceso</label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -85,12 +97,12 @@ export default function RegisterPage() {
                 onChange={e => setPassword(e.target.value)}
                 required
                 placeholder="Mínimo 6 caracteres"
-                className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-xs focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition pr-10"
+                className="w-full px-3 py-2 rounded-xl border border-[#A88B57]/30 bg-white/90 text-[#1C1917] placeholder-[#766153]/50 text-xs focus:outline-none focus:border-[#8F7347] transition pr-10 font-sans"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#766153] hover:text-[#1C1917] cursor-pointer"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -98,34 +110,34 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-0.5">Confirmar contraseña</label>
+            <label className="block text-xs font-semibold text-[#1C1917] mb-1">Confirmar clave</label>
             <input
               type={showPassword ? 'text' : 'password'}
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
               required
-              placeholder="Repite la contraseña"
-              className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-xs focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition"
+              placeholder="Repita la clave"
+              className="w-full px-3 py-2 rounded-xl border border-[#A88B57]/30 bg-white/90 text-[#1C1917] placeholder-[#766153]/50 text-xs focus:outline-none focus:border-[#8F7347] transition font-sans"
             />
           </div>
 
           {error && (
-            <p className="text-red-500 text-xs bg-red-50 px-3 py-2 rounded-xl">{error}</p>
+            <p className="text-[#C84B31] text-xs bg-[#FAF7F2] p-2 rounded-xl border border-[#C84B31]/30">{error}</p>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl transition disabled:opacity-60 disabled:cursor-not-allowed text-xs shadow-xs"
+            className="w-full py-2.5 bg-[#1C1917] hover:bg-black text-[#FAF7F2] font-semibold tracking-wider rounded-xl transition disabled:opacity-60 disabled:cursor-not-allowed text-xs shadow-sm cursor-pointer border border-[#A88B57]/40"
           >
-            {loading ? 'Creando cuenta...' : 'Crear cuenta'}
+            {loading ? 'Creando registro...' : '✦ Crear Cuenta en el Atelier ✦'}
           </button>
         </form>
 
-        <p className="text-center text-xs text-gray-500 mt-4">
-          ¿Ya tienes cuenta?{' '}
-          <Link to="/login" className="text-green-600 font-medium hover:text-green-700">
-            Iniciar sesión
+        <p className="text-center text-xs text-[#766153] mt-4 font-menu-serif">
+          ¿Ya tiene registro?{' '}
+          <Link to="/login" className="text-[#8F7347] font-semibold hover:underline">
+            Acceder
           </Link>
         </p>
       </div>

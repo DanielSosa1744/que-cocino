@@ -130,26 +130,26 @@ export default function HomePage() {
   }
 
   return (
-    <div className="h-full max-h-full bg-transparent flex flex-col justify-center items-center px-4 sm:px-6 py-6 sm:py-8 overflow-y-auto select-none animate-fade-in text-[#2F2A26]">
-      <div className="w-full max-w-md mx-auto text-center">
+    <div className="h-full max-h-full bg-transparent flex flex-col justify-start sm:justify-center items-center px-3 sm:px-6 py-4 sm:py-8 overflow-y-auto select-none animate-fade-in text-[#2F2A26]">
+      <div className="w-full max-w-md sm:max-w-lg md:max-w-xl mx-auto text-center my-auto py-2">
         {/* Filigrana superior gourmet */}
-        <div className="flex items-center justify-center gap-2.5 mb-2.5 opacity-90">
-          <span className="h-[1.5px] w-8 bg-gradient-to-r from-transparent to-[#A88B57]" />
-          <span className="text-[#A88B57] text-sm">✦</span>
-          <span className="text-sm sm:text-base tracking-[0.25em] uppercase font-bold text-[#8F7347]">
+        <div className="flex items-center justify-center gap-2 mb-2 sm:mb-2.5 opacity-90">
+          <span className="h-[1.5px] w-6 sm:w-8 bg-gradient-to-r from-transparent to-[#A88B57]" />
+          <span className="text-[#A88B57] text-xs sm:text-sm">✦</span>
+          <span className="text-xs sm:text-base tracking-[0.2em] sm:tracking-[0.25em] uppercase font-bold text-[#8F7347]">
             Atelier Gastronómico
           </span>
-          <span className="text-[#A88B57] text-sm">✦</span>
-          <span className="h-[1.5px] w-8 bg-gradient-to-l from-transparent to-[#A88B57]" />
+          <span className="text-[#A88B57] text-xs sm:text-sm">✦</span>
+          <span className="h-[1.5px] w-6 sm:w-8 bg-gradient-to-l from-transparent to-[#A88B57]" />
         </div>
 
         {/* Título principal de la casa */}
-        <h1 className="font-menu-title text-4xl sm:text-5xl font-extrabold tracking-tight text-[#1C1917] mb-3 leading-tight">
+        <h1 className="font-menu-title text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[#1C1917] mb-2 sm:mb-3 leading-tight">
           ¿Qué Cocinamos Hoy?
         </h1>
 
         {/* Subtítulo elegante */}
-        <p className="font-menu-serif text-base sm:text-lg text-[#44382F] max-w-md mx-auto leading-relaxed mb-6 font-normal">
+        <p className="font-menu-serif text-sm sm:text-base md:text-lg text-[#44382F] max-w-md mx-auto leading-relaxed mb-4 sm:mb-6 font-normal">
           Dicte o indique los ingredientes disponibles en su cocina para componer una carta a su medida.
         </p>
 
@@ -241,11 +241,11 @@ export default function HomePage() {
             </div>
 
             {/* Acciones principales: Hablar y Confeccionar Carta */}
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3">
               <button
                 type="button"
                 onClick={handleStartVoice}
-                className="flex-1 py-3.5 px-4 bg-[#FAF7F2] border-2 border-[#A88B57]/40 hover:border-[#8F7347] text-[#1C1917] text-base font-menu-serif font-bold rounded-2xl transition flex items-center justify-center gap-2 tap-subtle cursor-pointer shadow-2xs"
+                className="flex-1 py-3 sm:py-3.5 px-3 sm:px-4 bg-[#FAF7F2] border-2 border-[#A88B57]/40 hover:border-[#8F7347] text-[#1C1917] text-sm sm:text-base font-menu-serif font-bold rounded-2xl transition flex items-center justify-center gap-2 tap-subtle cursor-pointer shadow-2xs"
               >
                 <GoogleIcon name="mic" size={22} className="text-[#8F7347]" />
                 Dictar comanda
@@ -254,7 +254,7 @@ export default function HomePage() {
               <button
                 type="submit"
                 disabled={!inputText.trim() || isProcessing}
-                className="flex-1 py-3.5 px-4 bg-[#1C1917] hover:bg-black text-[#FAF7F2] text-base font-menu-serif font-bold tracking-wide rounded-2xl transition disabled:opacity-45 disabled:cursor-not-allowed tap-subtle cursor-pointer shadow-sm border border-[#A88B57]/40"
+                className="flex-1 py-3 sm:py-3.5 px-3 sm:px-4 bg-[#1C1917] hover:bg-black text-[#FAF7F2] text-sm sm:text-base font-menu-serif font-bold tracking-wide rounded-2xl transition disabled:opacity-45 disabled:cursor-not-allowed tap-subtle cursor-pointer shadow-sm border border-[#A88B57]/40"
               >
                 {isProcessing ? 'Elaborando...' : 'Confeccionar carta'}
               </button>

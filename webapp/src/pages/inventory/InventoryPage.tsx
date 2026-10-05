@@ -155,20 +155,23 @@ export default function InventoryPage() {
                   key={item.id}
                   className="flex items-center justify-between py-3 border-b border-[#A88B57]/15 group last:border-b-0"
                 >
-                  {/* Formato: ✦ Tomates ........ 4 ........ ARS 1800 */}
-                  <div className="flex items-baseline flex-1 min-w-0 mr-3">
-                    <span className="text-[#A88B57] text-xs mr-2 flex-shrink-0">✦</span>
-                    <span className="font-menu-serif font-extrabold text-lg sm:text-xl text-[#1C1917] capitalize truncate max-w-[130px] sm:max-w-none">
-                      {item.name}
-                    </span>
-                    <span className="flex-1 border-b border-dotted border-[#A88B57]/30 mx-2 mb-1" />
-                    <span className="text-base text-[#1C1917] font-mono font-bold flex-shrink-0">
-                      {qty} {item.unit || 'ud'}
-                    </span>
-                    <span className="flex-1 border-b border-dotted border-[#A88B57]/30 mx-2 mb-1" />
-                    <span className="text-xs sm:text-sm text-[#8F7347] font-mono whitespace-nowrap flex-shrink-0 bg-[#A88B57]/15 px-2.5 py-1 rounded border border-[#A88B57]/25 font-bold">
-                      ARS {priceARS.toLocaleString('es-AR')}
-                    </span>
+                  {/* Formato adaptativo: Nombre, existencias y valor */}
+                  <div className="flex flex-col sm:flex-row sm:items-baseline flex-1 min-w-0 mr-2 sm:mr-3">
+                    <div className="flex items-center min-w-0">
+                      <span className="text-[#A88B57] text-xs mr-2 flex-shrink-0">✦</span>
+                      <span className="font-menu-serif font-extrabold text-base sm:text-xl text-[#1C1917] capitalize truncate">
+                        {item.name}
+                      </span>
+                      <span className="ml-2 text-sm sm:text-base text-[#1C1917] font-mono font-bold flex-shrink-0">
+                        · {qty} {item.unit || 'ud'}
+                      </span>
+                    </div>
+                    <span className="hidden sm:inline-block flex-1 border-b border-dotted border-[#A88B57]/30 mx-2 mb-1" />
+                    <div className="mt-1 sm:mt-0 flex items-center">
+                      <span className="text-xs sm:text-sm text-[#8F7347] font-mono whitespace-nowrap flex-shrink-0 bg-[#A88B57]/15 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded border border-[#A88B57]/25 font-bold">
+                        ARS {priceARS.toLocaleString('es-AR')}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Acciones refinadas: +, -, Eliminar */}

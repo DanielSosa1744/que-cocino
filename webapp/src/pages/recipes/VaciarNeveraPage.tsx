@@ -215,19 +215,19 @@ export default function VaciarNeveraPage() {
         </p>
 
         {/* Selector de Categorías de la Carta (SIN NÚMEROS Y CON MÁXIMO CONTRASTE) */}
-        <div className="max-w-md mx-auto">
-          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-2.5">
+        <div className="w-full max-w-3xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
             {/* Botón 1: Servicio Directo (sin números, alto contraste) */}
             <button
               type="button"
               onClick={() => setActiveChoice('ready')}
-              className={`px-4 py-3 rounded-xl transition-all duration-200 tap-subtle cursor-pointer select-none text-center border-2 ${
+              className={`px-2 sm:px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-200 tap-subtle cursor-pointer select-none text-center border-2 ${
                 activeChoice === 'ready'
                   ? 'bg-[#1C1917] border-[#1C1917] text-[#FAF7F2] font-black shadow-md ring-2 ring-[#8F7347]/50'
                   : 'bg-white border-[#8F7347]/45 text-[#1C1917] hover:border-[#1C1917] hover:bg-[#FAF7F2] font-bold shadow-xs'
               }`}
             >
-              <span className="font-menu-serif text-base sm:text-lg tracking-wide block">
+              <span className="font-menu-serif text-sm sm:text-base md:text-lg tracking-wide block truncate">
                 Servicio Directo
               </span>
             </button>
@@ -236,13 +236,13 @@ export default function VaciarNeveraPage() {
             <button
               type="button"
               onClick={() => setActiveChoice('one_missing')}
-              className={`px-4 py-3 rounded-xl transition-all duration-200 tap-subtle cursor-pointer select-none text-center border-2 ${
+              className={`px-2 sm:px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-200 tap-subtle cursor-pointer select-none text-center border-2 ${
                 activeChoice === 'one_missing'
                   ? 'bg-[#1C1917] border-[#1C1917] text-[#FAF7F2] font-black shadow-md ring-2 ring-[#8F7347]/50'
                   : 'bg-white border-[#8F7347]/45 text-[#1C1917] hover:border-[#1C1917] hover:bg-[#FAF7F2] font-bold shadow-xs'
               }`}
             >
-              <span className="font-menu-serif text-base sm:text-lg tracking-wide block">
+              <span className="font-menu-serif text-sm sm:text-base md:text-lg tracking-wide block truncate">
                 Toque del Chef
               </span>
             </button>
@@ -251,13 +251,13 @@ export default function VaciarNeveraPage() {
             <button
               type="button"
               onClick={() => setActiveChoice('special')}
-              className={`px-4 py-3 rounded-xl transition-all duration-200 tap-subtle cursor-pointer select-none text-center border-2 ${
+              className={`px-2 sm:px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-200 tap-subtle cursor-pointer select-none text-center border-2 ${
                 activeChoice === 'special'
                   ? 'bg-[#1C1917] border-[#1C1917] text-[#FAF7F2] font-black shadow-md ring-2 ring-[#8F7347]/50'
                   : 'bg-white border-[#8F7347]/45 text-[#1C1917] hover:border-[#1C1917] hover:bg-[#FAF7F2] font-bold shadow-xs'
               }`}
             >
-              <span className="font-menu-serif text-base sm:text-lg tracking-wide block">
+              <span className="font-menu-serif text-sm sm:text-base md:text-lg tracking-wide block truncate">
                 Platos de Autor
               </span>
             </button>
@@ -266,13 +266,13 @@ export default function VaciarNeveraPage() {
             <button
               type="button"
               onClick={() => setActiveChoice('craving')}
-              className={`px-4 py-3 rounded-xl transition-all duration-200 tap-subtle cursor-pointer select-none text-center border-2 ${
+              className={`px-2 sm:px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-200 tap-subtle cursor-pointer select-none text-center border-2 ${
                 activeChoice === 'craving'
                   ? 'bg-[#1C1917] border-[#1C1917] text-[#FAF7F2] font-black shadow-md ring-2 ring-[#8F7347]/50'
                   : 'bg-white border-[#8F7347]/45 text-[#1C1917] hover:border-[#1C1917] hover:bg-[#FAF7F2] font-bold shadow-xs'
               }`}
             >
-              <span className="font-menu-serif text-base sm:text-lg tracking-wide block">
+              <span className="font-menu-serif text-sm sm:text-base md:text-lg tracking-wide block truncate">
                 A la Carta
               </span>
             </button>
@@ -330,10 +330,10 @@ export default function VaciarNeveraPage() {
             subMessage="Combinando sabores y armonizando ingredientes..."
           />
         ) : (
-          <div className="space-y-3.5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Si no hay inventario registrado */}
             {inventory.length === 0 && (
-              <div className="pt-2 pb-1">
+              <div className="col-span-full pt-2 pb-1">
                 <div className="p-4 rounded-2xl menu-card-frame text-base text-[#2E241E] text-left">
                   <p className="font-menu-title font-bold text-[#1C1917] mb-1.5 text-lg">
                     ✦ Selección del Chef para su inspiración
@@ -355,7 +355,7 @@ export default function VaciarNeveraPage() {
 
             {/* Si en "Servicio Directo" se ofrecen las alternativas más cercanas */}
             {activeChoice === 'ready' && isReadyFallback && inventory.length > 0 && (
-              <div className="pt-1 pb-1">
+              <div className="col-span-full pt-1 pb-1">
                 <div className="p-4 rounded-2xl bg-white border-2 border-[#8F7347]/40 text-base text-[#2E241E] text-left shadow-xs">
                   <p className="font-menu-title font-bold text-[#1C1917] mb-1 text-base">
                     ✦ Propuestas más afines a su selección
@@ -369,7 +369,7 @@ export default function VaciarNeveraPage() {
 
             {/* Aviso para antojos */}
             {activeChoice === 'craving' && cravingResult.isAlternative && cravingResult.notice && (
-              <div className="pt-1 pb-1">
+              <div className="col-span-full pt-1 pb-1">
                 <div className="p-4 rounded-2xl menu-card-frame text-left">
                   <p className="font-menu-title text-lg font-bold text-[#1C1917] leading-snug">
                     ✦ {cravingResult.notice.title}
@@ -383,7 +383,7 @@ export default function VaciarNeveraPage() {
 
             {/* Encabezado suave para antojos */}
             {activeChoice === 'craving' && !cravingQuery.trim() && (
-              <div className="pt-1 pb-1 text-center">
+              <div className="col-span-full pt-1 pb-1 text-center">
                 <p className="font-menu-serif text-base text-[#7A5E30] font-bold">
                   — Selección gastronómica para tentar al paladar —
                 </p>
@@ -395,7 +395,7 @@ export default function VaciarNeveraPage() {
               <article
                 key={recipe.id}
                 onClick={() => navigate(`/recipe/${recipe.id}`, { state: { recipe } })}
-                className="relative menu-card-frame rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:shadow-xl cursor-pointer select-none group"
+                className="relative menu-card-frame rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-xl cursor-pointer select-none group flex flex-col justify-between"
               >
                 {/* Esquinas ornamentales discretas tipo carta de lujo */}
                 <div className="absolute top-2.5 left-2.5 w-2.5 h-2.5 border-t-2 border-l-2 border-[#8F7347] pointer-events-none" />

@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useInventory } from '../hooks/useInventory'
+import { abortActiveActions } from '../lib/actionAbort'
 import GoogleIcon from './GoogleIcon'
 
 export const isTabBarHidden = (pathname: string) =>
@@ -28,7 +29,13 @@ export default function BottomTabBar() {
           const isActive = location.pathname === tab.path || (tab.path === '/recetas' && location.pathname === '/vaciar-nevera')
 
           const handleTabSelect = () => {
+            // 1. Abandonar de inmediato cualquier acción anterior (reconocimiento de voz, timers, promesas)
+            abortActiveActions()
+
+            // 2. Si ya está activo, la acción ya fue cancelada arriba (restablece vista limpia)
             if (isActive) return
+
+            // 3. Acelerar el cambio de página navegando al instante
             navigate(tab.path)
           }
 
@@ -36,6 +43,10 @@ export default function BottomTabBar() {
             <button
               key={tab.path}
               type="button"
+              onPointerDown={() => {
+                // Al primer contacto táctil, abortar inmediatamente la acción previa
+                abortActiveActions()
+              }}
               onClick={handleTabSelect}
               className={`flex-1 flex flex-col items-center justify-center py-1 relative cursor-pointer touch-manipulation select-none active:scale-95 transition-transform duration-75 ${
                 isActive ? 'text-[#1C1917]' : 'text-[#766153] hover:text-[#1C1917]'

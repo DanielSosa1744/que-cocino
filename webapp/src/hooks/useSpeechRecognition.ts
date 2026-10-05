@@ -350,7 +350,26 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
   }, [stopListening, resetTranscript])
 
   useEffect(() => {
+    const handleGlobalAbort = () => {
+      userStoppedRef.current = true
+      isListeningRef.current = false
+      if (simulationTimerRef.current) {
+        clearInterval(simulationTimerRef.current)
+        simulationTimerRef.current = null
+      }
+      if (restartTimerRef.current) {
+        clearTimeout(restartTimerRef.current)
+        restartTimerRef.current = null
+      }
+      cleanupRecognition()
+      setIsListening(false)
+      setInterimTranscript('')
+    }
+
+    window.addEventListener('que-cocino:abort-action', handleGlobalAbort)
+
     return () => {
+      window.removeEventListener('que-cocino:abort-action', handleGlobalAbort)
       if (simulationTimerRef.current) {
         clearInterval(simulationTimerRef.current)
       }

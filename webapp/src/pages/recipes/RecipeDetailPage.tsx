@@ -1,9 +1,10 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useSaveCooked, useVaciarNevera, useRecipes } from '../../hooks/useRecipes'
 import { useDeleteIngredient, useInventory } from '../../hooks/useInventory'
 import { isIngredientMatch, estimateItemValue } from '../../lib/ingredientParser'
 import { localStore } from '../../lib/localStore'
+import { registerAbortAction } from '../../lib/actionAbort'
 import type { RecipeWithScore } from '../../types/app.types'
 
 export default function RecipeDetailPage() {
@@ -19,6 +20,22 @@ export default function RecipeDetailPage() {
   const { data: allRawRecipes = [], isLoading: isLoadingRecipes } = useRecipes()
   const [hasCooked, setHasCooked] = useState(false)
   const [isDetailedMode, setIsDetailedMode] = useState(false)
+  const cookedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    const unregister = registerAbortAction(() => {
+      if (cookedTimerRef.current) {
+        clearTimeout(cookedTimerRef.current)
+        cookedTimerRef.current = null
+      }
+      setHasCooked(false)
+    })
+
+    return () => {
+      unregister()
+      if (cookedTimerRef.current) clearTimeout(cookedTimerRef.current)
+    }
+  }, [])
 
   const rawRecipe = stateRecipe ||
     availableRecipes.find(r => r.id === id) ||
@@ -87,7 +104,8 @@ export default function RecipeDetailPage() {
     matchedInventoryItems.forEach(item => deleteItem(item.id))
 
     setHasCooked(true)
-    setTimeout(() => {
+    if (cookedTimerRef.current) clearTimeout(cookedTimerRef.current)
+    cookedTimerRef.current = setTimeout(() => {
       navigate('/impact')
     }, 1200)
   }

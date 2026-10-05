@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition'
 import { useReplaceInventory } from '../hooks/useInventory'
 import { extractIngredients, guessCategory, defaultExpiryDate, getIngredientImportance } from '../lib/ingredientParser'
+import { registerAbortAction } from '../lib/actionAbort'
 import GoogleIcon from '../components/GoogleIcon'
 import CookingPotAnimation from '../components/CookingPotAnimation'
 
@@ -10,6 +11,7 @@ export default function HomePage() {
   const navigate = useNavigate()
   const [inputText, setInputText] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
+  const isAbortedRef = useRef(false)
   const { mutateAsync: replaceInventory } = useReplaceInventory()
 
   const {
@@ -30,7 +32,20 @@ export default function HomePage() {
   useEffect(() => {
     setInputText('')
     resetTranscript()
-  }, [])
+
+    // Registrar abandono inmediato cuando se toque cualquier botón del dock/toolbar
+    const unregister = registerAbortAction(() => {
+      isAbortedRef.current = true
+      setIsProcessing(false)
+      stopListening()
+      resetTranscript()
+    })
+
+    return () => {
+      unregister()
+      stopListening()
+    }
+  }, [stopListening, resetTranscript])
 
   // Si termina de escuchar y hay transcripción, autocompletar en el input
   useEffect(() => {
@@ -43,6 +58,7 @@ export default function HomePage() {
     const trimmed = text.trim()
     if (!trimmed) return
 
+    isAbortedRef.current = false
     setIsProcessing(true)
     try {
       // Guardar recetas de la tanda anterior como "vistas" para que la nueva carga no las repita
@@ -92,6 +108,9 @@ export default function HomePage() {
         new Promise((resolve) => setTimeout(resolve, 400)),
       ])
 
+      // Si el usuario tocó otro botón del toolbar, abandonar de inmediato y no redirigir
+      if (isAbortedRef.current) return
+
       // Guardar los ingredientes de este uso exclusivo
       sessionStorage.setItem('que_cocino_recent_ingredients', JSON.stringify(addedNames))
       navigate('/recetas', {
@@ -102,6 +121,7 @@ export default function HomePage() {
         },
       })
     } catch (err) {
+      if (isAbortedRef.current) return
       console.error('Error procesando ingredientes:', err)
       navigate('/recetas')
     } finally {

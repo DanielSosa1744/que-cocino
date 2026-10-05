@@ -1,9 +1,10 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useInventory } from '../../hooks/useInventory'
 import { useVaciarNevera, useRecipes } from '../../hooks/useRecipes'
 import { estimateItemValueARS, isIngredientMatch, getIngredientImportance } from '../../lib/ingredientParser'
 import { matchCravingRecipes, type RecipeWithCost } from '../../lib/cravingMatcher'
+import { registerAbortAction } from '../../lib/actionAbort'
 import CookingPotAnimation from '../../components/CookingPotAnimation'
 
 type CategoryChoice = 'ready' | 'one_missing' | 'special' | 'craving'
@@ -216,9 +217,35 @@ export default function VaciarNeveraPage() {
     return slice
   }, [currentCategoryRecipes, recipeOffset, totalInCategory])
 
+  const selectRecipeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const rotatingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Abandonar de inmediato acciones en curso al interactuar con el toolbar
+  useEffect(() => {
+    const unregister = registerAbortAction(() => {
+      if (selectRecipeTimerRef.current) {
+        clearTimeout(selectRecipeTimerRef.current)
+        selectRecipeTimerRef.current = null
+      }
+      if (rotatingTimerRef.current) {
+        clearTimeout(rotatingTimerRef.current)
+        rotatingTimerRef.current = null
+      }
+      setSelectedRecipeId(null)
+      setIsRotating(false)
+    })
+
+    return () => {
+      unregister()
+      if (selectRecipeTimerRef.current) clearTimeout(selectRecipeTimerRef.current)
+      if (rotatingTimerRef.current) clearTimeout(rotatingTimerRef.current)
+    }
+  }, [])
+
   const handleNextOptions = () => {
     setIsRotating(true)
-    setTimeout(() => {
+    if (rotatingTimerRef.current) clearTimeout(rotatingTimerRef.current)
+    rotatingTimerRef.current = setTimeout(() => {
       if (totalInCategory > pageSize) {
         setRecipeOffset(prev => prev + pageSize)
       } else {
@@ -234,7 +261,8 @@ export default function VaciarNeveraPage() {
 
   const handleSelectRecipe = (recipe: RecipeWithCost) => {
     setSelectedRecipeId(recipe.id)
-    setTimeout(() => {
+    if (selectRecipeTimerRef.current) clearTimeout(selectRecipeTimerRef.current)
+    selectRecipeTimerRef.current = setTimeout(() => {
       navigate(`/recipe/${recipe.id}`, { state: { recipe } })
     }, 280)
   }

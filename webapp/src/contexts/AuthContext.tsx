@@ -41,15 +41,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return () => subscription.unsubscribe()
     } else {
-      // Local / Offline demo mode
+      // Modo local / demo offline
       const saved = localStorage.getItem(LOCAL_USER_KEY)
       if (saved) {
         try {
           const parsed = JSON.parse(saved)
           setUser(parsed)
         } catch {
-          setUser(null)
+          const demoUser = {
+            id: 'demo-user-1',
+            email: 'demo@quecocino.app',
+            app_metadata: {},
+            user_metadata: { name: 'Chef Sostenible' },
+            aud: 'authenticated',
+            created_at: new Date().toISOString(),
+          } as unknown as User
+          setUser(demoUser)
+          localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(demoUser))
         }
+      } else {
+        const demoUser = {
+          id: 'demo-user-1',
+          email: 'demo@quecocino.app',
+          app_metadata: {},
+          user_metadata: { name: 'Chef Sostenible' },
+          aud: 'authenticated',
+          created_at: new Date().toISOString(),
+        } as unknown as User
+        setUser(demoUser)
+        localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(demoUser))
       }
       setIsDemoMode(true)
       setLoading(false)

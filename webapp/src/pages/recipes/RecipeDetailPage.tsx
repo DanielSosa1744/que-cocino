@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useSaveCooked, useVaciarNevera, useRecipes } from '../../hooks/useRecipes'
 import { useDeleteIngredient, useInventory } from '../../hooks/useInventory'
 import { isIngredientMatch, estimateItemValue } from '../../lib/ingredientParser'
+import { localStore } from '../../lib/localStore'
 import type { RecipeWithScore } from '../../types/app.types'
 
 export default function RecipeDetailPage() {
@@ -14,15 +15,25 @@ export default function RecipeDetailPage() {
   const { mutateAsync: saveCooked, isPending } = useSaveCooked()
   const { mutate: deleteItem } = useDeleteIngredient()
   const { data: inventory = [] } = useInventory()
-  const { data: availableRecipes = [] } = useVaciarNevera(inventory)
-  const { data: allRawRecipes = [] } = useRecipes()
+  const { data: availableRecipes = [], isLoading: isLoadingVaciar } = useVaciarNevera(inventory)
+  const { data: allRawRecipes = [], isLoading: isLoadingRecipes } = useRecipes()
   const [hasCooked, setHasCooked] = useState(false)
 
   const rawRecipe = stateRecipe ||
     availableRecipes.find(r => r.id === id) ||
-    allRawRecipes.find(r => r.id === id)
+    allRawRecipes.find(r => r.id === id) ||
+    localStore.getRecipes().find(r => r.id === id)
 
   if (!rawRecipe) {
+    if (isLoadingVaciar || isLoadingRecipes) {
+      return (
+        <div className="h-full max-h-full bg-[#FAF8F5] flex flex-col items-center justify-center p-6 text-center">
+          <div className="w-8 h-8 border-2 border-stone-800 border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="text-stone-600 text-xs tracking-wider uppercase font-serif">Cargando receta...</p>
+        </div>
+      )
+    }
+
     return (
       <div className="h-full max-h-full bg-white flex flex-col items-center justify-center p-6 text-center">
         <p className="text-stone-500 text-sm mb-4">Receta no encontrada.</p>

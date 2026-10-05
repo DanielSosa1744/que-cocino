@@ -4,6 +4,7 @@ interface CookingPotAnimationProps {
   message?: string
   subMessage?: string
   inline?: boolean
+  floating?: boolean
 }
 
 const GOURMET_STEPS = [
@@ -17,6 +18,7 @@ export default function CookingPotAnimation({
   message = 'Confeccionando la Carta del Chef...',
   subMessage,
   inline = false,
+  floating = false,
 }: CookingPotAnimationProps) {
   const [stepIndex, setStepIndex] = useState(0)
 
@@ -30,35 +32,36 @@ export default function CookingPotAnimation({
   const currentSub = subMessage || GOURMET_STEPS[stepIndex]
 
   const content = (
-    <div className="w-full max-w-sm mx-auto menu-card-frame rounded-3xl p-6 sm:p-7 relative shadow-lg text-center select-none animate-fade-in text-[#2F2A26]">
+    <div className="w-full max-w-[90vw] sm:max-w-sm md:max-w-md mx-auto menu-card-frame rounded-3xl p-4 sm:p-6 md:p-7 relative shadow-2xl text-center select-none text-[#2F2A26] border-2 border-[#8F7347]/50 bg-[#FAF7F2]/98 backdrop-blur-md">
       {/* Esquinas ornamentales en latón */}
-      <div className="absolute top-3 left-3 w-2.5 h-2.5 border-t border-l border-[#A88B57]/60 pointer-events-none" />
-      <div className="absolute top-3 right-3 w-2.5 h-2.5 border-t border-r border-[#A88B57]/60 pointer-events-none" />
-      <div className="absolute bottom-3 left-3 w-2.5 h-2.5 border-b border-l border-[#A88B57]/60 pointer-events-none" />
-      <div className="absolute bottom-3 right-3 w-2.5 h-2.5 border-b border-r border-[#A88B57]/60 pointer-events-none" />
+      <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 w-2.5 h-2.5 border-t border-l border-[#A88B57]/60 pointer-events-none" />
+      <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 w-2.5 h-2.5 border-t border-r border-[#A88B57]/60 pointer-events-none" />
+      <div className="absolute bottom-2.5 left-2.5 sm:bottom-3 sm:left-3 w-2.5 h-2.5 border-b border-l border-[#A88B57]/60 pointer-events-none" />
+      <div className="absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 w-2.5 h-2.5 border-b border-r border-[#A88B57]/60 pointer-events-none" />
 
       {/* Emblema superior */}
-      <div className="flex items-center justify-center gap-2 opacity-80 mb-2">
-        <span className="h-[1px] w-6 bg-gradient-to-r from-transparent to-[#A88B57]" />
+      <div className="flex items-center justify-center gap-2 opacity-80 mb-1.5 sm:mb-2">
+        <span className="h-[1px] w-5 sm:w-6 bg-gradient-to-r from-transparent to-[#A88B57]" />
         <span className="text-[#A88B57] text-xs">✦</span>
-        <span className="text-xs tracking-[0.22em] uppercase font-semibold text-[#8F7347]">
+        <span className="text-[11px] sm:text-xs tracking-[0.22em] uppercase font-semibold text-[#8F7347]">
           Atelier de Cuisine
         </span>
         <span className="text-[#A88B57] text-xs">✦</span>
-        <span className="h-[1px] w-6 bg-gradient-to-l from-transparent to-[#A88B57]" />
+        <span className="h-[1px] w-5 sm:w-6 bg-gradient-to-l from-transparent to-[#A88B57]" />
       </div>
 
-      {/* Ilustración de Alta Cocina: Cocotte de Cobre con ingredientes cayendo */}
-      <div className="relative w-64 h-64 mx-auto flex flex-col items-center justify-center overflow-visible">
-        {/* ========================================================
-            VOLUTAS DE VAPOR AROMÁTICO (DELICADO Y EN TONOS CÁLIDOS)
-            ======================================================== */}
-        <div className="absolute top-8 w-36 h-20 pointer-events-none flex justify-center items-end">
-          {/* Voluta 1 */}
-          <div
-            className="absolute left-6 animate-cartoon-steam"
-            style={{ animationDelay: '0s', animationDuration: '2.6s' }}
-          >
+      {/* Ilustración de Alta Cocina: Cocotte de Cobre con ingredientes cayendo (TOTALMENTE RESPONSIVE) */}
+      <div className="relative w-44 h-44 sm:w-56 sm:h-56 mx-auto flex flex-col items-center justify-center overflow-visible">
+        <div className="w-64 h-64 scale-[0.68] sm:scale-[0.88] transition-transform origin-center flex flex-col items-center justify-center relative flex-shrink-0">
+          {/* ========================================================
+              VOLUTAS DE VAPOR AROMÁTICO (DELICADO Y EN TONOS CÁLIDOS)
+              ======================================================== */}
+          <div className="absolute top-8 w-36 h-20 pointer-events-none flex justify-center items-end">
+            {/* Voluta 1 */}
+            <div
+              className="absolute left-6 animate-cartoon-steam"
+              style={{ animationDelay: '0s', animationDuration: '2.6s' }}
+            >
             <svg width="24" height="28" viewBox="0 0 24 28" fill="none">
               <path
                 d="M12 24C8 19 6 15 10 10C13 6 9 3 12 1"
@@ -412,42 +415,50 @@ export default function CookingPotAnimation({
           />
         </div>
       </div>
+    </div>
 
       {/* ========================================================
           TIPOGRAFÍA EDITORIAL DE CARTA GOURMET
           ======================================================== */}
-      <div className="mt-4 text-center max-w-sm mx-auto">
-        <h3 className="font-menu-title text-2xl sm:text-3xl font-extrabold text-[#1C1917] tracking-tight leading-snug">
+      <div className="mt-2 sm:mt-4 text-center max-w-sm mx-auto">
+        <h3 className="font-menu-title text-xl sm:text-2xl md:text-3xl font-extrabold text-[#1C1917] tracking-tight leading-snug">
           {message}
         </h3>
-        <p className="font-menu-serif text-base sm:text-lg text-[#44382F] mt-2 transition-all duration-300 min-h-[1.75rem] font-medium leading-relaxed">
+        <p className="font-menu-serif text-sm sm:text-base md:text-lg text-[#44382F] mt-1.5 sm:mt-2 transition-all duration-300 min-h-[1.6rem] font-medium leading-relaxed">
           {currentSub}
         </p>
 
         {/* Fina línea de latón con indicador de brillo */}
-        <div className="w-48 h-[2.5px] bg-[#A88B57]/25 rounded-full mx-auto mt-4 overflow-hidden relative">
+        <div className="w-36 sm:w-48 h-[2.5px] bg-[#A88B57]/25 rounded-full mx-auto mt-3 sm:mt-4 overflow-hidden relative">
           <div className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-[#A88B57] to-transparent animate-pulse rounded-full" />
         </div>
 
         {/* Florón discreto */}
-        <div className="text-sm text-[#8F7347] mt-3 select-none">
+        <div className="text-xs sm:text-sm text-[#8F7347] mt-2 sm:mt-3 select-none">
           — ❖ —
         </div>
       </div>
     </div>
   )
 
-  if (inline) {
+  if (inline && !floating) {
     return (
       <div className="flex flex-col items-center justify-center py-4 px-2 w-full">
-        {content}
+        <div className="flex flex-col items-center justify-center animate-float-gourmet w-full max-w-[90vw] sm:max-w-sm">
+          {content}
+          <div className="w-32 sm:w-44 h-3 bg-black/20 rounded-full blur-md mt-3 mx-auto animate-float-shadow pointer-events-none" />
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#F7F3EC]/92 backdrop-blur-md px-4 select-none animate-fade-in">
-      {content}
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/35 backdrop-blur-md px-3 sm:px-4 select-none animate-fade-in pointer-events-auto">
+      <div className="flex flex-col items-center justify-center animate-float-gourmet w-full max-w-[90vw] sm:max-w-sm md:max-w-md">
+        {content}
+        {/* Sombra de levitación flotante en el piso */}
+        <div className="w-36 sm:w-48 h-3.5 bg-black/40 rounded-full blur-md mt-4 sm:mt-5 mx-auto animate-float-shadow pointer-events-none" />
+      </div>
     </div>
   )
 }

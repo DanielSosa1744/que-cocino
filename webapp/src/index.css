@@ -512,3 +512,34 @@
   animation: cartoonBubblePop 1.4s ease-out infinite;
   will-change: transform, opacity;
 }
+
+/* Levitación flotante de la Carta gourmet */
+@keyframes floatGourmet {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+@keyframes floatGourmetShadow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(0.85);
+    opacity: 0.16;
+  }
+}
+
+.animate-float-gourmet {
+  animation: floatGourmet 3.2s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-float-shadow {
+  animation: floatGourmetShadow 3.2s ease-in-out infinite;
+  will-change: transform, opacity;
+}

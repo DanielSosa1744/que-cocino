@@ -399,11 +399,21 @@ export default function VaciarNeveraPage() {
 
         {/* Catálogo de la Carta: Pliegos editoriales de alta cocina */}
         {isLoading ? (
-          <CookingPotAnimation
-            inline
-            message="Elaborando propuestas de la Carta..."
-            subMessage="Combinando sabores y armonizando ingredientes..."
-          />
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 opacity-40 pointer-events-none select-none">
+              {[1, 2, 3, 4].map(idx => (
+                <div key={idx} className="menu-card-frame rounded-2xl p-5 relative space-y-3 animate-pulse bg-white/70 border border-[#8F7347]/30">
+                  <div className="h-4 bg-[#8F7347]/20 rounded-md w-3/4" />
+                  <div className="h-3 bg-[#8F7347]/15 rounded-md w-1/2" />
+                  <div className="h-14 bg-[#8F7347]/10 rounded-xl w-full" />
+                </div>
+              ))}
+            </div>
+            <CookingPotAnimation
+              message="Elaborando propuestas de la Carta..."
+              subMessage="Combinando sabores y armonizando ingredientes..."
+            />
+          </>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Si no hay inventario registrado */}
@@ -632,12 +642,15 @@ export default function VaciarNeveraPage() {
 
       {/* Micro-animación de transición gourmet al pasar a la cocina */}
       {selectedRecipeId && (
-        <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center bg-black/20 backdrop-blur-[2px] animate-fade-in">
-          <div className="bg-[#FAF7F2] border-2 border-[#8F7347] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3.5 animate-scale-up">
-            <div className="w-5 h-5 border-2 border-[#8F7347] border-t-transparent rounded-full animate-spin" />
-            <span className="font-menu-serif font-black text-[#1C1917] text-base sm:text-lg">
-              ✦ Pasando a la elaboración del plato...
-            </span>
+        <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center bg-black/25 backdrop-blur-sm animate-fade-in p-4">
+          <div className="flex flex-col items-center justify-center animate-float-gourmet w-full max-w-[90vw] sm:max-w-md">
+            <div className="bg-[#FAF7F2] border-2 border-[#8F7347] px-6 py-4.5 rounded-2xl shadow-2xl flex items-center justify-center gap-3.5 animate-scale-up w-full">
+              <div className="w-5 h-5 border-2 border-[#8F7347] border-t-transparent rounded-full animate-spin flex-shrink-0" />
+              <span className="font-menu-serif font-black text-[#1C1917] text-sm sm:text-base md:text-lg">
+                ✦ Pasando a la elaboración del plato...
+              </span>
+            </div>
+            <div className="w-36 sm:w-44 h-3 bg-black/25 rounded-full blur-md mt-3 mx-auto animate-float-shadow pointer-events-none" />
           </div>
         </div>
       )}

@@ -190,151 +190,162 @@ export default function VaciarNeveraPage() {
 
   return (
     <div className="h-full max-h-full bg-transparent flex flex-col overflow-hidden animate-fade-in text-[#2F2A26]">
-      {/* Encabezado sereno tipo Cuaderno de Cocina */}
-      <div className="px-5 pt-safe pb-2 flex-shrink-0 bg-transparent">
-        <h1 className="text-xl font-semibold text-[#2F2A26] tracking-tight">
-          ¿Qué te apetece preparar?
+      {/* Encabezado refinado: Carta de Restaurante Gourmet */}
+      <div className="px-5 pt-safe pb-2 flex-shrink-0 bg-transparent text-center">
+        {/* Filigrana superior con rombos y filetes */}
+        <div className="flex items-center justify-center gap-2 mb-1 opacity-80">
+          <span className="h-[1px] w-6 sm:w-10 bg-gradient-to-r from-transparent to-[#A88B57]" />
+          <span className="text-[#A88B57] text-[10px]">✦</span>
+          <span className="text-[10px] tracking-[0.22em] uppercase font-semibold text-[#8F7347]">
+            Menu du Jour · Selección del Chef
+          </span>
+          <span className="text-[#A88B57] text-[10px]">✦</span>
+          <span className="h-[1px] w-6 sm:w-10 bg-gradient-to-l from-transparent to-[#A88B57]" />
+        </div>
+
+        <h1 className="font-menu-title text-2xl sm:text-3xl font-bold text-[#1C1917] tracking-tight">
+          Carta de Temporada
         </h1>
-        <p className="text-xs text-[#766153] mt-0.5">
-          Elige una opción para ver las 4 mejores alternativas
+        <p className="font-menu-serif italic text-xs sm:text-sm text-[#766153] mt-0.5">
+          Propuestas de alta cocina elaboradas con los ingredientes de tu despensa
         </p>
 
-        {/* Selector Orgánico de 4 Botones Flotantes (Apple Journal / Headspace / Calm) */}
-        <div className="pt-3 pb-2">
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5">
-            {/* Botón 1: Cocinar ya */}
+        {/* Selector de Pliegos / Categorías de la Carta */}
+        <div className="pt-2.5 pb-1">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+            {/* Botón 1: Servicio Directo (Cocinar ya) */}
             <button
               type="button"
               onClick={() => setActiveChoice('ready')}
-              className={`animate-float-btn-1 relative px-3.5 py-2.5 rounded-2xl transition-all duration-300 tap-subtle hover-lift cursor-pointer select-none flex items-center gap-2 ${
+              className={`relative px-3 py-2 rounded-xl transition-all duration-300 tap-subtle cursor-pointer select-none flex items-center justify-between sm:justify-start gap-1.5 text-left border ${
                 activeChoice === 'ready'
-                  ? 'bg-[#EFF4EC] border-2 border-[#5D7A56] text-[#2F2A26] shadow-[0_4px_16px_rgba(93,122,86,0.18)] font-semibold scale-[1.02]'
-                  : 'bg-[#FCFAF7] border border-[#766153]/20 text-[#2F2A26] hover:border-[#766153]/40 hover:bg-[#FAF7F2] shadow-[0_2px_10px_rgba(47,42,38,0.04)] font-medium'
+                  ? 'bg-[#FAF7F2] border-[#A88B57] text-[#1C1917] shadow-[0_2px_12px_rgba(168,139,87,0.18)] font-semibold ring-1 ring-[#A88B57]/40'
+                  : 'bg-[#FCFAF7]/90 border-[#A88B57]/20 text-[#766153] hover:border-[#A88B57]/50 hover:bg-[#FAF7F2] font-medium'
               }`}
             >
-              <span className="text-xs sm:text-sm">Cocinar ya</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] text-[#A88B57] font-serif">I.</span>
+                <span className="font-menu-serif text-xs sm:text-sm tracking-wide">Servicio Directo</span>
+              </div>
               {readyRecipes.length > 0 && (
                 <span
-                  className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full ${
+                  className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
                     activeChoice === 'ready'
-                      ? 'bg-[#5D7A56]/15 text-[#3b4e37]'
-                      : 'bg-[#F7F3EC] text-[#766153]'
+                      ? 'bg-[#A88B57]/20 text-[#8F7347] font-bold'
+                      : 'bg-[#766153]/10 text-[#766153]'
                   }`}
                 >
                   {readyRecipes.length}
                 </span>
               )}
-              {activeChoice === 'ready' && (
-                <span className="w-1.5 h-1.5 rounded-full bg-[#5D7A56] animate-pulse" />
-              )}
             </button>
 
-            {/* Botón 2: Con algo más */}
+            {/* Botón 2: Toque del Chef (Con algo más) */}
             <button
               type="button"
               onClick={() => setActiveChoice('one_missing')}
-              className={`animate-float-btn-2 relative px-3.5 py-2.5 rounded-2xl transition-all duration-300 tap-subtle hover-lift cursor-pointer select-none flex items-center gap-2 ${
+              className={`relative px-3 py-2 rounded-xl transition-all duration-300 tap-subtle cursor-pointer select-none flex items-center justify-between sm:justify-start gap-1.5 text-left border ${
                 activeChoice === 'one_missing'
-                  ? 'bg-[#EFF4EC] border-2 border-[#5D7A56] text-[#2F2A26] shadow-[0_4px_16px_rgba(93,122,86,0.18)] font-semibold scale-[1.02]'
-                  : 'bg-[#FCFAF7] border border-[#766153]/20 text-[#2F2A26] hover:border-[#766153]/40 hover:bg-[#FAF7F2] shadow-[0_2px_10px_rgba(47,42,38,0.04)] font-medium'
+                  ? 'bg-[#FAF7F2] border-[#A88B57] text-[#1C1917] shadow-[0_2px_12px_rgba(168,139,87,0.18)] font-semibold ring-1 ring-[#A88B57]/40'
+                  : 'bg-[#FCFAF7]/90 border-[#A88B57]/20 text-[#766153] hover:border-[#A88B57]/50 hover:bg-[#FAF7F2] font-medium'
               }`}
             >
-              <span className="text-xs sm:text-sm">Con algo más</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] text-[#A88B57] font-serif">II.</span>
+                <span className="font-menu-serif text-xs sm:text-sm tracking-wide">Toque del Chef</span>
+              </div>
               {oneMissingRecipes.length > 0 && (
                 <span
-                  className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full ${
+                  className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
                     activeChoice === 'one_missing'
-                      ? 'bg-[#5D7A56]/15 text-[#3b4e37]'
-                      : 'bg-[#F7F3EC] text-[#766153]'
+                      ? 'bg-[#A88B57]/20 text-[#8F7347] font-bold'
+                      : 'bg-[#766153]/10 text-[#766153]'
                   }`}
                 >
                   {oneMissingRecipes.length}
                 </span>
               )}
-              {activeChoice === 'one_missing' && (
-                <span className="w-1.5 h-1.5 rounded-full bg-[#5D7A56] animate-pulse" />
-              )}
             </button>
 
-            {/* Botón 3: Plato especial */}
+            {/* Botón 3: Platos de Autor (Plato especial) */}
             <button
               type="button"
               onClick={() => setActiveChoice('special')}
-              className={`animate-float-btn-3 relative px-3.5 py-2.5 rounded-2xl transition-all duration-300 tap-subtle hover-lift cursor-pointer select-none flex items-center gap-2 ${
+              className={`relative px-3 py-2 rounded-xl transition-all duration-300 tap-subtle cursor-pointer select-none flex items-center justify-between sm:justify-start gap-1.5 text-left border ${
                 activeChoice === 'special'
-                  ? 'bg-[#EFF4EC] border-2 border-[#5D7A56] text-[#2F2A26] shadow-[0_4px_16px_rgba(93,122,86,0.18)] font-semibold scale-[1.02]'
-                  : 'bg-[#FCFAF7] border border-[#766153]/20 text-[#2F2A26] hover:border-[#766153]/40 hover:bg-[#FAF7F2] shadow-[0_2px_10px_rgba(47,42,38,0.04)] font-medium'
+                  ? 'bg-[#FAF7F2] border-[#A88B57] text-[#1C1917] shadow-[0_2px_12px_rgba(168,139,87,0.18)] font-semibold ring-1 ring-[#A88B57]/40'
+                  : 'bg-[#FCFAF7]/90 border-[#A88B57]/20 text-[#766153] hover:border-[#A88B57]/50 hover:bg-[#FAF7F2] font-medium'
               }`}
             >
-              <span className="text-xs sm:text-sm">Plato especial</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] text-[#A88B57] font-serif">III.</span>
+                <span className="font-menu-serif text-xs sm:text-sm tracking-wide">Platos de Autor</span>
+              </div>
               {specialRecipes.length > 0 && (
                 <span
-                  className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full ${
+                  className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
                     activeChoice === 'special'
-                      ? 'bg-[#5D7A56]/15 text-[#3b4e37]'
-                      : 'bg-[#F7F3EC] text-[#766153]'
+                      ? 'bg-[#A88B57]/20 text-[#8F7347] font-bold'
+                      : 'bg-[#766153]/10 text-[#766153]'
                   }`}
                 >
                   {specialRecipes.length}
                 </span>
               )}
-              {activeChoice === 'special' && (
-                <span className="w-1.5 h-1.5 rounded-full bg-[#5D7A56] animate-pulse" />
-              )}
             </button>
 
-            {/* Botón 4: Tengo un antojo */}
+            {/* Botón 4: A la Carta / Caprichos */}
             <button
               type="button"
               onClick={() => setActiveChoice('craving')}
-              className={`animate-float-btn-1 relative px-3.5 py-2.5 rounded-2xl transition-all duration-300 tap-subtle hover-lift cursor-pointer select-none flex items-center gap-2 ${
+              className={`relative px-3 py-2 rounded-xl transition-all duration-300 tap-subtle cursor-pointer select-none flex items-center justify-between sm:justify-start gap-1.5 text-left border ${
                 activeChoice === 'craving'
-                  ? 'bg-[#EFF4EC] border-2 border-[#5D7A56] text-[#2F2A26] shadow-[0_4px_16px_rgba(93,122,86,0.18)] font-semibold scale-[1.02]'
-                  : 'bg-[#FCFAF7] border border-[#766153]/20 text-[#2F2A26] hover:border-[#766153]/40 hover:bg-[#FAF7F2] shadow-[0_2px_10px_rgba(47,42,38,0.04)] font-medium'
+                  ? 'bg-[#FAF7F2] border-[#A88B57] text-[#1C1917] shadow-[0_2px_12px_rgba(168,139,87,0.18)] font-semibold ring-1 ring-[#A88B57]/40'
+                  : 'bg-[#FCFAF7]/90 border-[#A88B57]/20 text-[#766153] hover:border-[#A88B57]/50 hover:bg-[#FAF7F2] font-medium'
               }`}
             >
-              <span className="text-xs sm:text-sm">Tengo un antojo</span>
-              {activeChoice === 'craving' && (
-                <span className="w-1.5 h-1.5 rounded-full bg-[#5D7A56] animate-pulse" />
-              )}
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] text-[#A88B57] font-serif">IV.</span>
+                <span className="font-menu-serif text-xs sm:text-sm tracking-wide">A la Carta</span>
+              </div>
             </button>
           </div>
         </div>
 
-        {/* Sección interactiva de "Tengo un antojo" */}
+        {/* Sección interactiva de "A la Carta" */}
         {activeChoice === 'craving' && (
-          <div className="pt-2 pb-2 space-y-2.5 animate-fade-in">
+          <div className="pt-2 pb-2 space-y-2 max-w-md mx-auto animate-fade-in text-left">
             <div className="relative">
               <input
                 type="text"
                 value={cravingQuery}
                 onChange={e => setCravingQuery(e.target.value)}
-                placeholder="¿Qué comida deseas? (ej. pasta, pizza, empanadas...)"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#FCFAF7] border border-[#766153]/25 focus:border-[#5D7A56] focus:outline-none text-xs text-[#2F2A26] placeholder:text-[#766153]/60 transition shadow-2xs"
+                placeholder="¿Qué plato o antojo desea degustar hoy? (ej. pasta, lomo, pizza...)"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF7F2] border border-[#A88B57]/40 focus:border-[#8F7347] focus:outline-none text-xs text-[#1C1917] placeholder:text-[#766153]/60 transition shadow-inner font-menu-serif"
               />
               {cravingQuery && (
                 <button
                   type="button"
                   onClick={() => setCravingQuery('')}
-                  className="absolute right-3 top-2.5 text-xs text-[#766153] hover:text-[#2F2A26]"
+                  className="absolute right-3 top-2.5 text-xs text-[#766153] hover:text-[#1C1917]"
                 >
                   ✕
                 </button>
               )}
             </div>
 
-            {/* Píldoras de sugerencias rápidas */}
+            {/* Píldoras de sugerencias gastronómicas */}
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className="text-[11px] text-[#766153] mr-1">Sugerencias:</span>
+              <span className="text-[11px] font-menu-serif text-[#8F7347] italic mr-1">Inspiración:</span>
               {CRAVING_SUGGESTIONS.map((item) => (
                 <button
                   key={item}
                   type="button"
                   onClick={() => setCravingQuery(item)}
-                  className={`px-2.5 py-1 rounded-full text-[11px] transition tap-subtle cursor-pointer ${
+                  className={`px-2.5 py-1 rounded-full text-[11px] transition tap-subtle cursor-pointer font-menu-serif ${
                     cravingQuery.toLowerCase() === item.toLowerCase()
-                      ? 'bg-[#5D7A56] text-white font-medium'
-                      : 'bg-[#FCFAF7] border border-[#766153]/25 text-[#2F2A26] hover:border-[#5D7A56] hover:bg-[#EFF4EC]'
+                      ? 'bg-[#8F7347] text-[#FAF7F2] font-medium shadow-xs'
+                      : 'bg-[#FCFAF7] border border-[#A88B57]/30 text-[#1C1917] hover:border-[#8F7347] hover:bg-[#FAF7F2]'
                   }`}
                 >
                   {item}
@@ -345,144 +356,169 @@ export default function VaciarNeveraPage() {
         )}
       </div>
 
-      {/* Lista editorial limitada estrictamente a las 4 mejores recetas */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-5 divide-y divide-[#766153]/15 pb-8">
+      {/* Catálogo de la Carta: Pliegos editoriales de alta cocina */}
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 pb-8 space-y-3">
         {isLoading ? (
           <CookingPotAnimation
             inline
-            message="Preparando combinaciones..."
-            subMessage="Buscando las mejores recetas con tus ingredientes..."
+            message="Elaborando propuestas de la Carta..."
+            subMessage="Combinando sabores y armonizando ingredientes..."
           />
         ) : (
-          <div className="space-y-1">
-            {/* Si no hay inventario registrado, avisar amigablemente pero mostrar recetas recomendadas */}
+          <div className="space-y-3">
+            {/* Si no hay inventario registrado */}
             {inventory.length === 0 && (
-              <div className="pt-2 pb-2">
-                <div className="p-3 rounded-2xl bg-[#FCFAF7] border border-[#A68A64]/30 text-xs text-[#766153] text-left">
-                  <p className="font-semibold text-[#2F2A26] mb-0.5">Recetas esenciales para inspirarte</p>
-                  <p className="text-[11px] leading-relaxed">
-                    Aún no registraste ingredientes en tu despensa. Puedes{' '}
+              <div className="pt-2 pb-1">
+                <div className="p-4 rounded-2xl menu-card-frame text-xs text-[#766153] text-left">
+                  <p className="font-menu-title font-semibold text-[#1C1917] mb-1 text-sm">
+                    ✦ Selección del Chef para su inspiración
+                  </p>
+                  <p className="font-menu-serif leading-relaxed text-xs">
+                    Su despensa está libre de ingredientes en este momento. Puede{' '}
                     <button
                       type="button"
                       onClick={() => navigate('/home')}
-                      className="text-[#5D7A56] underline font-medium hover:text-[#2F2A26] cursor-pointer"
+                      className="text-[#8F7347] underline font-medium hover:text-[#1C1917] cursor-pointer"
                     >
-                      añadirlos con voz o texto aquí
-                    </button>
-                    .
+                      ingresar los ingredientes que tiene a mano
+                    </button>{' '}
+                    para confeccionar una carta personalizada.
                   </p>
                 </div>
               </div>
             )}
 
-            {/* Si en "Cocinar ya" se ofrecen las alternativas más cercanas por faltar ingredientes */}
+            {/* Si en "Servicio Directo" se ofrecen las alternativas más cercanas */}
             {activeChoice === 'ready' && isReadyFallback && inventory.length > 0 && (
-              <div className="pt-2 pb-1">
-                <div className="p-3 rounded-2xl bg-[#FCFAF7] border border-[#A68A64]/30 text-xs text-[#766153] text-left">
-                  <p className="font-semibold text-[#2F2A26] mb-0.5">Sugerencias más cercanas</p>
-                  <p className="text-[11px] leading-relaxed">
-                    Te falta algún ingrediente para completar la receta, pero estas son las opciones que más aprovechan lo que tienes:
+              <div className="pt-1 pb-1">
+                <div className="p-3.5 rounded-2xl bg-[#FCFAF7] border border-[#A88B57]/30 text-xs text-[#766153] text-left">
+                  <p className="font-menu-title font-semibold text-[#1C1917] mb-0.5 text-xs">
+                    ✦ Propuestas más afines a su selección
+                  </p>
+                  <p className="font-menu-serif text-xs leading-relaxed">
+                    Estas alternativas maximizan el uso de los ingredientes presentes en su mesa:
                   </p>
                 </div>
               </div>
             )}
 
-            {/* Aviso sereno cuando se muestran alternativas inspiradas para un antojo */}
+            {/* Aviso para antojos */}
             {activeChoice === 'craving' && cravingResult.isAlternative && cravingResult.notice && (
-              <div className="pt-2 pb-1">
-                <div className="p-3.5 rounded-2xl bg-[#FCFAF7] border border-[#A68A64]/30 shadow-[0_2px_8px_rgba(166,138,100,0.06)] text-left">
-                  <p className="text-xs sm:text-sm font-semibold text-[#2F2A26] leading-snug">
-                    {cravingResult.notice.title}
+              <div className="pt-1 pb-1">
+                <div className="p-4 rounded-2xl menu-card-frame text-left">
+                  <p className="font-menu-title text-sm font-semibold text-[#1C1917] leading-snug">
+                    ✦ {cravingResult.notice.title}
                   </p>
-                  <p className="text-xs text-[#766153] mt-1 leading-relaxed">
+                  <p className="font-menu-serif text-xs text-[#766153] mt-1 leading-relaxed">
                     {cravingResult.notice.subtitle}
                   </p>
                 </div>
               </div>
             )}
 
-            {/* Encabezado suave para antojos cuando aún no se ha escrito nada */}
+            {/* Encabezado suave para antojos */}
             {activeChoice === 'craving' && !cravingQuery.trim() && (
-              <div className="pt-2 pb-1 text-left">
-                <p className="text-xs text-[#766153]">
-                  Ideas para inspirarte con lo que tienes en casa:
+              <div className="pt-1 pb-1 text-center">
+                <p className="font-menu-serif italic text-xs text-[#8F7347]">
+                  — Selección gastronómica para tentar al paladar —
                 </p>
               </div>
             )}
 
-            {visibleRecipes.map((recipe) => (
+            {/* Lista de Platos tipo Carta de Restaurante Gourmet */}
+            {visibleRecipes.map((recipe, index) => (
               <article
                 key={recipe.id}
                 onClick={() => navigate(`/recipe/${recipe.id}`, { state: { recipe } })}
-                className="py-4 hover:bg-[#FCFAF7]/60 transition cursor-pointer select-none group"
+                className="relative menu-card-frame rounded-2xl p-4 sm:p-5 transition-all duration-300 hover:shadow-lg cursor-pointer select-none group"
               >
-                <div className="flex items-baseline justify-between">
-                  <h2 className="text-base font-semibold text-[#2F2A26] leading-snug group-hover:text-black">
-                    {recipe.name}
-                  </h2>
-                  <span className="text-xs text-[#766153] font-mono flex-shrink-0 ml-2">
-                    {recipe.prep_time || 15} min
+                {/* Esquinas ornamentales discretas tipo carta de lujo */}
+                <div className="absolute top-2.5 left-2.5 w-2 h-2 border-t border-l border-[#A88B57]/60 pointer-events-none" />
+                <div className="absolute top-2.5 right-2.5 w-2 h-2 border-t border-r border-[#A88B57]/60 pointer-events-none" />
+                <div className="absolute bottom-2.5 left-2.5 w-2 h-2 border-b border-l border-[#A88B57]/60 pointer-events-none" />
+                <div className="absolute bottom-2.5 right-2.5 w-2 h-2 border-b border-r border-[#A88B57]/60 pointer-events-none" />
+
+                {/* Encabezado del plato: Pase y tiempo */}
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] tracking-[0.2em] uppercase font-serif text-[#A88B57] font-semibold">
+                      PASE Nº 0{index + 1}
+                    </span>
+                    {recipe.recentIngredientsUsed != null && recipe.recentIngredientsUsed > 0 && (
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#EBF1E8] border border-[#5D7A56]/30 text-[#385333] inline-flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#5D7A56]" />
+                        ✦ Cosecha prioritaria
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[11px] font-menu-serif text-[#766153] italic tracking-wider">
+                    · {recipe.prep_time || 15} min de elaboración ·
                   </span>
                 </div>
 
-                {/* Si aprovecha ingredientes recién cargados por el usuario, indicarlo sutilmente */}
-                {recipe.recentIngredientsUsed != null && recipe.recentIngredientsUsed > 0 && (
-                  <div className="mt-1">
-                    <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#5D7A56]/15 text-[#3b4e37] inline-flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#5D7A56]" />
-                      Prioriza tus ingredientes recién cargados
-                    </span>
-                  </div>
-                )}
+                {/* Título noble del plato */}
+                <h2 className="font-menu-title text-lg sm:text-xl font-bold text-[#1C1917] tracking-tight group-hover:text-[#8F7347] transition leading-snug">
+                  {recipe.name}
+                </h2>
 
-                {/* Ingredientes que utiliza */}
-                <div className="mt-2 text-xs leading-relaxed">
-                  <p className="text-[#766153] font-medium mb-0.5">
-                    Utiliza:
+                {/* Composición del plato (Ingredientes disponibles) */}
+                <div className="mt-3 pt-2 border-t border-[#A88B57]/15">
+                  <p className="font-menu-serif italic text-xs text-[#766153] mb-1">
+                    Composición del plato:
                   </p>
-                  <div className="space-y-0.5">
+                  <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
                     {recipe.matchedIngredients.length > 0 ? (
                       [...recipe.matchedIngredients]
                         .sort((a, b) => getIngredientImportance(b) - getIngredientImportance(a))
                         .map((ing, i) => {
                           const isRecent = recentIngredients.some(rec => isIngredientMatch(rec, ing) || isIngredientMatch(ing, rec))
                           return (
-                            <p key={i} className="text-[#2F2A26] flex items-center gap-1.5">
-                              <span className="capitalize font-medium">{ing}</span>
+                            <span key={i} className="text-[#2F2A26] inline-flex items-center gap-1 font-medium">
+                              <span className="text-[#A88B57] text-[8px]">✦</span>
+                              <span className="capitalize">{ing}</span>
                               {isRecent && (
                                 <span className="text-[10px] text-[#5D7A56] font-normal">
-                                  · recién añadido
+                                  (fresco)
                                 </span>
                               )}
-                            </p>
+                            </span>
                           )
                         })
                     ) : (
-                      <p className="text-[#766153] italic">Ninguno disponible actualmente</p>
+                      <span className="text-[#766153] italic text-xs">Propuesta gourmet sugerida</span>
                     )}
                   </div>
                 </div>
 
-                {/* Ingredientes faltantes y coste adicional en ARS */}
+                {/* Ingredientes faltantes / suplementos sugeridos */}
                 {recipe.missingIngredients.length > 0 && (
-                  <div className="mt-2.5 text-xs text-[#766153]">
-                    <span className="font-medium text-[#766153]">
-                      {recipe.missingIngredients.length === 1 ? 'Falta: ' : 'Faltan: '}
-                    </span>
-                    <span className="text-[#A68A64] font-medium capitalize">
-                      {[...recipe.missingIngredients]
-                        .sort((a, b) => getIngredientImportance(b) - getIngredientImportance(a))
-                        .join(', ')}
-                    </span>
-                    <span className="text-[#766153] font-mono ml-1.5">
-                      · ARS {recipe.additionalCostARS.toLocaleString('es-AR')} est.
+                  <div className="mt-2.5 pt-2 border-t border-dashed border-[#A88B57]/20 text-xs text-[#766153] flex flex-wrap items-baseline justify-between gap-1">
+                    <div>
+                      <span className="font-menu-serif italic text-[#8F7347]">
+                        {recipe.missingIngredients.length === 1 ? 'Aporte sugerido: ' : 'Aportes sugeridos: '}
+                      </span>
+                      <span className="text-[#2F2A26] font-medium capitalize">
+                        {[...recipe.missingIngredients]
+                          .sort((a, b) => getIngredientImportance(b) - getIngredientImportance(a))
+                          .join(', ')}
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-mono text-[#8F7347] bg-[#A88B57]/10 px-2 py-0.5 rounded-md">
+                      est. ARS {recipe.additionalCostARS.toLocaleString('es-AR')}
                     </span>
                   </div>
                 )}
 
-                <div className="mt-3">
-                  <span className="text-xs text-[#5D7A56] group-hover:text-[#2F2A26] transition inline-flex items-center gap-1 font-medium">
-                    Ver receta →
+                {/* Pie del plato con adorno refinado y llamada a la acción */}
+                <div className="mt-3.5 pt-2 flex items-center justify-between text-xs border-t border-[#A88B57]/15">
+                  <div className="flex items-center gap-1 text-[#A88B57]/60 text-[10px]">
+                    <span>—</span>
+                    <span>❖</span>
+                    <span>—</span>
+                  </div>
+                  <span className="font-menu-serif text-sm text-[#8F7347] group-hover:text-[#1C1917] transition inline-flex items-center gap-1 font-semibold">
+                    Consultar elaboración del Chef
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
                   </span>
                 </div>
               </article>

@@ -7,6 +7,11 @@ export interface LocalRecipe {
   instructions: string
   servings: number
   recipe_ingredients: { ingredient_name: string }[]
+  origin?: string
+  chef_tips?: string
+  detailed_steps?: string[]
+  substitutes?: string
+  pairing?: string
 }
 
 export const INITIAL_RECIPES: LocalRecipe[] = [

@@ -1,13 +1,18 @@
 import type { LocalRecipe } from './initialRecipes.ts'
 import { INITIAL_RECIPES } from './initialRecipes.ts'
+import { NEIGHBORING_COUNTRY_RECIPES } from './neighboringRecipes.ts'
 
 /**
- * Catálogo masivo de más de 3000 recetas culinarias estructuradas,
+ * Catálogo masivo de recetas culinarias estructuradas,
+ * incluyendo biblioteca de países limítrofes y cocina regional,
  * garantizando compatibilidad total con el motor de matching y la interfaz de la aplicación.
  */
 
-// 1. Recetas maestras artesanales para intenciones directas
+// 1. Recetas maestras artesanales para intenciones directas y cocina regional
 const HANDCRAFTED_INTENT_RECIPES: LocalRecipe[] = [
+  // --- PLATOS TRADICIONALES DE PAÍSES LIMÍTROFES Y REGIONALES ---
+  ...NEIGHBORING_COUNTRY_RECIPES,
+
   // --- SUSHI Y COCINA JAPONESA DE ALTA COCINA ---
   {
     id: 'cat-sushi-california-roll',
@@ -904,9 +909,9 @@ export function getFullRecipeCatalog(): LocalRecipe[] {
     }
   })
 
-  // 3. Generación determinista y gastronómicamente coherente para superar 10.500 recetas (el doble de la biblioteca previa)
+  // 3. Generación determinista y gastronómicamente coherente para superar 21.000 recetas (el doble de la biblioteca previa)
   let genCounter = 1
-  const TARGET_COUNT = 10500
+  const TARGET_COUNT = 21000
 
   // Recorrer los clusters gastronómicos asegurando combinaciones naturales y apetitosas
   while (catalog.length < TARGET_COUNT) {
@@ -964,4 +969,4 @@ export function getTotalRecipesCount(): number {
   return getFullRecipeCatalog().length
 }
 
-export const TOTAL_RECIPES_COUNT = 10500
+export const TOTAL_RECIPES_COUNT = 21000

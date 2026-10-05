@@ -40,6 +40,20 @@ export default function VaciarNeveraPage() {
 
   const [activeChoice, setActiveChoice] = useState<CategoryChoice>('ready')
   const [cravingQuery, setCravingQuery] = useState('')
+  const [expandedDetailIds, setExpandedDetailIds] = useState<Set<string>>(new Set())
+
+  const toggleDetails = (recipeId: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setExpandedDetailIds(prev => {
+      const next = new Set(prev)
+      if (next.has(recipeId)) {
+        next.delete(recipeId)
+      } else {
+        next.add(recipeId)
+      }
+      return next
+    })
+  }
 
   // Si es una nueva carga desde el inicio, limpiar búsqueda previa de antojo y reajustar categoría
   useEffect(() => {
@@ -454,11 +468,25 @@ export default function VaciarNeveraPage() {
                 <div className="absolute bottom-2.5 left-2.5 w-2.5 h-2.5 border-b-2 border-l-2 border-[#8F7347] pointer-events-none" />
                 <div className="absolute bottom-2.5 right-2.5 w-2.5 h-2.5 border-b-2 border-r-2 border-[#8F7347] pointer-events-none" />
 
-                {/* Encabezado del plato: Pase y tiempo */}
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
+                {/* Encabezado del plato: Pase, Origen, Dificultad y tiempo */}
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="text-xs sm:text-sm tracking-[0.22em] uppercase font-serif text-[#7A5E30] font-black">
                       PASE Nº 0{((recipeOffset + index) % Math.max(1, totalInCategory)) + 1}
+                    </span>
+                    {recipe.origin && (
+                      <span className="text-xs sm:text-sm font-bold px-2 py-0.5 rounded-md bg-[#FAF0E6] border border-[#8F7347]/40 text-[#7A5E30] inline-flex items-center gap-1 font-menu-serif">
+                        📍 {recipe.origin}
+                      </span>
+                    )}
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded border font-menu-serif ${
+                      recipe.difficulty === 'Difícil'
+                        ? 'bg-red-50 border-red-300 text-red-800'
+                        : recipe.difficulty === 'Media'
+                        ? 'bg-amber-50 border-amber-300 text-amber-800'
+                        : 'bg-emerald-50 border-emerald-300 text-emerald-800'
+                    }`}>
+                      {recipe.difficulty || 'Fácil'}
                     </span>
                     {recipe.recentIngredientsUsed != null && recipe.recentIngredientsUsed > 0 && (
                       <span className="text-xs sm:text-sm font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0DC] border-2 border-[#385333] text-[#244220] inline-flex items-center gap-1">
@@ -522,6 +550,76 @@ export default function VaciarNeveraPage() {
                     <span className="text-xs sm:text-sm font-mono text-[#7A5E30] bg-[#FAF0E6] px-2.5 py-1 rounded-md font-black border border-[#8F7347]/30">
                       est. ARS {recipe.additionalCostARS.toLocaleString('es-AR')}
                     </span>
+                  </div>
+                )}
+
+                {/* Opción de Ficha Más Detallada (Botón interactivo sin salir de la carta) */}
+                <div className="mt-3.5 pt-2.5 border-t border-[#8F7347]/20 flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={(e) => toggleDetails(recipe.id, e)}
+                    className="text-xs sm:text-sm font-menu-serif font-black px-3 py-1.5 rounded-lg bg-white border border-[#8F7347] text-[#7A5E30] hover:bg-[#FAF7F2] hover:text-[#1C1917] transition shadow-xs inline-flex items-center gap-1.5 cursor-pointer tap-subtle"
+                  >
+                    <span>{expandedDetailIds.has(recipe.id) ? '▲ Menos detalle' : '✦ Ficha detallada (Tips & Maridaje)'}</span>
+                  </button>
+                  {(recipe.chef_tips || recipe.pairing || (recipe.substitutes && Object.keys(recipe.substitutes).length > 0)) && !expandedDetailIds.has(recipe.id) && (
+                    <span className="text-xs font-serif text-[#7A5E30] font-bold hidden sm:inline">
+                      Incluye secretos del chef
+                    </span>
+                  )}
+                </div>
+
+                {/* Despliegue de Ficha Detallada */}
+                {expandedDetailIds.has(recipe.id) && (
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="mt-3 p-3.5 bg-[#FAF7F2] rounded-xl border-2 border-[#8F7347]/40 text-left space-y-2.5 animate-fade-in shadow-xs cursor-default"
+                  >
+                    {recipe.chef_tips ? (
+                      <div>
+                        <p className="text-xs sm:text-sm font-black font-menu-serif text-[#7A5E30] uppercase tracking-wider flex items-center gap-1.5">
+                          <span>👨‍🍳</span> Secreto & Técnica del Chef:
+                        </p>
+                        <p className="text-sm sm:text-base font-menu-serif text-[#1C1917] font-medium leading-relaxed mt-1">
+                          {recipe.chef_tips}
+                        </p>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="text-xs sm:text-sm font-black font-menu-serif text-[#7A5E30] uppercase tracking-wider flex items-center gap-1.5">
+                          <span>👨‍🍳</span> Consejo de Cocina:
+                        </p>
+                        <p className="text-sm sm:text-base font-menu-serif text-[#1C1917] font-medium leading-relaxed mt-1">
+                          Cocción a fuego controlado para resaltar el aroma de los ingredientes locales.
+                        </p>
+                      </div>
+                    )}
+
+                    {recipe.substitutes && Object.keys(recipe.substitutes).length > 0 && (
+                      <div className="pt-2 border-t border-[#8F7347]/20">
+                        <p className="text-xs sm:text-sm font-black font-menu-serif text-[#7A5E30] uppercase tracking-wider flex items-center gap-1.5">
+                          <span>🔄</span> Sustitutos sugeridos:
+                        </p>
+                        <div className="flex flex-wrap gap-1.5 mt-1.5">
+                          {Object.entries(recipe.substitutes).map(([orig, sub]) => (
+                            <span key={orig} className="text-xs sm:text-sm bg-white px-2.5 py-1 rounded-md border border-[#8F7347]/30 text-[#1C1917] font-medium">
+                              <strong className="capitalize text-[#7A5E30]">{orig}:</strong> {sub}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {recipe.pairing && (
+                      <div className="pt-2 border-t border-[#8F7347]/20">
+                        <p className="text-xs sm:text-sm font-black font-menu-serif text-[#7A5E30] uppercase tracking-wider flex items-center gap-1.5">
+                          <span>🍷</span> Maridaje & Guarnición recomendada:
+                        </p>
+                        <p className="text-sm sm:text-base font-menu-serif text-[#1C1917] italic mt-1 leading-relaxed">
+                          {recipe.pairing}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
 

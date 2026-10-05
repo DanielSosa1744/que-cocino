@@ -32,6 +32,11 @@ export interface RecipeWithScore {
   prep_time: number | null // minutos
   instructions: string | null
   servings: number | null
+  origin?: string
+  chef_tips?: string
+  detailed_steps?: string[]
+  substitutes?: string
+  pairing?: string
   score: number
   recentIngredientsUsed?: number
   importanceScore?: number

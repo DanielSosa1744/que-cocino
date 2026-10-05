@@ -17,6 +17,11 @@ export interface RawRecipe {
   instructions: string | null
   servings?: number | null
   recipe_ingredients: { ingredient_name: string }[]
+  origin?: string
+  chef_tips?: string
+  detailed_steps?: string[]
+  substitutes?: string
+  pairing?: string
 }
 
 export function useRecipes() {
@@ -105,6 +110,11 @@ export function useVaciarNevera(inventory: InventoryItem[], recentIngredientName
           prep_time: recipe.prep_time ?? 15,
           instructions: recipe.instructions,
           servings: recipe.servings ?? 2,
+          origin: recipe.origin,
+          chef_tips: recipe.chef_tips,
+          detailed_steps: recipe.detailed_steps,
+          substitutes: recipe.substitutes,
+          pairing: recipe.pairing,
           score,
           recentIngredientsUsed: recentUsed,
           importanceScore,

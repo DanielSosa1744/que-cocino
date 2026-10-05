@@ -256,7 +256,7 @@ export default function VaciarNeveraPage() {
         else setRecipeOffset(prev => prev + pageSize)
       }
       setIsRotating(false)
-    }, 280)
+    }, 80)
   }
 
   const handleSelectRecipe = (recipe: RecipeWithCost) => {
@@ -264,7 +264,7 @@ export default function VaciarNeveraPage() {
     if (selectRecipeTimerRef.current) clearTimeout(selectRecipeTimerRef.current)
     selectRecipeTimerRef.current = setTimeout(() => {
       navigate(`/recipe/${recipe.id}`, { state: { recipe } })
-    }, 280)
+    }, 80)
   }
 
   // Guardar las recetas actualmente visibles para que una nueva carga en inicio las archive y no se repitan

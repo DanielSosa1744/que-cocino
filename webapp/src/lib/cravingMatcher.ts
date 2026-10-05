@@ -136,8 +136,9 @@ export function matchCravingRecipes(
 ): CravingResult {
   const cleanTerm = query.trim()
   if (!cleanTerm) {
-    // Si no hay término aún, devolver las 4 recetas más compatibles de la despensa como sugerencia inicial
-    const formatted = scoreAndFormatRecipes(allRawRecipes, inventory, recentIngredientNames).slice(0, 4)
+    // Si no hay término aún, sugerir entre las recetas maestras y artesanales (primeras 150)
+    const baseCandidates = allRawRecipes.slice(0, 150)
+    const formatted = scoreAndFormatRecipes(baseCandidates, inventory, recentIngredientNames).slice(0, 4)
     return {
       recipes: formatted,
       isAlternative: false,

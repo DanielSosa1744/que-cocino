@@ -105,7 +105,7 @@ export default function HomePage() {
           }
           return names
         })(),
-        new Promise((resolve) => setTimeout(resolve, 400)),
+        new Promise((resolve) => setTimeout(resolve, 80)),
       ])
 
       // Si el usuario tocó otro botón del toolbar, abandonar de inmediato y no redirigir

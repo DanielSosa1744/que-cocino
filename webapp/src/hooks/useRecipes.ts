@@ -86,7 +86,27 @@ export function useVaciarNevera(inventory: InventoryItem[], recentIngredientName
         rawRecipes = localStore.getRecipes()
       }
 
-      const scored: RecipeWithScore[] = rawRecipes.map((recipe) => {
+      // Optimización de alto rendimiento: pre-filtro ultrarrápido para dispositivos móviles
+      // Las recetas maestras, artesanales y regionales siempre se evalúan;
+      // Las recetas generadas solo se evalúan si contienen algún ingrediente de la despensa o reciente
+      const inventoryTerms = new Set(
+        inventory.map(i => i.name.toLowerCase().trim()).concat(recentIngredientNames.map(r => r.toLowerCase().trim()))
+      )
+
+      const candidates = inventory.length === 0
+        ? rawRecipes.slice(0, 150)
+        : rawRecipes.filter(r => {
+            if (!r.id.startsWith('rec-gen-')) return true
+            return (r.recipe_ingredients || []).some(ri => {
+              const ing = ri.ingredient_name.toLowerCase()
+              for (const term of inventoryTerms) {
+                if (ing.includes(term) || term.includes(ing)) return true
+              }
+              return false
+            })
+          })
+
+      const scored: RecipeWithScore[] = candidates.map((recipe) => {
         const recipeIngredientNames = (recipe.recipe_ingredients || []).map(
           (ri: { ingredient_name: string }) => ri.ingredient_name
         )

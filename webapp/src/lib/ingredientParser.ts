@@ -212,6 +212,16 @@ export function isIngredientMatch(a: string, b: string): boolean {
     ['tapa de empanada', 'disco de empanada', 'tapas de empanada', 'tapas de empanadas'],
     ['masa de tarta', 'pascualina'],
     ['fideos', 'pasta', 'tallarines', 'spaghetti'],
+    // Sushi y cocina oriental
+    ['salmon', 'salmón'],
+    ['atun', 'atún'],
+    ['alga nori', 'nori', 'alga'],
+    ['arroz de sushi', 'arroz shari', 'arroz'],
+    ['salsa de soja', 'soja', 'shoyu'],
+    ['sesamo', 'sésamo', 'ajonjoli'],
+    ['queso crema', 'philadelphia', 'queso finlandia'],
+    ['kanikama', 'cangrejo'],
+    ['langostino', 'langostinos', 'camaron', 'camarones'],
   ]
 
   for (const group of strictSynonyms) {

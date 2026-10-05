@@ -54,7 +54,7 @@ export default function HomePage() {
 
       const parsed = extractIngredients(trimmed)
 
-      // Ejecutar reemplazo de inventario (no acumular tanda previa) junto a la animación de la olla (mínimo 2.1s)
+      // Ejecutar reemplazo de inventario (no acumular tanda previa) junto a una animación ágil y fluida (400ms)
       const [addedNames] = await Promise.all([
         (async () => {
           let names: string[] = []
@@ -89,7 +89,7 @@ export default function HomePage() {
           }
           return names
         })(),
-        new Promise((resolve) => setTimeout(resolve, 2100)),
+        new Promise((resolve) => setTimeout(resolve, 400)),
       ])
 
       // Guardar los ingredientes de este uso exclusivo

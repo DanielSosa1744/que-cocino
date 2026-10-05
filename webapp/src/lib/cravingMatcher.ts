@@ -180,10 +180,22 @@ export function matchCravingRecipes(
     return hasTokenInNameOrDesc || hasTokenInIngredients
   })
 
-  let finalCandidates: RawRecipe[] = intentCandidates
+  if (intentCandidates.length > 0) {
+    const formatted = scoreAndFormatRecipes(intentCandidates, inventory, recentIngredientNames)
+    const nonConflicting = formatted.filter(r => !r.hasProteinConflict)
+    const finalFormatted = (nonConflicting.length > 0 ? nonConflicting : formatted).slice(0, 4)
+    return {
+      recipes: finalFormatted,
+      isAlternative: false,
+      displayTerm: cleanTerm,
+      notice: null,
+    }
+  }
+
+  let finalCandidates: RawRecipe[] = []
 
   // 3. Si no hay candidatos por intención específica, buscar por categoría culinaria afinada
-  if (finalCandidates.length === 0 && culinaryIntent.matchedCategory) {
+  if (culinaryIntent.matchedCategory) {
     const keywords = culinaryIntent.matchedCategory.representativeKeywords
     finalCandidates = allRawRecipes.filter(r => {
       const normName = normalize(r.name)

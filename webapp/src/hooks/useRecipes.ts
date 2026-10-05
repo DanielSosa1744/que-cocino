@@ -22,6 +22,7 @@ export interface RawRecipe {
 export function useRecipes() {
   return useQuery<RawRecipe[]>({
     queryKey: ['recipes'],
+    staleTime: 1000 * 60 * 30, // 30 minutos de caché en memoria
     queryFn: async () => {
       if (!isSupabaseConfigured) {
         return localStore.getRecipes()
@@ -56,6 +57,7 @@ export function useVaciarNevera(inventory: InventoryItem[], recentIngredientName
       inventory.map(i => `${i.id}-${i.name}-${i.urgency}`).join(','),
       recentIngredientNames.slice().sort().join(','),
     ],
+    staleTime: 1000 * 60 * 10,
     queryFn: async () => {
       let rawRecipes: RawRecipe[] = []
 

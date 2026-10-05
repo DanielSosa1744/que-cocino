@@ -8,40 +8,140 @@ import { INITIAL_RECIPES } from './initialRecipes.ts'
 
 // 1. Recetas maestras artesanales para intenciones directas
 const HANDCRAFTED_INTENT_RECIPES: LocalRecipe[] = [
-  // --- SUSHI Y COCINA JAPONESA ---
+  // --- SUSHI Y COCINA JAPONESA DE ALTA COCINA ---
   {
-    id: 'cat-sushi-maki-salmon',
-    name: 'Maki clásico de salmón y palta',
-    description: 'Rollos tradicionales de alga nori rellenos de salmón fresco, palta cremosa y arroz sazonado.',
+    id: 'cat-sushi-california-roll',
+    name: 'Sushi California Roll clásico',
+    description: 'Uramaki tradicional con palta cremosa, pepino fresco, kanikama y arroz sazonado con sésamo tostado.',
     difficulty: 'Media',
     prep_time: 25,
+    instructions: '1. Extiende arroz de sushi avinagrado sobre lámina de alga nori.\n2. Da vuelta el alga dejando el arroz hacia afuera y espolvorea sésamo.\n3. Rellena con kanikama, palta y bastones de pepino.\n4. Enrolla con esterilla presionando suavemente y corta en 8 piezas.',
+    servings: 2,
+    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'palta' }, { ingredient_name: 'pepino' }, { ingredient_name: 'alga nori' }, { ingredient_name: 'sesamo' }],
+  },
+  {
+    id: 'cat-sushi-philadelphia-roll',
+    name: 'Sushi Philadelphia Roll con salmón y queso crema',
+    description: 'El clásico indiscutido con salmón rosado fresco, queso crema suave y palta.',
+    difficulty: 'Media',
+    prep_time: 25,
+    instructions: '1. Dispone arroz shari sobre nori.\n2. Coloca tiras de salmón fresco, queso crema y palta en el centro.\n3. Cierra el rollo con esterilla de bambú.\n4. Corta con cuchillo humedecido y sirve con salsa de soja y wasabi.',
+    servings: 2,
+    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'salmon' }, { ingredient_name: 'queso crema' }, { ingredient_name: 'palta' }, { ingredient_name: 'alga nori' }],
+  },
+  {
+    id: 'cat-sushi-maki-salmon',
+    name: 'Sushi Maki tradicional de salmón y palta',
+    description: 'Rollos tradicionales de alga nori crocante rellenos de salmón fresco, palta cremosa y arroz sazonado.',
+    difficulty: 'Media',
+    prep_time: 20,
     instructions: '1. Extiende arroz avinagrado sobre lámina de nori.\n2. Coloca tiras de salmón y palta en el centro.\n3. Enrolla con makisu presionando suavemente.\n4. Corta en 8 piezas y acompaña con salsa de soja y wasabi.',
     servings: 2,
     recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'salmon' }, { ingredient_name: 'palta' }, { ingredient_name: 'alga nori' }],
   },
   {
-    id: 'cat-sushi-nigiri-atun',
-    name: 'Nigiri suave de atún',
-    description: 'Bocados artesanales de arroz moldeado a mano coronados con finos cortes de atún.',
+    id: 'cat-sushi-nigiri-salmon',
+    name: 'Sushi Nigiri de salmón fresco con salsa de soja',
+    description: 'Bocados artesanales de arroz moldeado a mano con láminas suaves de salmón rosado.',
     difficulty: 'Media',
-    prep_time: 20,
-    instructions: '1. Modela porciones ovaladas de arroz tibio.\n2. Unta una pincelada mínima de wasabi sobre cada corte de atún.\n3. Coloca el pescado sobre el arroz y ajusta con los dedos.',
+    prep_time: 15,
+    instructions: '1. Humedece tus manos y moldea pequeñas porciones ovaladas de arroz tibio.\n2. Aplica un punto sutil de wasabi sobre cada corte de salmón.\n3. Coloca el salmón sobre el arroz y ajusta suavemente con los dedos.\n4. Acompaña con salsa de soja.',
     servings: 2,
-    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'atun' }],
+    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'salmon' }, { ingredient_name: 'soja' }],
   },
   {
-    id: 'cat-sushi-poke-bowl',
-    name: 'Poké bowl de salmón y sésamo',
-    description: 'Cuenco hawaiano de inspiración japonesa con base de arroz, dados de pescado, vegetales y soja.',
+    id: 'cat-sushi-nigiri-atun',
+    name: 'Sushi Nigiri de atún rojo y sésamo',
+    description: 'Bocados refinados de arroz de sushi moldeado a mano coronados con finos cortes de atún.',
+    difficulty: 'Media',
+    prep_time: 18,
+    instructions: '1. Modela porciones ovaladas de arroz tibio.\n2. Unta una pincelada mínima de wasabi sobre cada corte de atún.\n3. Coloca el pescado sobre el arroz y ajusta con los dedos.\n4. Corona con unas semillas de sésamo tostado.',
+    servings: 2,
+    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'atun' }, { ingredient_name: 'sesamo' }],
+  },
+  {
+    id: 'cat-sushi-nigiri-langostinos',
+    name: 'Sushi Nigiri de langostinos (Ebi Nigiri)',
+    description: 'Langostinos abiertos al vapor sobre bocados de arroz sazonado con shari.',
+    difficulty: 'Media',
+    prep_time: 20,
+    instructions: '1. Cocina los langostinos en brocheta para mantenerlos rectos, pélalos y ábrelos tipo mariposa.\n2. Modela el arroz con las manos.\n3. Monta el langostino sobre el arroz y sella con una tirita fina de alga nori.',
+    servings: 2,
+    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'langostinos' }, { ingredient_name: 'alga nori' }],
+  },
+  {
+    id: 'cat-sushi-hot-roll-salmon',
+    name: 'Sushi Hot Roll crocante de salmón y queso',
+    description: 'Roll relleno de salmón y queso crema, rebozado en panko y frito hasta dorar super crocante.',
+    difficulty: 'Media',
+    prep_time: 25,
+    instructions: '1. Arma un roll clásico de salmón y queso crema envuelto en nori.\n2. Pasa el rollo entero por masa de tempura ligera y pan rallado o panko.\n3. Fríe 2 minutos en aceite bien caliente hasta dorar parejo.\n4. Corta en rodajas tibias y rocía salsa teriyaki.',
+    servings: 2,
+    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'salmon' }, { ingredient_name: 'queso crema' }, { ingredient_name: 'alga nori' }],
+  },
+  {
+    id: 'cat-sushi-poke-bowl-salmon',
+    name: 'Sushi Poké Bowl de salmón, palta y sésamo',
+    description: 'Cuenco japonés contemporáneo con base de arroz avinagrado, cubos de salmón fresco, palta y sésamo.',
     difficulty: 'Fácil',
     prep_time: 15,
-    instructions: '1. Sirve arroz blanco en un cuenco amplio.\n2. Distribuye cubos de salmón, pepino, zanahoria y palta.\n3. Sazona con salsa de soja, aceite de sésamo y semillas tostadas.',
+    instructions: '1. Sirve arroz de sushi avinagrado en un cuenco amplio.\n2. Distribuye cubos de salmón fresco, palta cremosa, pepino y alga nori en tiras.\n3. Sazona con salsa de soja, aceite de sésamo y semillas tostadas.',
     servings: 2,
-    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'salmon' }, { ingredient_name: 'pepino' }, { ingredient_name: 'soja' }],
+    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'salmon' }, { ingredient_name: 'palta' }, { ingredient_name: 'pepino' }, { ingredient_name: 'soja' }],
+  },
+  {
+    id: 'cat-sushi-poke-bowl-atun',
+    name: 'Sushi Poké Bowl de atún marinado con soja',
+    description: 'Dados frescos de atún marinados con salsa de soja, jengibre y sésamo sobre colchón de arroz de sushi.',
+    difficulty: 'Fácil',
+    prep_time: 15,
+    instructions: '1. Marina cubos de atún 10 minutos con salsa de soja y sésamo.\n2. Sirve en bol sobre arroz de sushi tibio.\n3. Decora con pepino en rodajas, palta y semillas de sésamo.',
+    servings: 2,
+    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'atun' }, { ingredient_name: 'pepino' }, { ingredient_name: 'soja' }, { ingredient_name: 'sesamo' }],
+  },
+  {
+    id: 'cat-sushi-temaki-salmon-palta',
+    name: 'Sushi Temaki en cono de alga nori con salmón',
+    description: 'Conos crujientes de alga nori rellenos al momento con arroz avinagrado, salmón fresco y palta.',
+    difficulty: 'Fácil',
+    prep_time: 12,
+    instructions: '1. Toma media hoja de alga nori crocante.\n2. Coloca arroz en ángulo y tiras generosas de salmón y palta.\n3. Enrolla formando un cono y degusta de inmediato para conservar el crujido.',
+    servings: 2,
+    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'salmon' }, { ingredient_name: 'palta' }, { ingredient_name: 'alga nori' }],
+  },
+  {
+    id: 'cat-sushi-temaki-langostinos',
+    name: 'Sushi Temaki de langostinos crocantes y queso crema',
+    description: 'Cono de nori relleno de langostinos dorados, queso crema suave y ciboulette fresco.',
+    difficulty: 'Fácil',
+    prep_time: 15,
+    instructions: '1. Saltea o dora los langostinos brevemente.\n2. Arma el cono de nori con arroz shari, queso crema y los langostinos.\n3. Termina con un toque de salsa de soja.',
+    servings: 2,
+    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'langostinos' }, { ingredient_name: 'queso crema' }, { ingredient_name: 'alga nori' }],
+  },
+  {
+    id: 'cat-sushi-maki-veggie-pepino',
+    name: 'Sushi Maki vegetariano (Kappa Maki)',
+    description: 'Roll japonés tradicional ligero con pepino fresco, palta y sésamo tostado.',
+    difficulty: 'Fácil',
+    prep_time: 15,
+    instructions: '1. Extiende arroz en nori.\n2. Coloca bastones finos de pepino y palta.\n3. Enrolla y corta en 8 piezas. Acompaña con soja.',
+    servings: 2,
+    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'pepino' }, { ingredient_name: 'palta' }, { ingredient_name: 'alga nori' }],
+  },
+  {
+    id: 'cat-sushi-roll-buenos-aires',
+    name: 'Sushi Roll Buenos Aires de salmón y langostinos',
+    description: 'Roll fusión con langostinos, palta y queso crema envuelto en finas láminas de salmón fresco.',
+    difficulty: 'Media',
+    prep_time: 30,
+    instructions: '1. Rellena el roll con langostinos, palta y queso crema.\n2. Cubre el exterior con láminas de salmón fresco.\n3. Moldea con la esterilla y corta prolijamente. Sirve con salsa teriyaki o soja.',
+    servings: 2,
+    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'salmon' }, { ingredient_name: 'langostinos' }, { ingredient_name: 'queso crema' }, { ingredient_name: 'palta' }],
   },
   {
     id: 'cat-sushi-onigiri-atun',
-    name: 'Onigiri japonés relleno de atún',
+    name: 'Sushi Onigiri japonés relleno de atún',
     description: 'Triángulos de arroz tradicionales envueltos con alga nori y centro de atún sazonado.',
     difficulty: 'Fácil',
     prep_time: 15,
@@ -50,14 +150,54 @@ const HANDCRAFTED_INTENT_RECIPES: LocalRecipe[] = [
     recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'atun' }, { ingredient_name: 'alga nori' }],
   },
   {
-    id: 'cat-sushi-temaki-veggie',
-    name: 'Temaki vegetariano crocante',
-    description: 'Conos crujientes de alga nori rellenos al momento con arroz, pepino, zanahoria y queso crema.',
+    id: 'cat-sushi-geishas-salmon',
+    name: 'Sushi Geishas de salmón y queso crema',
+    description: 'Cintas de salmón fresco enrolladas con corazón de queso crema y palta sin arroz.',
     difficulty: 'Fácil',
-    prep_time: 12,
-    instructions: '1. Toma media hoja de nori.\n2. Coloca arroz en ángulo y vegetales en bastones finos.\n3. Enrolla formando un cono y consume de inmediato.',
+    prep_time: 15,
+    instructions: '1. Corta finas tiras longitudinales de salmón fresco.\n2. Coloca un dado de queso crema y palta en el centro de cada tira.\n3. Enrolla formando bocados redondos y corona con sésamo.',
     servings: 2,
-    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'pepino' }, { ingredient_name: 'zanahoria' }, { ingredient_name: 'alga nori' }],
+    recipe_ingredients: [{ ingredient_name: 'salmon' }, { ingredient_name: 'queso crema' }, { ingredient_name: 'palta' }, { ingredient_name: 'sesamo' }],
+  },
+  {
+    id: 'cat-sushi-chirashi-bowl',
+    name: 'Sushi Chirashi Bowl tradicional de salmón y atún',
+    description: 'Cama de arroz de sushi cubierta con surtido vistoso de salmón, atún, palta, pepino y nori.',
+    difficulty: 'Fácil',
+    prep_time: 15,
+    instructions: '1. Dispone arroz shari en una fuente o cuenco.\n2. Decora la superficie con abanicos de salmón, atún, palta y pepino.\n3. Espolvorea tiras de nori y semillas de sésamo con salsa de soja.',
+    servings: 2,
+    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'salmon' }, { ingredient_name: 'atun' }, { ingredient_name: 'palta' }, { ingredient_name: 'alga nori' }],
+  },
+  {
+    id: 'cat-sushi-gunkan-tartar-salmon',
+    name: 'Sushi Gunkan de tartar de salmón y sésamo',
+    description: 'Barquetas de nori rellenas de arroz de sushi y coronadas con tartar de salmón marinado.',
+    difficulty: 'Media',
+    prep_time: 20,
+    instructions: '1. Modela cilindros de arroz y envuélvelos con una faja de nori más alta que el arroz.\n2. Pica salmón a cuchillo con salsa de soja y aceite de sésamo.\n3. Rellena la parte superior con el tartar fresco.',
+    servings: 2,
+    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'salmon' }, { ingredient_name: 'alga nori' }, { ingredient_name: 'soja' }, { ingredient_name: 'sesamo' }],
+  },
+  {
+    id: 'cat-sushi-roll-crispy-pollo-teriyaki',
+    name: 'Sushi Roll de pollo teriyaki y palta',
+    description: 'Uramaki contemporáneo con tiras de pollo glaseadas en salsa dulce y palta cremosa.',
+    difficulty: 'Fácil',
+    prep_time: 25,
+    instructions: '1. Saltea tiras de pollo y glasea con salsa teriyaki o soja.\n2. Rellena el roll con el pollo y bastones de palta.\n3. Enrolla, corta y baña con unas gotas de salsa teriyaki.',
+    servings: 2,
+    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'pollo' }, { ingredient_name: 'palta' }, { ingredient_name: 'alga nori' }],
+  },
+  {
+    id: 'cat-sushi-omakase-degustacion',
+    name: 'Sushi Degustación Omakase del Chef',
+    description: 'Combinado gourmet de nigiris de salmón y atún con makis crocantes de palta y queso crema.',
+    difficulty: 'Media',
+    prep_time: 30,
+    instructions: '1. Prepara arroz de sushi avinagrado.\n2. Modela nigiris de salmón y atún.\n3. Confecciona rolls makis de palta y queso crema.\n4. Emplata con wasabi, jengibre y cuenco de salsa de soja.',
+    servings: 3,
+    recipe_ingredients: [{ ingredient_name: 'arroz' }, { ingredient_name: 'salmon' }, { ingredient_name: 'atun' }, { ingredient_name: 'palta' }, { ingredient_name: 'queso crema' }, { ingredient_name: 'alga nori' }],
   },
 
   // --- PIZZA, CALZONE, FOCACCIA ---
@@ -679,6 +819,63 @@ const CULINARY_CLUSTERS: CulinaryCluster[] = [
       'choclo', 'coliflor', 'brocoli'
     ],
     bases: ['arroz blanco', 'fideos cinta', 'pan casero', 'avena', 'aceite de oliva']
+  },
+
+  // 8. Sushi y Cocina Japonesa Artesanal
+  {
+    techniques: [
+      { verb: 'Sushi Roll Uramaki de', diff: 'Media', time: 25, descAction: 'rollo invertido de sushi con sésamo tostado y alga nori', instAction: 'Extiende el arroz avinagrado sobre nori, coloca el relleno en el centro, enrolla con esterilla y corta en piezas prolijas.' },
+      { verb: 'Sushi Maki tradicional de', diff: 'Media', time: 20, descAction: 'roll clásico envuelto en alga nori crujiente', instAction: 'Envuelve los ingredientes en alga nori con arroz avinagrado shari y corta en bocados limpios.' },
+      { verb: 'Sushi Nigiri suave de', diff: 'Media', time: 15, descAction: 'bocado artesanal moldeado a mano de arroz shari', instAction: 'Modela el arroz con las manos húmedas y monta el ingrediente fresco por encima con un toque sutil de soja.' },
+      { verb: 'Sushi Temaki cónico de', diff: 'Fácil', time: 12, descAction: 'cono crujiente de nori relleno de arroz sazonado', instAction: 'Arma un cono con el alga nori y rellena con arroz tibio y los ingredientes seleccionados.' },
+      { verb: 'Sushi Poké Bowl fresco de', diff: 'Fácil', time: 15, descAction: 'cuenco gastronómico con base de arroz de sushi y vegetales', instAction: 'Sirve arroz avinagrado en cuenco hondo y acomoda los ingredientes en abanico con salsa de soja y sésamo.' },
+      { verb: 'Sushi Hot Roll crocante de', diff: 'Media', time: 25, descAction: 'rollo de sushi rebozado y frito hasta dorar crujiente', instAction: 'Pasa el rollo por tempura ligera y panko, dora en aceite caliente y corta en rodajas.' },
+    ],
+    proteins: [
+      'salmon', 'atun', 'langostinos', 'kanikama', 'pescado blanco', 'tofu', 'pollo teriyaki', 'tartar de salmon'
+    ],
+    veggies: [
+      'palta', 'pepino', 'zanahoria', 'cebollin', 'rucula', 'mango', 'champinon', 'espinaca'
+    ],
+    bases: [
+      'arroz', 'alga nori', 'soja', 'sesamo', 'queso crema', 'salsa teriyaki'
+    ]
+  },
+
+  // 9. Arroces, Risottos y Paellas del Chef
+  {
+    techniques: [
+      { verb: 'Risotto cremoso al vino blanco con', diff: 'Media', time: 30, descAction: 'arroz mantecado lentamente con caldo sabroso y queso', instAction: 'Nacra el arroz, añade caldo caliente poco a poco sin dejar de remover y manteca con queso.' },
+      { verb: 'Arroz salteado al estilo oriental con', diff: 'Fácil', time: 18, descAction: 'arroz frito en sartén ardiente con vegetales crocantes', instAction: 'Saltea en fuego vivo integrando el arroz con los ingredientes y salsa de soja.' },
+      { verb: 'Paella tradicional dorada con', diff: 'Media', time: 40, descAction: 'arroz seco con azafrán y socarrat crocante en el fondo', instAction: 'Distribuye los ingredientes uniformemente en la paellera y cocina sin remover hasta formar socarrat.' },
+    ],
+    proteins: [
+      'pollo', 'langostinos', 'calamar', 'chorizo', 'panceta', 'hongos', 'arvejas', 'cerdo'
+    ],
+    veggies: [
+      'morron rojo', 'cebolla', 'ajo', 'tomate', 'champiñon', 'espinaca', 'zucchini', 'alcaucil'
+    ],
+    bases: [
+      'arroz', 'caldo de verduras', 'vino blanco', 'aceite de oliva', 'queso parmesano'
+    ]
+  },
+
+  // 10. Pizzas a la piedra, Tartas y Calzones rústicos
+  {
+    techniques: [
+      { verb: 'Pizza artesanal a la piedra con', diff: 'Media', time: 25, descAction: 'masa crocante con salsa de tomate y queso gratinado', instAction: 'Estira la masa, cubre con salsa, mozzarella y los ingredientes, y hornea a 240°C.' },
+      { verb: 'Calzone relleno dorado con', diff: 'Media', time: 25, descAction: 'masa doblada sellada con relleno caliente y queso fundido', instAction: 'Coloca el relleno en una mitad, pliega, sella bordes y hornea 15 minutos.' },
+      { verb: 'Tarta rústica crujiente de', diff: 'Fácil', time: 30, descAction: 'tarta dorada al horno con relleno aromático de temporada', instAction: 'Vierte la preparación sobre el molde y hornea hasta que el relleno cuaje y la masa dore.' },
+    ],
+    proteins: [
+      'queso', 'jamon', 'panceta', 'huevo', 'atun', 'pollo', 'provoleta', 'longaniza'
+    ],
+    veggies: [
+      'cebolla', 'tomate', 'morron rojo', 'rucula', 'champiñon', 'albahaca', 'espinaca', 'aceitunas'
+    ],
+    bases: [
+      'harina', 'masa de tarta', 'aceite de oliva', 'oregano'
+    ]
   }
 ]
 
@@ -707,9 +904,9 @@ export function getFullRecipeCatalog(): LocalRecipe[] {
     }
   })
 
-  // 3. Generación determinista y gastronómicamente coherente para superar 5200 recetas
+  // 3. Generación determinista y gastronómicamente coherente para superar 10.500 recetas (el doble de la biblioteca previa)
   let genCounter = 1
-  const TARGET_COUNT = 5250
+  const TARGET_COUNT = 10500
 
   // Recorrer los clusters gastronómicos asegurando combinaciones naturales y apetitosas
   while (catalog.length < TARGET_COUNT) {
@@ -767,4 +964,4 @@ export function getTotalRecipesCount(): number {
   return getFullRecipeCatalog().length
 }
 
-export const TOTAL_RECIPES_COUNT = 5200
+export const TOTAL_RECIPES_COUNT = 10500

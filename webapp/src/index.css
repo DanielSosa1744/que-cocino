@@ -103,25 +103,21 @@
 }
 
 .font-menu-serif {
-  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
-  font-weight: 500;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 600;
 }
 
-/* Carta de Restaurante Premium: Bordes fileteados y marcos dobles */
+/* Carta de Restaurante Premium: Fondos nítidos de alto contraste y bordes definidos */
 .menu-card-frame {
   position: relative;
-  background-color: #FAF7F2;
-  border: 1px solid rgba(168, 139, 87, 0.38);
-  box-shadow: inset 0 0 0 3px rgba(250, 247, 242, 0.95),
-              inset 0 0 0 4px rgba(168, 139, 87, 0.22),
-              0 3px 14px rgba(47, 42, 38, 0.05);
+  background-color: #FFFFFF;
+  border: 2px solid rgba(143, 115, 71, 0.45);
+  box-shadow: 0 4px 18px rgba(47, 42, 38, 0.08);
 }
 
 .menu-card-frame:hover {
-  border-color: rgba(168, 139, 87, 0.55);
-  box-shadow: inset 0 0 0 3px rgba(250, 247, 242, 0.95),
-              inset 0 0 0 4px rgba(168, 139, 87, 0.35),
-              0 6px 20px rgba(47, 42, 38, 0.08);
+  border-color: rgba(143, 115, 71, 0.75);
+  box-shadow: 0 8px 24px rgba(47, 42, 38, 0.12);
 }
 
 .tap-subtle {

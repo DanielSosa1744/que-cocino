@@ -167,6 +167,11 @@ export default function VaciarNeveraPage() {
     return matchCravingRecipes(cravingQuery, allRawRecipes, inventory, recentIngredients)
   }, [cravingQuery, allRawRecipes, inventory, recentIngredients])
 
+  // Estados para rotación de propuestas y animación de transición a la elaboración
+  const [recipeOffset, setRecipeOffset] = useState(0)
+  const [isRotating, setIsRotating] = useState(false)
+  const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null)
+
   // Lista actual según categoría seleccionada (siempre garantiza resultados)
   const currentCategoryRecipes = useMemo(() => {
     if (activeChoice === 'ready') return readyRecipes
@@ -175,8 +180,50 @@ export default function VaciarNeveraPage() {
     return cravingResult.recipes
   }, [activeChoice, readyRecipes, oneMissingRecipes, specialRecipes, cravingResult.recipes])
 
-  // Máximo 4 mejores recetas visibles para evitar fatiga de decisión
-  const visibleRecipes = currentCategoryRecipes.slice(0, 4)
+  // Reiniciar offset cuando el usuario cambia de categoría o busca un antojo
+  useEffect(() => {
+    setRecipeOffset(0)
+  }, [activeChoice, cravingQuery])
+
+  const pageSize = 4
+  const totalInCategory = currentCategoryRecipes.length
+
+  // Obtener 4 recetas con rotación fluida
+  const visibleRecipes = useMemo(() => {
+    if (totalInCategory === 0) return []
+    if (totalInCategory <= pageSize) return currentCategoryRecipes
+
+    const start = recipeOffset % totalInCategory
+    const slice = currentCategoryRecipes.slice(start, start + pageSize)
+    if (slice.length < pageSize) {
+      const needed = pageSize - slice.length
+      return [...slice, ...currentCategoryRecipes.slice(0, needed)]
+    }
+    return slice
+  }, [currentCategoryRecipes, recipeOffset, totalInCategory])
+
+  const handleNextOptions = () => {
+    setIsRotating(true)
+    setTimeout(() => {
+      if (totalInCategory > pageSize) {
+        setRecipeOffset(prev => prev + pageSize)
+      } else {
+        // Si hay 4 o menos en la categoría actual, pasar con gracia a la siguiente categoría culinaria
+        if (activeChoice === 'ready') setActiveChoice('one_missing')
+        else if (activeChoice === 'one_missing') setActiveChoice('special')
+        else if (activeChoice === 'special') setActiveChoice('craving')
+        else setRecipeOffset(prev => prev + pageSize)
+      }
+      setIsRotating(false)
+    }, 280)
+  }
+
+  const handleSelectRecipe = (recipe: RecipeWithCost) => {
+    setSelectedRecipeId(recipe.id)
+    setTimeout(() => {
+      navigate(`/recipe/${recipe.id}`, { state: { recipe } })
+    }, 280)
+  }
 
   // Guardar las recetas actualmente visibles para que una nueva carga en inicio las archive y no se repitan
   useEffect(() => {
@@ -394,8 +441,12 @@ export default function VaciarNeveraPage() {
             {visibleRecipes.map((recipe, index) => (
               <article
                 key={recipe.id}
-                onClick={() => navigate(`/recipe/${recipe.id}`, { state: { recipe } })}
-                className="relative menu-card-frame rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-xl cursor-pointer select-none group flex flex-col justify-between"
+                onClick={() => handleSelectRecipe(recipe)}
+                className={`relative menu-card-frame rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-xl cursor-pointer select-none group flex flex-col justify-between ${
+                  selectedRecipeId === recipe.id
+                    ? 'ring-4 ring-[#8F7347] scale-[0.985] bg-[#FAF7F2]'
+                    : ''
+                }`}
               >
                 {/* Esquinas ornamentales discretas tipo carta de lujo */}
                 <div className="absolute top-2.5 left-2.5 w-2.5 h-2.5 border-t-2 border-l-2 border-[#8F7347] pointer-events-none" />
@@ -407,7 +458,7 @@ export default function VaciarNeveraPage() {
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <span className="text-xs sm:text-sm tracking-[0.22em] uppercase font-serif text-[#7A5E30] font-black">
-                      PASE Nº 0{index + 1}
+                      PASE Nº 0{((recipeOffset + index) % Math.max(1, totalInCategory)) + 1}
                     </span>
                     {recipe.recentIngredientsUsed != null && recipe.recentIngredientsUsed > 0 && (
                       <span className="text-xs sm:text-sm font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0DC] border-2 border-[#385333] text-[#244220] inline-flex items-center gap-1">
@@ -482,15 +533,61 @@ export default function VaciarNeveraPage() {
                     <span>—</span>
                   </div>
                   <span className="font-menu-serif text-base sm:text-lg text-[#1C1917] group-hover:text-[#7A5E30] transition inline-flex items-center gap-1.5 font-black underline decoration-[#8F7347] decoration-2">
-                    Consultar elaboración del Chef
-                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                    {selectedRecipeId === recipe.id ? (
+                      <span className="inline-flex items-center gap-2 text-[#7A5E30] animate-pulse">
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#8F7347] animate-ping" />
+                        Abriendo elaboración...
+                      </span>
+                    ) : (
+                      <>
+                        Consultar elaboración del Chef
+                        <span className="group-hover:translate-x-1 transition-transform">→</span>
+                      </>
+                    )}
                   </span>
                 </div>
               </article>
             ))}
+
+            {/* Botón de Otras Opciones de la Carta al final de las recetas */}
+            {visibleRecipes.length > 0 && (
+              <div className="col-span-full pt-4 pb-8 text-center animate-fade-in">
+                <button
+                  type="button"
+                  onClick={handleNextOptions}
+                  disabled={isRotating}
+                  className="inline-flex items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-white border-2 border-[#8F7347] text-[#1C1917] hover:bg-[#FAF7F2] hover:border-[#1C1917] font-menu-serif font-black text-base sm:text-lg shadow-md hover:shadow-lg transition-all duration-200 tap-subtle cursor-pointer select-none group"
+                >
+                  <span className={`text-[#8F7347] text-xl transition-transform duration-500 ${isRotating ? 'animate-spin' : 'group-hover:rotate-90'}`}>
+                    ✦
+                  </span>
+                  <span>
+                    {isRotating ? 'Renovando propuestas del Chef...' : 'Ver otras opciones de la carta'}
+                  </span>
+                  <span className="text-xs sm:text-sm font-mono text-[#8F7347] bg-[#FAF0E6] px-2.5 py-1 rounded-md border border-[#8F7347]/30 font-bold">
+                    {totalInCategory > pageSize ? 'Alternar propuestas' : 'Más recetas'}
+                  </span>
+                </button>
+                <p className="font-menu-serif text-xs sm:text-sm text-[#5A483D] mt-2.5 font-medium italic">
+                  ¿Desea otras alternativas? Explore sugerencias y giros culinarios adicionales.
+                </p>
+              </div>
+            )}
           </div>
         )}
       </div>
+
+      {/* Micro-animación de transición gourmet al pasar a la cocina */}
+      {selectedRecipeId && (
+        <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center bg-black/20 backdrop-blur-[2px] animate-fade-in">
+          <div className="bg-[#FAF7F2] border-2 border-[#8F7347] px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3.5 animate-scale-up">
+            <div className="w-5 h-5 border-2 border-[#8F7347] border-t-transparent rounded-full animate-spin" />
+            <span className="font-menu-serif font-black text-[#1C1917] text-base sm:text-lg">
+              ✦ Pasando a la elaboración del plato...
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

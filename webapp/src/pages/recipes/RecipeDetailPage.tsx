@@ -104,7 +104,7 @@ export default function RecipeDetailPage() {
       ]
 
   return (
-    <div className="h-full max-h-full bg-transparent flex flex-col overflow-hidden animate-fade-in text-[#1C1917]">
+    <div className="h-full max-h-full bg-transparent flex flex-col overflow-hidden animate-recipe-entrance text-[#1C1917]">
       {/* Encabezado fijo: El título de la receta y botón de retorno permanecen fijos en la parte superior */}
       <header className="px-5 pt-safe pb-3 flex-shrink-0 bg-[#F7F3EC]/95 backdrop-blur-md border-b-2 border-[#8F7347]/25 z-20">
         <div className="flex items-center justify-between mb-1.5">
@@ -142,7 +142,7 @@ export default function RecipeDetailPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           {/* Columna Izquierda: Comanda de Ingredientes (Fondo blanco nítido, alto contraste) */}
-          <section className="menu-card-frame rounded-2xl p-5 sm:p-6 relative">
+          <section className="menu-card-frame rounded-2xl p-5 sm:p-6 relative animate-stagger-1">
             {/* Esquinas ornamentales */}
             <div className="absolute top-2.5 left-2.5 w-2.5 h-2.5 border-t-2 border-l-2 border-[#8F7347] pointer-events-none" />
             <div className="absolute top-2.5 right-2.5 w-2.5 h-2.5 border-t-2 border-r-2 border-[#8F7347] pointer-events-none" />
@@ -182,7 +182,7 @@ export default function RecipeDetailPage() {
           </section>
 
           {/* Columna Derecha: Guía de Elaboración del Chef & Botón de Servicio */}
-          <div className="space-y-6">
+          <div className="space-y-6 animate-stagger-2">
             <section className="space-y-4">
               <div className="flex items-center gap-2">
                 <span className="h-[2px] w-8 bg-[#8F7347]" />

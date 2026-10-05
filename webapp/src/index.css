@@ -273,6 +273,56 @@
   animation: tabSlideRight 0.28s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
+/* Transición gourmet a la elaboración de receta */
+@keyframes recipeEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-recipe-entrance {
+  animation: recipeEntrance 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInUpDelayed {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-stagger-1 {
+  animation: slideInUpDelayed 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.06s backwards;
+}
+
+.animate-stagger-2 {
+  animation: slideInUpDelayed 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.14s backwards;
+}
+
+@keyframes scaleUpBadge {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-up {
+  animation: scaleUpBadge 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
 @keyframes tabSlideLeft {
   from {
     opacity: 0.6;

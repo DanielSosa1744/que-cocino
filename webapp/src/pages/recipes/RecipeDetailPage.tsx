@@ -1,5 +1,5 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useSaveCooked, useVaciarNevera, useRecipes } from '../../hooks/useRecipes'
 import { useDeleteIngredient, useInventory } from '../../hooks/useInventory'
 import { isIngredientMatch, estimateItemValue } from '../../lib/ingredientParser'
@@ -19,7 +19,7 @@ export default function RecipeDetailPage() {
   const { data: availableRecipes = [], isLoading: isLoadingVaciar } = useVaciarNevera(inventory)
   const { data: allRawRecipes = [], isLoading: isLoadingRecipes } = useRecipes()
   const [hasCooked, setHasCooked] = useState(false)
-  const [isDetailedMode, setIsDetailedMode] = useState(false)
+  const [isDetailedExpanded, setIsDetailedExpanded] = useState(true)
   const cookedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -110,25 +110,84 @@ export default function RecipeDetailPage() {
     }, 1200)
   }
 
-  // Pasos limpios numerados o pasos detallados si está activo el Modo Detallado
-  const detailedSteps = (rawRecipe as any).detailed_steps
-  const steps = isDetailedMode && Array.isArray(detailedSteps) && detailedSteps.length > 0
-    ? detailedSteps
-    : (rawRecipe.instructions
-        ? rawRecipe.instructions
-            .split('\n')
-            .map(s => s.trim())
-            .filter(Boolean)
-        : [
-            'Preparar y limpiar los ingredientes.',
-            'Cocinar a fuego medio según la preparación.',
-            'Servir caliente y disfrutar.',
-          ])
+  // Pasos sintéticos numerados de la receta
+  const steps = rawRecipe.instructions
+    ? rawRecipe.instructions
+        .split('\n')
+        .map(s => s.trim())
+        .filter(Boolean)
+    : [
+        'Preparar y limpiar los ingredientes.',
+        'Cocinar a fuego medio según la preparación.',
+        'Servir caliente y disfrutar.',
+      ]
 
   const chefTips = (rawRecipe as any).chef_tips
   const substitutes = (rawRecipe as any).substitutes as Record<string, string> | undefined
   const pairing = (rawRecipe as any).pairing as string | undefined
   const origin = (rawRecipe as any).origin as string | undefined
+
+  // Pasos detallados para principiantes / personas menos experimentadas
+  const detailedGuideSteps = useMemo(() => {
+    const rawDetailed = (rawRecipe as any).detailed_steps
+    if (Array.isArray(rawDetailed) && rawDetailed.length > 0) {
+      return rawDetailed.map((item: string, idx: number) => {
+        const colonIndex = item.indexOf(':')
+        if (colonIndex > 0) {
+          return {
+            title: item.slice(0, colonIndex).trim(),
+            detail: item.slice(colonIndex + 1).trim(),
+          }
+        }
+        return {
+          title: `Paso Técnico ${idx + 1}`,
+          detail: item.trim(),
+        }
+      })
+    }
+
+    // Guía pedagógica minuciosa paso a paso para los menos experimentados
+    const cleanSteps = (rawRecipe.instructions || '')
+      .split('\n')
+      .map(s => s.replace(/^\d+[\.\)]\s*/, '').trim())
+      .filter(Boolean)
+
+    if (cleanSteps.length === 0) {
+      return [
+        {
+          title: 'Paso 1 · Preparación previa y mise en place',
+          detail: 'Lava, pela y corta todos los ingredientes antes de encender el fuego. Tener todo cortado y medido sobre la mesada evita distracciones y quemaduras.',
+        },
+        {
+          title: 'Paso 2 · Manejo del fuego y cocción',
+          detail: 'Cocina a fuego medio constante. Si notas que la preparación humea o salpica fuerte, reduce la llama de inmediato.',
+        },
+        {
+          title: 'Paso 3 · Punto de sal y reposo',
+          detail: 'Prueba una pequeña muestra antes de apagar. Deja reposar 1 a 2 minutos fuera del fuego antes de servir para integrar los jugos.',
+        },
+      ]
+    }
+
+    return cleanSteps.map((step, idx) => {
+      if (idx === 0) {
+        return {
+          title: `Paso ${idx + 1} · Preparación de ingredientes y fuego inicial`,
+          detail: `${step} — Para principiantes: Corta todos los alimentos en tamaños similares para que se cocinen al mismo tiempo sin que queden partes crudas ni quemadas.`,
+        }
+      }
+      if (idx === cleanSteps.length - 1) {
+        return {
+          title: `Paso ${idx + 1} · Punto final de cocción, sazón y reposo`,
+          detail: `${step} — Para principiantes: Verifica que el centro esté bien caliente, prueba el punto de sal y apaga la hornalla. Deja reposar la comida 2 minutos fuera del fuego antes de emplatar.`,
+        }
+      }
+      return {
+        title: `Paso ${idx + 1} · Cocción y control de temperatura`,
+        detail: `${step} — Para principiantes: Mantén fuego medio o medio-bajo. Si notas que la base se seca con rapidez, agrega 2 cucharadas de agua, caldo o manteca para cuidar el fondo.`,
+      }
+    })
+  }, [rawRecipe])
 
   return (
     <div className="h-full max-h-full bg-transparent flex flex-col overflow-hidden animate-recipe-entrance text-[#1C1917]">
@@ -155,35 +214,8 @@ export default function RecipeDetailPage() {
         </h1>
       </header>
 
-      {/* Todo el resto de la página se desplaza: tiempo, ingredientes, pasos y botón de registrar servicio */}
+      {/* Todo el resto de la página se desplaza: tiempo, ingredientes, pasos y al final la ficha detallada */}
       <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-4 pb-12 space-y-5">
-        {/* Selector interactivo de Modo: Síntesis vs Modo Detallado del Chef */}
-        <div className="flex justify-center items-center gap-2 max-w-sm mx-auto p-1 bg-white border-2 border-[#8F7347]/40 rounded-xl shadow-xs">
-          <button
-            type="button"
-            onClick={() => setIsDetailedMode(false)}
-            className={`flex-1 py-2 px-3 rounded-lg font-menu-serif text-sm sm:text-base font-black transition cursor-pointer ${
-              !isDetailedMode
-                ? 'bg-[#1C1917] text-[#FAF7F2] shadow-sm'
-                : 'text-[#1C1917] hover:bg-[#FAF7F2]'
-            }`}
-          >
-            Modo Síntesis
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsDetailedMode(true)}
-            className={`flex-1 py-2 px-3 rounded-lg font-menu-serif text-sm sm:text-base font-black transition cursor-pointer flex items-center justify-center gap-1.5 ${
-              isDetailedMode
-                ? 'bg-[#1C1917] text-[#FAF7F2] shadow-sm ring-1 ring-[#8F7347]'
-                : 'text-[#1C1917] hover:bg-[#FAF7F2]'
-            }`}
-          >
-            <span>✦</span>
-            <span>Modo Detallado</span>
-          </button>
-        </div>
-
         {/* Subtítulo: Tiempo, Origen y Dificultad */}
         <div className="text-center pb-2 border-b-2 border-[#8F7347]/20 space-y-1.5">
           <div className="flex flex-wrap items-center justify-center gap-2">
@@ -211,63 +243,6 @@ export default function RecipeDetailPage() {
             · Tiempo estimado de cocina: {rawRecipe.prep_time || 15} minutos ·
           </p>
         </div>
-
-        {/* Módulo destacado de Modo Detallado: Consejos del Chef, Sustitutos y Maridaje */}
-        {isDetailedMode && (
-          <div className="space-y-4 animate-fade-in">
-            {chefTips && (
-              <div className="bg-[#FAF7F2] border-2 border-[#8F7347] rounded-2xl p-4 sm:p-5 shadow-xs">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xl">👨‍🍳</span>
-                  <h3 className="font-menu-title text-base sm:text-lg font-black text-[#1C1917] uppercase tracking-wide">
-                    Técnica y Secreto del Chef
-                  </h3>
-                </div>
-                <p className="font-menu-serif text-base sm:text-lg text-[#2E241E] leading-relaxed font-medium">
-                  {chefTips}
-                </p>
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {substitutes && Object.keys(substitutes).length > 0 && (
-                <div className="bg-white border-2 border-[#8F7347]/30 rounded-2xl p-4 shadow-xs">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-lg">🔄</span>
-                    <h3 className="font-menu-title text-sm sm:text-base font-black text-[#1C1917] uppercase tracking-wide">
-                      Intercambios y Sustitutos Caseros
-                    </h3>
-                  </div>
-                  <ul className="space-y-1.5 text-sm sm:text-base font-menu-serif">
-                    {Object.entries(substitutes).map(([orig, sub]) => (
-                      <li key={orig} className="flex items-start gap-2">
-                        <span className="text-[#8F7347] font-bold">•</span>
-                        <span>
-                          <strong className="capitalize text-[#7A5E30]">{orig}:</strong>{' '}
-                          <span className="text-[#1C1917]">{sub}</span>
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {pairing && (
-                <div className="bg-white border-2 border-[#8F7347]/30 rounded-2xl p-4 shadow-xs">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-lg">🍷</span>
-                    <h3 className="font-menu-title text-sm sm:text-base font-black text-[#1C1917] uppercase tracking-wide">
-                      Maridaje y Acompañamiento
-                    </h3>
-                  </div>
-                  <p className="font-menu-serif text-sm sm:text-base text-[#1C1917] italic leading-relaxed">
-                    {pairing}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           {/* Columna Izquierda: Comanda de Ingredientes */}
@@ -310,13 +285,14 @@ export default function RecipeDetailPage() {
             </ul>
           </section>
 
-          {/* Columna Derecha: Guía de Elaboración del Chef & Botón de Servicio */}
+          {/* Columna Derecha: Pasos de Elaboración & Ficha Detallada al Final */}
           <div className="space-y-6 animate-stagger-2">
+            {/* 1. Pasos directos de elaboración */}
             <section className="space-y-4">
               <div className="flex items-center gap-2">
                 <span className="h-[2px] w-8 bg-[#8F7347]" />
                 <h2 className="font-menu-title text-base sm:text-lg font-black text-[#1C1917] uppercase tracking-wider">
-                  {isDetailedMode ? 'Pasos Detallados de Elaboración' : 'Pasos de Elaboración'}
+                  Pasos de Elaboración
                 </h2>
                 <span className="h-[2px] flex-1 bg-[#8F7347]/30" />
               </div>
@@ -334,9 +310,108 @@ export default function RecipeDetailPage() {
                   )
                 })}
               </ol>
+
+              {/* 2. FICHA DETALLADA AL FINAL DE LOS PASOS: Guía minuciosa para los menos experimentados */}
+              <div className="pt-4 border-t-2 border-[#8F7347]/30">
+                <div className="bg-[#FAF7F2] border-2 border-[#8F7347] rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
+                  {/* Encabezado noble de la Ficha Detallada */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-[#8F7347]/20 pb-3">
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-2xl">👨‍🍳</span>
+                      <div>
+                        <h3 className="font-menu-title text-base sm:text-lg font-black text-[#1C1917] uppercase tracking-wide">
+                          Ficha Detallada del Chef
+                        </h3>
+                        <p className="font-menu-serif text-xs sm:text-sm text-[#7A5E30] font-bold">
+                          Guía minuciosa paso a paso para los menos experimentados
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsDetailedExpanded(prev => !prev)}
+                      className="px-3 py-1.5 rounded-lg bg-white border-2 border-[#8F7347] text-[#1C1917] font-menu-serif text-xs sm:text-sm font-black hover:bg-[#FAF7F2] transition cursor-pointer shadow-xs tap-subtle"
+                    >
+                      {isDetailedExpanded ? '▲ Plegar guía detallada' : '✦ Desplegar guía paso a paso'}
+                    </button>
+                  </div>
+
+                  {/* Contenido detallado para principiantes */}
+                  {isDetailedExpanded && (
+                    <div className="space-y-4 animate-fade-in text-left">
+                      {/* Desglose exhaustivo de los pasos de cocina */}
+                      <div>
+                        <h4 className="font-menu-title text-sm sm:text-base font-black text-[#1C1917] uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                          <span className="text-[#8F7347]">✦</span>
+                          <span>Pasos de Cocina Explicados en Detalle:</span>
+                        </h4>
+                        <div className="space-y-3">
+                          {detailedGuideSteps.map((dStep, idx) => (
+                            <div key={idx} className="bg-white p-3.5 sm:p-4 rounded-xl border-2 border-[#8F7347]/30 shadow-xs">
+                              <div className="flex items-start gap-3">
+                                <span className="w-6 h-6 rounded-full bg-[#8F7347] text-white font-mono text-xs font-black flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs">
+                                  {idx + 1}
+                                </span>
+                                <div className="text-sm sm:text-base font-menu-serif text-[#1C1917] leading-relaxed">
+                                  <strong className="text-[#7A5E30] block mb-1 font-black">
+                                    {dStep.title}
+                                  </strong>
+                                  <p className="font-medium text-[#2E241E]">
+                                    {dStep.detail}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Secretos del Chef: Control del fuego y temperatura */}
+                      {chefTips && (
+                        <div className="bg-white p-3.5 sm:p-4 rounded-xl border-2 border-[#8F7347]/30 shadow-xs">
+                          <h4 className="font-menu-title text-xs sm:text-sm font-black text-[#7A5E30] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                            <span>💡</span> Secreto de Fuego & Técnica del Chef:
+                          </h4>
+                          <p className="font-menu-serif text-sm sm:text-base text-[#1C1917] font-medium leading-relaxed">
+                            {chefTips}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Sustitutos caseros si falta algún ingrediente */}
+                      {substitutes && Object.keys(substitutes).length > 0 && (
+                        <div className="bg-white p-3.5 sm:p-4 rounded-xl border-2 border-[#8F7347]/30 shadow-xs">
+                          <h4 className="font-menu-title text-xs sm:text-sm font-black text-[#7A5E30] uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                            <span>🔄</span> Sustitutos en caso de faltar algún ingrediente:
+                          </h4>
+                          <div className="flex flex-wrap gap-2">
+                            {Object.entries(substitutes).map(([orig, sub]) => (
+                              <span key={orig} className="text-xs sm:text-sm bg-[#FAF7F2] px-2.5 py-1 rounded-md border border-[#8F7347]/30 text-[#1C1917]">
+                                <strong className="capitalize text-[#7A5E30]">{orig}:</strong> {sub}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Maridaje y acompañamiento sugerido */}
+                      {pairing && (
+                        <div className="bg-white p-3.5 sm:p-4 rounded-xl border-2 border-[#8F7347]/30 shadow-xs">
+                          <h4 className="font-menu-title text-xs sm:text-sm font-black text-[#7A5E30] uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                            <span>🍷</span> Cómo servir y acompañar:
+                          </h4>
+                          <p className="font-menu-serif text-sm sm:text-base text-[#1C1917] italic leading-relaxed">
+                            {pairing}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
             </section>
 
-            {/* Botón de servicio gastronómico */}
+            {/* 3. Botón de servicio gastronómico */}
             <div className="pt-2 pb-4">
               <button
                 onClick={handleCooked}

@@ -41,20 +41,6 @@ export default function VaciarNeveraPage() {
 
   const [activeChoice, setActiveChoice] = useState<CategoryChoice>('ready')
   const [cravingQuery, setCravingQuery] = useState('')
-  const [expandedDetailIds, setExpandedDetailIds] = useState<Set<string>>(new Set())
-
-  const toggleDetails = (recipeId: string, e: React.MouseEvent) => {
-    e.stopPropagation()
-    setExpandedDetailIds(prev => {
-      const next = new Set(prev)
-      if (next.has(recipeId)) {
-        next.delete(recipeId)
-      } else {
-        next.add(recipeId)
-      }
-      return next
-    })
-  }
 
   // Si es una nueva carga desde el inicio, limpiar búsqueda previa de antojo y reajustar categoría
   useEffect(() => {
@@ -581,78 +567,19 @@ export default function VaciarNeveraPage() {
                   </div>
                 )}
 
-                {/* Opción de Ficha Más Detallada (Botón interactivo sin salir de la carta) */}
-                <div className="mt-3.5 pt-2.5 border-t border-[#8F7347]/20 flex items-center justify-between">
-                  <button
-                    type="button"
-                    onClick={(e) => toggleDetails(recipe.id, e)}
-                    className="text-xs sm:text-sm font-menu-serif font-black px-3 py-1.5 rounded-lg bg-white border border-[#8F7347] text-[#7A5E30] hover:bg-[#FAF7F2] hover:text-[#1C1917] transition shadow-xs inline-flex items-center gap-1.5 cursor-pointer tap-subtle"
-                  >
-                    <span>{expandedDetailIds.has(recipe.id) ? '▲ Menos detalle' : '✦ Ficha detallada (Tips & Maridaje)'}</span>
-                  </button>
-                  {(recipe.chef_tips || recipe.pairing || (recipe.substitutes && Object.keys(recipe.substitutes).length > 0)) && !expandedDetailIds.has(recipe.id) && (
-                    <span className="text-xs font-serif text-[#7A5E30] font-bold hidden sm:inline">
-                      Incluye secretos del chef
-                    </span>
-                  )}
+                {/* Indicador de guía detallada disponible en la elaboración */}
+                <div className="mt-3 pt-2.5 border-t border-[#8F7347]/20 flex items-center justify-between text-xs sm:text-sm font-menu-serif text-[#7A5E30] font-bold">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span>✦</span>
+                    <span>Incluye pasos detallados para principiantes</span>
+                  </span>
+                  <span className="font-serif italic hidden sm:inline">
+                    Secretos del chef en la elaboración
+                  </span>
                 </div>
 
-                {/* Despliegue de Ficha Detallada */}
-                {expandedDetailIds.has(recipe.id) && (
-                  <div
-                    onClick={(e) => e.stopPropagation()}
-                    className="mt-3 p-3.5 bg-[#FAF7F2] rounded-xl border-2 border-[#8F7347]/40 text-left space-y-2.5 animate-fade-in shadow-xs cursor-default"
-                  >
-                    {recipe.chef_tips ? (
-                      <div>
-                        <p className="text-xs sm:text-sm font-black font-menu-serif text-[#7A5E30] uppercase tracking-wider flex items-center gap-1.5">
-                          <span>👨‍🍳</span> Secreto & Técnica del Chef:
-                        </p>
-                        <p className="text-sm sm:text-base font-menu-serif text-[#1C1917] font-medium leading-relaxed mt-1">
-                          {recipe.chef_tips}
-                        </p>
-                      </div>
-                    ) : (
-                      <div>
-                        <p className="text-xs sm:text-sm font-black font-menu-serif text-[#7A5E30] uppercase tracking-wider flex items-center gap-1.5">
-                          <span>👨‍🍳</span> Consejo de Cocina:
-                        </p>
-                        <p className="text-sm sm:text-base font-menu-serif text-[#1C1917] font-medium leading-relaxed mt-1">
-                          Cocción a fuego controlado para resaltar el aroma de los ingredientes locales.
-                        </p>
-                      </div>
-                    )}
-
-                    {recipe.substitutes && Object.keys(recipe.substitutes).length > 0 && (
-                      <div className="pt-2 border-t border-[#8F7347]/20">
-                        <p className="text-xs sm:text-sm font-black font-menu-serif text-[#7A5E30] uppercase tracking-wider flex items-center gap-1.5">
-                          <span>🔄</span> Sustitutos sugeridos:
-                        </p>
-                        <div className="flex flex-wrap gap-1.5 mt-1.5">
-                          {Object.entries(recipe.substitutes).map(([orig, sub]) => (
-                            <span key={orig} className="text-xs sm:text-sm bg-white px-2.5 py-1 rounded-md border border-[#8F7347]/30 text-[#1C1917] font-medium">
-                              <strong className="capitalize text-[#7A5E30]">{orig}:</strong> {sub}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {recipe.pairing && (
-                      <div className="pt-2 border-t border-[#8F7347]/20">
-                        <p className="text-xs sm:text-sm font-black font-menu-serif text-[#7A5E30] uppercase tracking-wider flex items-center gap-1.5">
-                          <span>🍷</span> Maridaje & Guarnición recomendada:
-                        </p>
-                        <p className="text-sm sm:text-base font-menu-serif text-[#1C1917] italic mt-1 leading-relaxed">
-                          {recipe.pairing}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
-
                 {/* Pie del plato con adorno refinado y llamada a la acción */}
-                <div className="mt-4 pt-3 flex items-center justify-between text-sm sm:text-base border-t-2 border-[#8F7347]/20">
+                <div className="mt-3.5 pt-2.5 flex items-center justify-between text-sm sm:text-base border-t-2 border-[#8F7347]/20">
                   <div className="flex items-center gap-1.5 text-[#8F7347] text-sm font-bold">
                     <span>—</span>
                     <span>❖</span>

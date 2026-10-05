@@ -4,6 +4,7 @@ import {
   useDeleteIngredient,
   useUpdateIngredient,
   useAddIngredients,
+  useClearInventory,
 } from '../../hooks/useInventory'
 import {
   guessCategory,
@@ -12,6 +13,7 @@ import {
   estimateItemValueARS,
 } from '../../lib/ingredientParser'
 import GoogleIcon from '../../components/GoogleIcon'
+import CookingPotAnimation from '../../components/CookingPotAnimation'
 import type { InventoryItem } from '../../types/app.types'
 
 export default function InventoryPage() {
@@ -19,6 +21,7 @@ export default function InventoryPage() {
   const { mutate: deleteItem } = useDeleteIngredient()
   const { mutate: updateItem } = useUpdateIngredient()
   const { mutateAsync: addItems } = useAddIngredients()
+  const { mutate: clearInventory } = useClearInventory()
 
   const [newName, setNewName] = useState('')
   const [newQuantity, setNewQuantity] = useState<number>(1)
@@ -68,14 +71,26 @@ export default function InventoryPage() {
 
   return (
     <div className="h-full max-h-full bg-transparent flex flex-col overflow-hidden animate-fade-in">
-      {/* Encabezado limpio */}
-      <div className="px-5 pt-safe pb-4 border-b border-[#766153]/15 flex-shrink-0 bg-transparent">
-        <h1 className="text-xl font-serif font-medium text-[#2F2A26] tracking-tight">
-          Mi Despensa
-        </h1>
-        <p className="text-xs text-[#766153] mt-0.5">
-          {inventory.length} {inventory.length === 1 ? 'ingrediente' : 'ingredientes'} en stock
-        </p>
+      {/* Encabezado limpio con acción de vaciar despensa */}
+      <div className="px-5 pt-safe pb-4 border-b border-[#766153]/15 flex-shrink-0 bg-transparent flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-serif font-medium text-[#2F2A26] tracking-tight">
+            Mi Despensa
+          </h1>
+          <p className="text-xs text-[#766153] mt-0.5">
+            {inventory.length} {inventory.length === 1 ? 'ingrediente' : 'ingredientes'} en stock
+          </p>
+        </div>
+        {inventory.length > 0 && (
+          <button
+            type="button"
+            onClick={() => clearInventory()}
+            className="text-[11px] text-[#A68A64] hover:text-[#C84B31] transition px-2.5 py-1 rounded-md border border-[#766153]/20 hover:border-[#C84B31]/40 tap-subtle cursor-pointer"
+            title="Vaciar despensa para empezar de cero"
+          >
+            Vaciar despensa
+          </button>
+        )}
       </div>
 
       <div className="flex-1 min-h-0 overflow-y-auto px-5 py-4">
@@ -107,9 +122,7 @@ export default function InventoryPage() {
 
         {/* Lista simple estilo libreta de cocina */}
         {isLoading ? (
-          <div className="py-12 text-center text-xs text-[#766153] font-mono">
-            Cargando despensa...
-          </div>
+          <CookingPotAnimation inline message="Consultando despensa..." />
         ) : inventory.length === 0 ? (
           <div className="py-16 text-center text-[#766153] text-xs">
             No tienes ingredientes en tu despensa. Añade uno arriba o desde Inicio.

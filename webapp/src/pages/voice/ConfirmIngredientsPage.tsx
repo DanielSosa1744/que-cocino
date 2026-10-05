@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useAddIngredients } from '../../hooks/useInventory'
+import { useReplaceInventory } from '../../hooks/useInventory'
 import { defaultExpiryDate, guessCategory, guessShelfLife, singularize } from '../../lib/ingredientParser'
 import { GoogleIcon } from '../../components/GoogleIcon'
+import CookingPotAnimation from '../../components/CookingPotAnimation'
 import type { ParsedIngredient } from '../../types/app.types'
 
 interface IngredientRow extends ParsedIngredient {
@@ -18,7 +19,8 @@ function newId() {
 export default function ConfirmIngredientsPage() {
   const location = useLocation()
   const navigate = useNavigate()
-  const { mutateAsync: addIngredients, isPending } = useAddIngredients()
+  const { mutateAsync: replaceInventory } = useReplaceInventory()
+  const [isProcessing, setIsProcessing] = useState(false)
 
   const { parsed = [], rawText = '' } = (location.state as {
     parsed: ParsedIngredient[]
@@ -68,6 +70,7 @@ export default function ConfirmIngredientsPage() {
 
   const handleConfirm = async () => {
     if (rows.length === 0) return
+    setIsProcessing(true)
 
     const items = rows.map(r => ({
       name: r.name,
@@ -77,9 +80,29 @@ export default function ConfirmIngredientsPage() {
       expires_at: r.expiryDays != null ? defaultExpiryDate(r.expiryDays) : null,
     }))
 
-    await addIngredients(items)
-    // Mostrar directamente las recetas compatibles
-    navigate('/recetas', { replace: true })
+    const names = items.map(i => i.name)
+    sessionStorage.setItem('que_cocino_recent_ingredients', JSON.stringify(names))
+
+    try {
+      await Promise.all([
+        replaceInventory(items),
+        new Promise(resolve => setTimeout(resolve, 2000)),
+      ])
+      // Mostrar directamente las recetas compatibles basadas estrictamente en esta tanda
+      navigate('/recetas', {
+        state: {
+          recentIngredients: names,
+          isNewBatch: true,
+          timestamp: Date.now(),
+        },
+        replace: true,
+      })
+    } catch (err) {
+      console.error('Error al guardar ingredientes:', err)
+      navigate('/recetas', { replace: true })
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
   return (
@@ -218,11 +241,11 @@ export default function ConfirmIngredientsPage() {
       <div className="flex-shrink-0 px-4 py-2 bg-white/95 backdrop-blur-sm border-t border-stone-200/80 pb-safe">
         <button
           onClick={handleConfirm}
-          disabled={rows.length === 0 || isPending}
+          disabled={rows.length === 0 || isProcessing}
           className="w-full py-3 bg-emerald-800 hover:bg-emerald-900 text-white font-medium rounded-xl transition disabled:opacity-40 flex items-center justify-center gap-2 shadow-xs active:scale-98 text-sm tap-subtle"
         >
-          {isPending ? (
-            'Guardando en inventario...'
+          {isProcessing ? (
+            'Cocinando ideas...'
           ) : (
             <>
               <GoogleIcon name="check_circle" size={18} />
@@ -231,6 +254,14 @@ export default function ConfirmIngredientsPage() {
           )}
         </button>
       </div>
+
+      {/* Animación de la olla con ingredientes cayendo */}
+      {isProcessing && (
+        <CookingPotAnimation
+          message="¡Al fuego!"
+          subMessage="Guardando ingredientes y buscando recetas..."
+        />
+      )}
     </div>
   )
 }

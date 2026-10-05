@@ -30,24 +30,7 @@ export const localStore = {
   getInventory(userId: string): InventoryItem[] {
     const raw = localStorage.getItem(STORAGE_KEYS.INVENTORY + userId)
     if (!raw) {
-      // Seed with initial items for a new session
-      const seeded: InventoryItem[] = INITIAL_DEMO_INVENTORY.map((item, index) => {
-        const expires_at = defaultExpiryDate(item.daysToExpire)
-        const { urgency, daysUntilExpiry } = calculateUrgency(expires_at)
-        return {
-          id: `demo-${index + 1}`,
-          name: item.name,
-          quantity: item.quantity,
-          unit: item.unit,
-          category: item.category,
-          expires_at,
-          created_at: new Date().toISOString(),
-          urgency,
-          days_until_expiry: daysUntilExpiry,
-        }
-      })
-      localStorage.setItem(STORAGE_KEYS.INVENTORY + userId, JSON.stringify(seeded))
-      return seeded
+      return []
     }
     try {
       const items = JSON.parse(raw) as InventoryItem[]
@@ -62,6 +45,21 @@ export const localStore = {
     } catch {
       return []
     }
+  },
+
+  replaceInventory(
+    userId: string,
+    items: Array<{
+      name: string
+      quantity: number | null
+      unit: string | null
+      category?: string
+      expires_at?: string | null
+    }>
+  ): InventoryItem[] {
+    // Limpiar completamente el inventario previo para basarse exclusivamente en la tanda actual
+    localStorage.setItem(STORAGE_KEYS.INVENTORY + userId, JSON.stringify([]))
+    return localStore.addInventory(userId, items)
   },
 
   addInventory(

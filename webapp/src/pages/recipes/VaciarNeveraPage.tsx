@@ -4,6 +4,7 @@ import { useInventory } from '../../hooks/useInventory'
 import { useVaciarNevera, useRecipes } from '../../hooks/useRecipes'
 import { estimateItemValueARS, isIngredientMatch, getIngredientImportance } from '../../lib/ingredientParser'
 import { matchCravingRecipes, type RecipeWithCost } from '../../lib/cravingMatcher'
+import CookingPotAnimation from '../../components/CookingPotAnimation'
 
 type CategoryChoice = 'ready' | 'one_missing' | 'special' | 'craving'
 
@@ -347,9 +348,11 @@ export default function VaciarNeveraPage() {
       {/* Lista editorial limitada estrictamente a las 4 mejores recetas */}
       <div className="flex-1 min-h-0 overflow-y-auto px-5 divide-y divide-[#766153]/15 pb-8">
         {isLoading ? (
-          <div className="py-16 text-center text-xs text-[#766153] font-mono">
-            Buscando combinaciones en tu cocina...
-          </div>
+          <CookingPotAnimation
+            inline
+            message="Preparando combinaciones..."
+            subMessage="Buscando las mejores recetas con tus ingredientes..."
+          />
         ) : (
           <div className="space-y-1">
             {/* Si no hay inventario registrado, avisar amigablemente pero mostrar recetas recomendadas */}

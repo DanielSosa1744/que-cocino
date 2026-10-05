@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition'
-import { useAddIngredients } from '../hooks/useInventory'
+import { useReplaceInventory } from '../hooks/useInventory'
 import { extractIngredients, guessCategory, defaultExpiryDate, getIngredientImportance } from '../lib/ingredientParser'
 import GoogleIcon from '../components/GoogleIcon'
+import CookingPotAnimation from '../components/CookingPotAnimation'
 
 export default function HomePage() {
   const navigate = useNavigate()
   const [inputText, setInputText] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
-  const { mutateAsync: addIngredients } = useAddIngredients()
+  const { mutateAsync: replaceInventory } = useReplaceInventory()
 
   const {
     transcript,
@@ -52,39 +53,46 @@ export default function HomePage() {
       sessionStorage.removeItem('que_cocino_current_recipe_ids')
 
       const parsed = extractIngredients(trimmed)
-      let addedNames: string[] = []
 
-      if (parsed.length > 0) {
-        // Ordenar los ingredientes ingresados por jerarquía culinaria (la carne, pescado y proteína van primero; la cebolla, ajo y aromáticos van después)
-        const sortedParsed = [...parsed].sort((a, b) => {
-          const impA = getIngredientImportance(a.name)
-          const impB = getIngredientImportance(b.name)
-          return impB - impA
-        })
+      // Ejecutar reemplazo de inventario (no acumular tanda previa) junto a la animación de la olla (mínimo 2.1s)
+      const [addedNames] = await Promise.all([
+        (async () => {
+          let names: string[] = []
+          if (parsed.length > 0) {
+            // Ordenar los ingredientes por jerarquía culinaria (la carne y proteína primero; aromáticos después)
+            const sortedParsed = [...parsed].sort((a, b) => {
+              const impA = getIngredientImportance(a.name)
+              const impB = getIngredientImportance(b.name)
+              return impB - impA
+            })
 
-        // Guardar ingredientes en la despensa
-        const items = sortedParsed.map(p => ({
-          name: p.name,
-          quantity: p.quantity ?? 1,
-          unit: p.unit ?? 'ud',
-          category: p.category || guessCategory(p.name),
-          expires_at: p.expiryDays != null ? defaultExpiryDate(p.expiryDays) : null,
-        }))
-        await addIngredients(items)
-        addedNames = items.map(i => i.name)
-      } else {
-        // Asegurar que cualquier ingrediente introducido quede registrado
-        await addIngredients([{
-          name: trimmed,
-          quantity: 1,
-          unit: 'ud',
-          category: guessCategory(trimmed),
-          expires_at: defaultExpiryDate(7),
-        }])
-        addedNames = [trimmed]
-      }
+            // Guardar EXCLUSIVAMENTE estos ingredientes en la despensa (reemplazando lo previo)
+            const items = sortedParsed.map(p => ({
+              name: p.name,
+              quantity: p.quantity ?? 1,
+              unit: p.unit ?? 'ud',
+              category: p.category || guessCategory(p.name),
+              expires_at: p.expiryDays != null ? defaultExpiryDate(p.expiryDays) : null,
+            }))
+            await replaceInventory(items)
+            names = items.map(i => i.name)
+          } else {
+            // Reemplazar inventario con el ingrediente único introducido
+            await replaceInventory([{
+              name: trimmed,
+              quantity: 1,
+              unit: 'ud',
+              category: guessCategory(trimmed),
+              expires_at: defaultExpiryDate(7),
+            }])
+            names = [trimmed]
+          }
+          return names
+        })(),
+        new Promise((resolve) => setTimeout(resolve, 2100)),
+      ])
 
-      // Guardar los ingredientes recientes para darles máxima prioridad al publicar recetas
+      // Guardar los ingredientes de este uso exclusivo
       sessionStorage.setItem('que_cocino_recent_ingredients', JSON.stringify(addedNames))
       navigate('/recetas', {
         state: {
@@ -258,6 +266,14 @@ export default function HomePage() {
           </button>
         </div>
       </div>
+
+      {/* Animación de la olla cocinando estilo dibujo animado */}
+      {isProcessing && (
+        <CookingPotAnimation
+          message="¡Al fuego!"
+          subMessage="Echando los ingredientes a la olla y buscando recetas..."
+        />
+      )}
     </div>
   )
 }

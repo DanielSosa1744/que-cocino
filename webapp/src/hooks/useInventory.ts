@@ -211,6 +211,94 @@ export function useAddIngredients() {
   })
 }
 
+/**
+ * Reemplaza el inventario completo con la nueva tanda de ingredientes agregados en ese momento.
+ * Evita la acumulación de ingredientes previos para que cada uso sea fresco y preciso.
+ */
+export function useReplaceInventory() {
+  const { user } = useAuth()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (items: {
+      name: string
+      quantity: number | null
+      unit: string | null
+      category?: string
+      expires_at?: string | null
+    }[]) => {
+      if (!user) throw new Error('Not authenticated')
+
+      if (!isSupabaseConfigured) {
+        return localStore.replaceInventory(user.id, items)
+      }
+
+      try {
+        // 1. Desactivar todos los ingredientes previos del usuario para no acumular
+        await db
+          .from('inventory')
+          .update({ is_consumed: true, updated_at: new Date().toISOString() })
+          .eq('user_id', user.id)
+          .eq('is_consumed', false)
+
+        // 2. Obtener catálogo maestro de ingredients
+        const { data: dbIngredients } = await db
+          .from('ingredients')
+          .select('id, name, category, shelf_life_days, unit_default')
+        const catalog = dbIngredients || []
+
+        // 3. Insertar únicamente la nueva tanda
+        for (const item of items) {
+          const trimmedName = item.name.trim()
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const matchedCatalog = catalog.find((cat: any) =>
+            isIngredientMatch(trimmedName, cat.name) ||
+            singularize(trimmedName) === singularize(cat.name) ||
+            cat.name.toLowerCase() === trimmedName.toLowerCase()
+          )
+
+          const ingredientId = matchedCatalog ? matchedCatalog.id : null
+          const unit = item.unit || matchedCatalog?.unit_default || 'ud'
+          let expiresAt = item.expires_at || null
+          if (!expiresAt && matchedCatalog?.shelf_life_days) {
+            expiresAt = defaultExpiryDate(matchedCatalog.shelf_life_days)
+          }
+
+          await db
+            .from('inventory')
+            .insert({
+              user_id: user.id,
+              ingredient_id: ingredientId,
+              name: trimmedName,
+              quantity: item.quantity ?? 1,
+              unit,
+              expires_at: expiresAt,
+              is_consumed: false,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            })
+
+          inventoryLogger.addLog(user.id, 'added', trimmedName, item.quantity ?? 1, unit)
+        }
+
+        return true
+      } catch (err) {
+        console.warn('Fallback a localStore para reemplazar inventario:', err)
+        for (const item of items) {
+          inventoryLogger.addLog(user.id, 'added', item.name, item.quantity ?? 1, item.unit)
+        }
+        return localStore.replaceInventory(user.id, items)
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inventory'] })
+      queryClient.invalidateQueries({ queryKey: ['vaciar-nevera'] })
+      queryClient.invalidateQueries({ queryKey: ['cooked-history'] })
+      queryClient.invalidateQueries({ queryKey: ['recipes'] })
+    },
+  })
+}
+
 export function useUpdateIngredient() {
   const { user } = useAuth()
   const queryClient = useQueryClient()

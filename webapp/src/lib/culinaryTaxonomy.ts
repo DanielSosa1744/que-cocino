@@ -134,6 +134,31 @@ export const CULINARY_INTENT_MAP: Record<string, {
     canonicalCategory: 'Parrilla, Asados y Achuras',
     relatedCategories: ['Cocina Criolla y Argentina', 'Carnes Rojas', 'Carnes y Parrilla'],
   },
+  farofa: {
+    tokens: ['farofa', 'harina de mandioca', 'mandioca', 'farofa de huevo', 'farofa de bacon', 'farofa de banana', 'guarnicion brasilera', 'acompanamiento brasileno', 'farofa crocante'],
+    canonicalCategory: 'Farofas y Acompañamientos Brasileños',
+    relatedCategories: ['Cocina Brasileña y Regional', 'Guarniciones y Salteados'],
+  },
+  strogonoff: {
+    tokens: ['strogonoff', 'stroganoff', 'pollo strogonoff', 'carne strogonoff', 'crema', 'champiñones', 'papas pay', 'estrogonofe'],
+    canonicalCategory: 'Strogonoff y Guisados Cremosos',
+    relatedCategories: ['Cocina Brasileña y Regional', 'Carnes y Salsas'],
+  },
+  polenta: {
+    tokens: ['polenta', 'harina de maiz', 'polenta con tuco', 'polenta frita', 'polenta cremosa'],
+    canonicalCategory: 'Polentas y Masas de Maíz',
+    relatedCategories: ['Cocina Criolla y Argentina', 'Cocina Italiana', 'Cereales y Granos'],
+  },
+  guiso: {
+    tokens: ['guiso', 'estofado', 'cazuela', 'lentejas', 'carbonada', 'locro', 'guisado', 'porotos'],
+    canonicalCategory: 'Guisos, Estofados y Ollas Criollas',
+    relatedCategories: ['Cocina Criolla y Argentina', 'Legumbres y Ollas'],
+  },
+  humita: {
+    tokens: ['humita', 'choclo', 'pastel de choclo', 'chipa guazu', 'chipa guazú', 'maiz'],
+    canonicalCategory: 'Humitas y Platos de Choclo',
+    relatedCategories: ['Cocina Criolla y Andina', 'Vegetariano y Regional'],
+  },
   parrillada: {
     tokens: ['parrillada', 'asado', 'chorizo', 'chinchulin', 'chinchulines', 'achuras', 'mollejas', 'morcilla', 'vacio', 'entrana', 'tira de asado'],
     canonicalCategory: 'Parrilla, Asados y Achuras',
@@ -173,11 +198,6 @@ export const CULINARY_INTENT_MAP: Record<string, {
     tokens: ['pescado', 'merluza', 'salmon', 'atun', 'filet de merluza', 'corvina'],
     canonicalCategory: 'Pescados y Mariscos',
     relatedCategories: ['Pescados y Mariscos'],
-  },
-  guiso: {
-    tokens: ['guiso', 'estofado', 'locro', 'cazuela', 'lentejas', 'carbonada'],
-    canonicalCategory: 'Guisos y Platos de Olla',
-    relatedCategories: ['Platos de Cuchara', 'Cocina Tradicional'],
   },
 }
 

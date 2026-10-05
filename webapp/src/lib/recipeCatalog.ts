@@ -881,6 +881,26 @@ const CULINARY_CLUSTERS: CulinaryCluster[] = [
     bases: [
       'harina', 'masa de tarta', 'aceite de oliva', 'oregano'
     ]
+  },
+
+  // 10. Farofas y Guisados Regionales (Brasil, Cono Sur y Andino)
+  {
+    techniques: [
+      { verb: 'Farofa crocante dorada en manteca con', diff: 'Fácil', time: 15, descAction: 'harina de mandioca tostada en manteca hasta quedar crujiente', instAction: 'Rehoga los ingredientes en manteca fundida, agrega la harina de mandioca y tuesta a fuego medio-bajo sin dejar de remover.' },
+      { verb: 'Farofa húmeda tradicional con', diff: 'Fácil', time: 14, descAction: 'farofa jugosa salteada en manteca con vegetales y aromáticos', instAction: 'Dora los ingredientes en sartén, añade la harina y mezcla hasta lograr consistencia suave y húmeda.' },
+      { verb: 'Strogonoff cremoso al plato con', diff: 'Fácil', time: 25, descAction: 'guisado sedoso con crema, mostaza y papas pay crocantes', instAction: 'Sella la carne a fuego fuerte, agrega cebolla con tomate y mostaza, y suaviza con crema de leche sin hervir.' },
+      { verb: 'Guiso criollo de olla con', diff: 'Media', time: 35, descAction: 'cazuela campesina reconfortante cocinada a fuego lento', instAction: 'Dora la proteína con sofrito de cebolla y morrón, cubre con caldo y cocina tapado hasta tiernizar.' },
+      { verb: 'Polenta cremosa gratinada con', diff: 'Fácil', time: 22, descAction: 'harina de maíz cocida en leche con salsa espesa y queso', instAction: 'Cocina la polenta en lluvia con leche y manteca, cubre con el salteado y gratina con abundante queso.' },
+    ],
+    proteins: [
+      'panceta', 'huevo', 'chorizo', 'pollo', 'carne picada', 'queso mantecoso', 'salchicha'
+    ],
+    veggies: [
+      'cebolla', 'ajo', 'zanahoria', 'choclo', 'banana', 'morron', 'verdeo', 'tomate'
+    ],
+    bases: [
+      'mandioca', 'manteca', 'harina de maiz', 'polenta', 'arroz blanco'
+    ]
   }
 ]
 

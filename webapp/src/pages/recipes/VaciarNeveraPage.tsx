@@ -9,7 +9,7 @@ import CookingPotAnimation from '../../components/CookingPotAnimation'
 
 type CategoryChoice = 'ready' | 'one_missing' | 'special' | 'craving'
 
-const CRAVING_SUGGESTIONS = ['Pizza', 'Hamburguesa', 'Pasta', 'Empanadas', 'Sushi']
+const CRAVING_SUGGESTIONS = ['Pizza', 'Farofa', 'Hamburguesa', 'Strogonoff', 'Pasta', 'Empanadas', 'Sushi', 'Polenta', 'Guiso']
 
 export default function VaciarNeveraPage() {
   const navigate = useNavigate()

@@ -581,33 +581,41 @@ export default function VaciarNeveraPage() {
                 <div className="mt-3 pt-2.5 border-t border-[#8F7347]/20 flex items-center justify-between text-xs sm:text-sm font-menu-serif text-[#7A5E30] font-bold">
                   <span className="inline-flex items-center gap-1.5">
                     <span>✦</span>
-                    <span>Incluye pasos detallados para principiantes</span>
+                    <span>Incluye pasos detallados y técnicas de cocina</span>
                   </span>
                   <span className="font-serif italic hidden sm:inline">
                     Secretos del chef en la elaboración
                   </span>
                 </div>
 
-                {/* Pie del plato con adorno refinado y llamada a la acción */}
+                {/* Pie del plato con adorno refinado y botón de acción */}
                 <div className="mt-3.5 pt-2.5 flex items-center justify-between text-sm sm:text-base border-t-2 border-[#8F7347]/20">
                   <div className="flex items-center gap-1.5 text-[#8F7347] text-sm font-bold">
                     <span>—</span>
                     <span>❖</span>
                     <span>—</span>
                   </div>
-                  <span className="font-menu-serif text-base sm:text-lg text-[#1C1917] group-hover:text-[#7A5E30] transition inline-flex items-center gap-1.5 font-black underline decoration-[#8F7347] decoration-2">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleSelectRecipe(recipe)
+                    }}
+                    className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-[#1C1917] text-[#FAF7F2] hover:bg-black font-menu-serif text-sm sm:text-base font-black border-2 border-[#8F7347] shadow-sm hover:shadow-md transition-all duration-150 inline-flex items-center gap-2 tap-subtle cursor-pointer select-none group-hover:border-[#C7A971]"
+                  >
                     {selectedRecipeId === recipe.id ? (
-                      <span className="inline-flex items-center gap-2 text-[#7A5E30] animate-pulse">
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#8F7347] animate-ping" />
-                        Abriendo elaboración...
-                      </span>
+                      <>
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#C7A971] animate-ping" />
+                        <span>Abriendo receta...</span>
+                      </>
                     ) : (
                       <>
-                        Consultar elaboración del Chef
+                        <span className="text-[#C7A971]">✦</span>
+                        <span>Receta del chef</span>
                         <span className="group-hover:translate-x-1 transition-transform">→</span>
                       </>
                     )}
-                  </span>
+                  </button>
                 </div>
               </article>
             ))}

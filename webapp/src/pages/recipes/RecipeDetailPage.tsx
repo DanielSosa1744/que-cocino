@@ -127,7 +127,7 @@ export default function RecipeDetailPage() {
   const pairing = (rawRecipe as any).pairing as string | undefined
   const origin = (rawRecipe as any).origin as string | undefined
 
-  // Pasos detallados para principiantes / personas menos experimentadas
+  // Pasos detallados y técnicas culinarias paso a paso
   const detailedGuideSteps = useMemo(() => {
     const rawDetailed = (rawRecipe as any).detailed_steps
     if (Array.isArray(rawDetailed) && rawDetailed.length > 0) {
@@ -146,7 +146,7 @@ export default function RecipeDetailPage() {
       })
     }
 
-    // Guía pedagógica minuciosa paso a paso para los menos experimentados
+    // Guía pedagógica minuciosa paso a paso con técnicas del chef
     const cleanSteps = (rawRecipe.instructions || '')
       .split('\n')
       .map(s => s.replace(/^\d+[\.\)]\s*/, '').trim())
@@ -173,18 +173,18 @@ export default function RecipeDetailPage() {
       if (idx === 0) {
         return {
           title: `Paso ${idx + 1} · Preparación de ingredientes y fuego inicial`,
-          detail: `${step} — Para principiantes: Corta todos los alimentos en tamaños similares para que se cocinen al mismo tiempo sin que queden partes crudas ni quemadas.`,
+          detail: `${step} — Consejo práctico: Corta todos los alimentos en tamaños similares para que se cocinen al mismo tiempo sin que queden partes crudas ni quemadas.`,
         }
       }
       if (idx === cleanSteps.length - 1) {
         return {
           title: `Paso ${idx + 1} · Punto final de cocción, sazón y reposo`,
-          detail: `${step} — Para principiantes: Verifica que el centro esté bien caliente, prueba el punto de sal y apaga la hornalla. Deja reposar la comida 2 minutos fuera del fuego antes de emplatar.`,
+          detail: `${step} — Consejo práctico: Verifica que el centro esté bien caliente, prueba el punto de sal y apaga la hornalla. Deja reposar la comida 2 minutos fuera del fuego antes de emplatar.`,
         }
       }
       return {
         title: `Paso ${idx + 1} · Cocción y control de temperatura`,
-        detail: `${step} — Para principiantes: Mantén fuego medio o medio-bajo. Si notas que la base se seca con rapidez, agrega 2 cucharadas de agua, caldo o manteca para cuidar el fondo.`,
+        detail: `${step} — Consejo práctico: Mantén fuego medio o medio-bajo. Si notas que la base se seca con rapidez, agrega 2 cucharadas de agua, caldo o manteca para cuidar el fondo.`,
       }
     })
   }, [rawRecipe])
@@ -311,7 +311,7 @@ export default function RecipeDetailPage() {
                 })}
               </ol>
 
-              {/* 2. FICHA DETALLADA AL FINAL DE LOS PASOS: Guía minuciosa para los menos experimentados */}
+              {/* 2. FICHA DETALLADA AL FINAL DE LOS PASOS: Guía minuciosa paso a paso con técnicas y secretos */}
               <div className="pt-4 border-t-2 border-[#8F7347]/30">
                 <div className="bg-[#FAF7F2] border-2 border-[#8F7347] rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
                   {/* Encabezado noble de la Ficha Detallada */}
@@ -323,7 +323,7 @@ export default function RecipeDetailPage() {
                           Ficha Detallada del Chef
                         </h3>
                         <p className="font-menu-serif text-xs sm:text-sm text-[#7A5E30] font-bold">
-                          Guía minuciosa paso a paso para los menos experimentados
+                          Guía minuciosa paso a paso con técnicas y secretos de cocina
                         </p>
                       </div>
                     </div>
@@ -336,7 +336,7 @@ export default function RecipeDetailPage() {
                     </button>
                   </div>
 
-                  {/* Contenido detallado para principiantes */}
+                  {/* Contenido detallado paso a paso */}
                   {isDetailedExpanded && (
                     <div className="space-y-4 animate-fade-in text-left">
                       {/* Desglose exhaustivo de los pasos de cocina */}

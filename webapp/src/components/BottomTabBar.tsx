@@ -22,24 +22,30 @@ export default function BottomTabBar() {
   if (isHidden) return null
 
   return (
-    <div className="flex-shrink-0 w-full z-40 bg-[#FAF7F2]/95 backdrop-blur-xl border-t border-[#A88B57]/30 pb-safe shadow-[0_-2px_12px_rgba(168,139,87,0.06)]">
-      <nav className="flex justify-around items-center h-17 px-2 sm:px-4 max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto">
+    <div className="flex-shrink-0 w-full z-40 bg-[#FAF7F2]/95 backdrop-blur-xl border-t border-[#A88B57]/30 pb-safe shadow-[0_-2px_12px_rgba(168,139,87,0.06)] select-none">
+      <nav className="flex justify-around items-center h-17 px-2 sm:px-4 max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto touch-manipulation">
         {MAIN_TABS.map((tab) => {
           const isActive = location.pathname === tab.path || (tab.path === '/recetas' && location.pathname === '/vaciar-nevera')
+
+          const handleTabSelect = () => {
+            if (isActive) return
+            navigate(tab.path)
+          }
 
           return (
             <button
               key={tab.path}
-              onClick={() => navigate(tab.path)}
-              className={`flex-1 flex flex-col items-center justify-center py-1 transition-all relative tap-subtle cursor-pointer ${
+              type="button"
+              onClick={handleTabSelect}
+              className={`flex-1 flex flex-col items-center justify-center py-1 relative cursor-pointer touch-manipulation select-none active:scale-95 transition-transform duration-75 ${
                 isActive ? 'text-[#1C1917]' : 'text-[#766153] hover:text-[#1C1917]'
               }`}
             >
-              <div className="relative flex items-center justify-center">
+              <div className="relative flex items-center justify-center pointer-events-none">
                 <GoogleIcon
                   name={tab.icon}
                   filled={isActive}
-                  className={`text-[26px] transition-all duration-200 ${
+                  className={`text-[26px] ${
                     isActive ? 'text-[#8F7347] scale-105' : 'text-[#766153]'
                   }`}
                 />
@@ -47,7 +53,7 @@ export default function BottomTabBar() {
                   <span className="absolute -top-0.5 -right-1.5 w-2.5 h-2.5 rounded-full bg-[#A88B57]" />
                 )}
               </div>
-              <span className={`text-[13px] sm:text-[14px] mt-0.5 tracking-wider font-menu-serif transition-colors ${
+              <span className={`text-[13px] sm:text-[14px] mt-0.5 tracking-wider font-menu-serif pointer-events-none ${
                 isActive ? 'text-[#1C1917] font-extrabold' : 'text-[#5A483D] font-semibold'
               }`}>
                 {tab.label}

@@ -26,7 +26,7 @@ export default function VaciarNeveraPage() {
     } catch {
       return []
     }
-  }, [location.state, location.key])
+  }, [location.state])
 
   // 2. Obtener IDs de recetas de la tanda anterior para no repetirlas
   const previousRecipeIds: string[] = useMemo(() => {
@@ -36,7 +36,7 @@ export default function VaciarNeveraPage() {
     } catch {
       return []
     }
-  }, [location.key])
+  }, [])
 
   const [activeChoice, setActiveChoice] = useState<CategoryChoice>('ready')
   const [cravingQuery, setCravingQuery] = useState('')

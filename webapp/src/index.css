@@ -46,8 +46,9 @@
     line-height: 1.55;
   }
 
-  input, textarea, button, select {
+  input, textarea, button, select, a {
     font-family: inherit;
+    touch-action: manipulation;
   }
 }
 

@@ -13,6 +13,7 @@ export default function SwipeContainer({ children }: SwipeContainerProps) {
   const touchStartX = useRef<number | null>(null)
   const touchStartY = useRef<number | null>(null)
   const touchStartTime = useRef<number>(0)
+  const isGestureSwipe = useRef<boolean>(false)
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | 'none'>('none')
   const prevTabIndex = useRef<number>(-1)
 
@@ -22,15 +23,21 @@ export default function SwipeContainer({ children }: SwipeContainerProps) {
   const isMainTab = currentTabIndex !== -1
 
   useEffect(() => {
-    if (prevTabIndex.current !== -1 && isMainTab) {
+    // Solo aplicar animación de desplazamiento si proviene de un gesto táctil de swipe (no desde el dock)
+    if (isGestureSwipe.current && prevTabIndex.current !== -1 && isMainTab) {
       if (currentTabIndex > prevTabIndex.current) {
         setSlideDirection('left')
       } else if (currentTabIndex < prevTabIndex.current) {
         setSlideDirection('right')
       }
-      const timer = setTimeout(() => setSlideDirection('none'), 300)
+      const timer = setTimeout(() => {
+        setSlideDirection('none')
+        isGestureSwipe.current = false
+      }, 200)
+      prevTabIndex.current = currentTabIndex
       return () => clearTimeout(timer)
     }
+    isGestureSwipe.current = false
     prevTabIndex.current = currentTabIndex
   }, [location.pathname, currentTabIndex, isMainTab])
 
@@ -56,11 +63,13 @@ export default function SwipeContainer({ children }: SwipeContainerProps) {
       if (deltaX < 0) {
         // Swipe izquierda -> pestaña siguiente
         if (currentTabIndex < MAIN_TABS.length - 1) {
+          isGestureSwipe.current = true
           navigate(MAIN_TABS[currentTabIndex + 1].path)
         }
       } else {
         // Swipe derecha -> pestaña anterior
         if (currentTabIndex > 0) {
+          isGestureSwipe.current = true
           navigate(MAIN_TABS[currentTabIndex - 1].path)
         }
       }

@@ -8,7 +8,8 @@ export type MainCategory = 'all' | 'carnes' | 'verduras' | 'pastas' | 'veggie' |
 export interface SubcategoryDef {
   id: string
   label: string
-  icon: string
+  iconName: string
+  iconSymbol: string
   description: string
 }
 
@@ -16,7 +17,8 @@ export interface CategoryDef {
   id: MainCategory
   label: string
   shortLabel: string
-  icon: string
+  iconName: string
+  iconSymbol: string
   badgeLabel: string
   description: string
   subcategories: SubcategoryDef[]
@@ -33,106 +35,113 @@ export interface RecipeClassification {
   badgeList: { label: string; icon: string; colorClass: string }[]
 }
 
-// Catálogo de Categorías y Subcategorías del Chef
+// Catálogo de Categorías y Subcategorías del Chef con Iconografía Gourmet
 export const PREFERENCE_CATEGORIES: CategoryDef[] = [
   {
     id: 'all',
     label: 'Toda la Carta',
     shortLabel: 'Toda la Carta',
-    icon: '🌟',
+    iconName: 'auto_awesome',
+    iconSymbol: '✦',
     badgeLabel: 'Carta Completa',
     description: 'Explore la selección completa de platos diseñados por el Chef.',
     subcategories: [
-      { id: 'all', label: 'Todas las propuestas', icon: '✦', description: 'Todas las creaciones culinarias' },
-      { id: 'rapidas', label: 'Rápidas (< 20 min)', icon: '⏱️', description: 'Elaboraciones ágiles y sencillas' },
-      { id: 'gourmet', label: 'Platos de Autor', icon: '👑', description: 'Técnicas y creaciones especiales' },
+      { id: 'all', label: 'Todas las propuestas', iconName: 'auto_awesome', iconSymbol: '✦', description: 'Todas las creaciones culinarias' },
+      { id: 'rapidas', label: 'Rápidas (< 20 min)', iconName: 'schedule', iconSymbol: '✦', description: 'Elaboraciones ágiles y sencillas' },
+      { id: 'gourmet', label: 'Platos de Autor', iconName: 'military_tech', iconSymbol: '✦', description: 'Técnicas y creaciones especiales' },
     ],
   },
   {
     id: 'carnes',
     label: 'Carnes y Proteínas',
     shortLabel: 'Carnes',
-    icon: '🥩',
+    iconName: 'restaurant',
+    iconSymbol: '✦',
     badgeLabel: 'Base Carnes',
     description: 'Platos sustanciosos en base a cortes vacunos, aves, pescados o cerdo.',
     subcategories: [
-      { id: 'all_carnes', label: 'Todas las carnes', icon: '🥩', description: 'Todos los platos cárnicos' },
-      { id: 'vacuno', label: 'Vacuno y Ternera', icon: '🥩', description: 'Bifes, lomos, picadas y cortes nobles' },
-      { id: 'pollo', label: 'Pollo y Aves', icon: '🍗', description: 'Pechugas, supremas y salteados de ave' },
-      { id: 'pescado', label: 'Pescados y Mariscos', icon: '🐟', description: 'Salmón, atún, merluza y sushi fresco' },
-      { id: 'cerdo', label: 'Cerdo y Embutidos', icon: '🥓', description: 'Panceta, chorizo, bondiola y jamón' },
+      { id: 'all_carnes', label: 'Todas las carnes', iconName: 'restaurant', iconSymbol: '✦', description: 'Todos los platos cárnicos' },
+      { id: 'vacuno', label: 'Vacuno y Ternera', iconName: 'skillet', iconSymbol: '✦', description: 'Bifes, lomos, picadas y cortes nobles' },
+      { id: 'pollo', label: 'Pollo y Aves', iconName: 'outdoor_grill', iconSymbol: '✦', description: 'Pechugas, supremas y salteados de ave' },
+      { id: 'pescado', label: 'Pescados y Mariscos', iconName: 'set_meal', iconSymbol: '✦', description: 'Salmón, atún, merluza y sushi fresco' },
+      { id: 'cerdo', label: 'Cerdo y Embutidos', iconName: 'kebab_dining', iconSymbol: '✦', description: 'Panceta, chorizo, bondiola y jamón' },
     ],
   },
   {
     id: 'verduras',
     label: 'Verduras y Huerta',
     shortLabel: 'Verduras',
-    icon: '🥗',
+    iconName: 'nutrition',
+    iconSymbol: '✦',
     badgeLabel: 'Base Huerta',
     description: 'Platos donde los vegetales frescos de la huerta son los protagonistas.',
     subcategories: [
-      { id: 'all_verduras', label: 'Todas las verduras', icon: '🥗', description: 'Todas las recetas de la huerta' },
-      { id: 'ensaladas', label: 'Ensaladas y Frescos', icon: '🥬', description: 'Hojas verdes, tomates y aliños aromáticos' },
-      { id: 'salteados', label: 'Salteados y Woks', icon: '🍳', description: 'Vegetales salteados y crujientes' },
-      { id: 'tartas_tortillas', label: 'Tortillas y Tartas', icon: '🥧', description: 'Tortillas jugosas, revueltos y quiches' },
-      { id: 'guisos_huerta', label: 'Guisos y Cazuelas', icon: '🍲', description: 'Caldos reconfortantes y cremas de huerta' },
+      { id: 'all_verduras', label: 'Todas las verduras', iconName: 'nutrition', iconSymbol: '✦', description: 'Todas las recetas de la huerta' },
+      { id: 'ensaladas', label: 'Ensaladas y Frescos', iconName: 'eco', iconSymbol: '✦', description: 'Hojas verdes, tomates y aliños aromáticos' },
+      { id: 'salteados', label: 'Salteados y Woks', iconName: 'skillet', iconSymbol: '✦', description: 'Vegetales salteados y crujientes' },
+      { id: 'tartas_tortillas', label: 'Tortillas y Tartas', iconName: 'egg_alt', iconSymbol: '✦', description: 'Tortillas jugosas, revueltos y quiches' },
+      { id: 'guisos_huerta', label: 'Guisos y Cazuelas', iconName: 'soup_kitchen', iconSymbol: '✦', description: 'Caldos reconfortantes y cremas de huerta' },
     ],
   },
   {
     id: 'pastas',
     label: 'Pastas y Masas',
     shortLabel: 'Pastas',
-    icon: '🍝',
+    iconName: 'dinner_dining',
+    iconSymbol: '✦',
     badgeLabel: 'Base Pastas',
     description: 'Pastas tradicionales, fideos, pizzas, arroces, farofas y horneados.',
     subcategories: [
-      { id: 'all_pastas', label: 'Todas las pastas', icon: '🍝', description: 'Todas las pastas y masas' },
-      { id: 'fideos', label: 'Pastas y Fideos', icon: '🍝', description: 'Espaguetis, tallarines, ravioles y ñoquis' },
-      { id: 'pizzas_empanadas', label: 'Pizzas y Empanadas', icon: '🍕', description: 'Pizzas a la piedra y empanadas horneadas' },
-      { id: 'arroces', label: 'Arroces y Risottos', icon: '🍚', description: 'Arroces salteados, paellas y granos' },
-      { id: 'farofas_masas', label: 'Farofas y Acompañamientos', icon: '🌾', description: 'Farofas brasileñas y masas de maíz' },
+      { id: 'all_pastas', label: 'Todas las pastas', iconName: 'dinner_dining', iconSymbol: '✦', description: 'Todas las pastas y masas' },
+      { id: 'fideos', label: 'Pastas y Fideos', iconName: 'ramen_dining', iconSymbol: '✦', description: 'Espaguetis, tallarines, ravioles y ñoquis' },
+      { id: 'pizzas_empanadas', label: 'Pizzas y Empanadas', iconName: 'local_pizza', iconSymbol: '✦', description: 'Pizzas a la piedra y empanadas horneadas' },
+      { id: 'arroces', label: 'Arroces y Risottos', iconName: 'rice_bowl', iconSymbol: '✦', description: 'Arroces salteados, paellas y granos' },
+      { id: 'farofas_masas', label: 'Farofas y Acompañamientos', iconName: 'bakery_dining', iconSymbol: '✦', description: 'Farofas brasileñas y masas de maíz' },
     ],
   },
   {
     id: 'veggie',
     label: 'Veggie / Vegetariano',
     shortLabel: 'Veggie',
-    icon: '🥬',
+    iconName: 'spa',
+    iconSymbol: '✦',
     badgeLabel: '100% Veggie',
     description: 'Opciones 100% libres de carne animal, ricas en sabor y nutrientes vegetales.',
     subcategories: [
-      { id: 'all_veggie', label: 'Todas veggie', icon: '🥬', description: 'Todas las opciones vegetarianas' },
-      { id: 'veggie_frescos', label: 'Frescos y Ensaladas', icon: '🥑', description: 'Platos crudos, paltas y huerta' },
-      { id: 'veggie_pastas', label: 'Pastas Vegetarianas', icon: '🍝', description: 'Pastas y arroces sin carnes' },
-      { id: 'veggie_huevos', label: 'Huevos y Quesos', icon: '🧀', description: 'Tortillas, revueltos y gratines' },
+      { id: 'all_veggie', label: 'Todas veggie', iconName: 'spa', iconSymbol: '✦', description: 'Todas las opciones vegetarianas' },
+      { id: 'veggie_frescos', label: 'Frescos y Ensaladas', iconName: 'eco', iconSymbol: '✦', description: 'Platos crudos, paltas y huerta' },
+      { id: 'veggie_pastas', label: 'Pastas Vegetarianas', iconName: 'dinner_dining', iconSymbol: '✦', description: 'Pastas y arroces sin carnes' },
+      { id: 'veggie_huevos', label: 'Huevos y Quesos', iconName: 'egg_alt', iconSymbol: '✦', description: 'Tortillas, revueltos y gratines' },
     ],
   },
   {
     id: 'low_cal',
     label: 'Baja en Calorías',
     shortLabel: 'Baja en Calorías',
-    icon: '⚡',
+    iconName: 'energy_savings_leaf',
+    iconSymbol: '✦',
     badgeLabel: 'Ligera & Saludable',
     description: 'Platos ligeros, digestivos y de baja densidad calórica sin resignar sabor.',
     subcategories: [
-      { id: 'all_low_cal', label: 'Todas bajas en calorías', icon: '⚡', description: 'Todas las opciones ligeras' },
-      { id: 'low_ensaladas', label: 'Ensaladas Ligeras', icon: '🥗', description: 'Hojas verdes, cítricos y tomates' },
-      { id: 'low_plancha', label: 'A la Plancha y Vapor', icon: '♨️', description: 'Proteínas y verduras sin frituras' },
-      { id: 'low_sopas', label: 'Caldos y Sopas Claras', icon: '🥣', description: 'Fondos aromáticos y vegetales' },
+      { id: 'all_low_cal', label: 'Todas bajas en calorías', iconName: 'energy_savings_leaf', iconSymbol: '✦', description: 'Todas las opciones ligeras' },
+      { id: 'low_ensaladas', label: 'Ensaladas Ligeras', iconName: 'eco', iconSymbol: '✦', description: 'Hojas verdes, cítricos y tomates' },
+      { id: 'low_plancha', label: 'A la Plancha y Vapor', iconName: 'skillet', iconSymbol: '✦', description: 'Proteínas y verduras sin frituras' },
+      { id: 'low_sopas', label: 'Caldos y Sopas Claras', iconName: 'soup_kitchen', iconSymbol: '✦', description: 'Fondos aromáticos y vegetales' },
     ],
   },
   {
     id: 'fitness',
     label: 'Fitness / Proteica',
     shortLabel: 'Fitness',
-    icon: '💪',
+    iconName: 'fitness_center',
+    iconSymbol: '✦',
     badgeLabel: 'Alta Proteína Fitness',
     description: 'Platos ricos en proteínas de calidad y energía limpia para entrenamiento o nutrición activa.',
     subcategories: [
-      { id: 'all_fitness', label: 'Todas fitness', icon: '💪', description: 'Todas las opciones proteicas' },
-      { id: 'fit_pollo_pavo', label: 'Pollo y Carnes Magras', icon: '🍗', description: 'Pechuga a la plancha, lomo magro' },
-      { id: 'fit_huevos', label: 'Huevos y Omelettes', icon: '🍳', description: 'Revueltos, tortillas proteicas' },
-      { id: 'fit_pescados', label: 'Pescados y Salmón Fit', icon: '🐟', description: 'Atún, salmón y sushi proteico' },
+      { id: 'all_fitness', label: 'Todas fitness', iconName: 'fitness_center', iconSymbol: '✦', description: 'Todas las opciones proteicas' },
+      { id: 'fit_pollo_pavo', label: 'Pollo y Carnes Magras', iconName: 'restaurant', iconSymbol: '✦', description: 'Pechuga a la plancha, lomo magro' },
+      { id: 'fit_huevos', label: 'Huevos y Omelettes', iconName: 'egg_alt', iconSymbol: '✦', description: 'Revueltos, tortillas proteicas' },
+      { id: 'fit_pescados', label: 'Pescados y Salmón Fit', iconName: 'set_meal', iconSymbol: '✦', description: 'Atún, salmón y sushi proteico' },
     ],
   },
 ]
@@ -330,31 +339,31 @@ export function classifyRecipe(recipe: {
     fullText.includes('proteina')
   ) && !matchesAny(fullText, ['chinchulin', 'morcilla', 'chorizo grasoso', 'fritura'])
 
-  // 6. Generar lista de insignias editoriales
+  // 6. Generar lista de insignias editoriales de alta cocina (sin emojis vulgares)
   const badgeList: { label: string; icon: string; colorClass: string }[] = []
 
   // Insignia de Base
   if (mainBase === 'carnes') {
-    badgeList.push({ label: subcategory, icon: '🥩', colorClass: 'bg-[#FAF0E6] text-[#8F2D14] border-[#8F2D14]/30' })
+    badgeList.push({ label: subcategory, icon: '✦', colorClass: 'bg-gradient-to-r from-[#FAF0E6] to-[#F5E6D6] text-[#7A2A1A] border-[#8F7347]/40' })
   } else if (mainBase === 'pastas') {
-    badgeList.push({ label: subcategory, icon: '🍝', colorClass: 'bg-[#FFF9E6] text-[#8F6A14] border-[#8F6A14]/30' })
+    badgeList.push({ label: subcategory, icon: '✦', colorClass: 'bg-gradient-to-r from-[#FFF9E6] to-[#F8EDCD] text-[#755310] border-[#8F7347]/40' })
   } else {
-    badgeList.push({ label: subcategory, icon: '🥗', colorClass: 'bg-[#F2F7F0] text-[#3F6335] border-[#3F6335]/30' })
+    badgeList.push({ label: subcategory, icon: '✦', colorClass: 'bg-gradient-to-r from-[#F0F6EE] to-[#E3EFE0] text-[#2F5226] border-[#48733E]/40' })
   }
 
   // Insignia Veggie si aplica
   if (isVeggie) {
-    badgeList.push({ label: 'Veggie', icon: '🥬', colorClass: 'bg-[#EBF7EA] text-[#2E6B24] border-[#2E6B24]/30' })
+    badgeList.push({ label: 'Veggie', icon: '✦', colorClass: 'bg-gradient-to-r from-[#EBF7EA] to-[#DDF0DA] text-[#22571B] border-[#3E8033]/40' })
   }
 
   // Insignia Baja en Calorías si aplica
   if (isLowCal) {
-    badgeList.push({ label: 'Baja en Calorías', icon: '⚡', colorClass: 'bg-[#F5F3FF] text-[#5B3F96] border-[#5B3F96]/30' })
+    badgeList.push({ label: 'Baja en Calorías', icon: '✦', colorClass: 'bg-gradient-to-r from-[#F7F4FD] to-[#EEE8FA] text-[#4E3182] border-[#7C5BB8]/40' })
   }
 
   // Insignia Fitness si aplica
   if (isFitness) {
-    badgeList.push({ label: 'Fitness', icon: '💪', colorClass: 'bg-[#EFF6FF] text-[#1D4ED8] border-[#1D4ED8]/30' })
+    badgeList.push({ label: 'Fitness', icon: '✦', colorClass: 'bg-gradient-to-r from-[#EEF4FE] to-[#DFEBFC] text-[#19409A] border-[#3B6FD6]/40' })
   }
 
   return {

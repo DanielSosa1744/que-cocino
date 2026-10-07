@@ -6,6 +6,7 @@ import { estimateItemValueARS, isIngredientMatch, getIngredientImportance } from
 import { matchCravingRecipes, type RecipeWithCost } from '../../lib/cravingMatcher'
 import { registerAbortAction } from '../../lib/actionAbort'
 import CookingPotAnimation from '../../components/CookingPotAnimation'
+import GoogleIcon from '../../components/GoogleIcon'
 import {
   PREFERENCE_CATEGORIES,
   classifyRecipe,
@@ -426,19 +427,27 @@ export default function VaciarNeveraPage() {
                   key={category.id}
                   type="button"
                   onClick={() => handleSelectPreference(category.id)}
-                  className={`p-2.5 rounded-xl border-2 transition-all duration-200 cursor-pointer select-none text-left flex flex-col justify-between tap-subtle ${
+                  className={`p-2.5 rounded-xl border-2 transition-all duration-200 cursor-pointer select-none text-left flex flex-col justify-between tap-subtle relative overflow-hidden group ${
                     isSelected
-                      ? 'bg-[#1C1917] border-[#1C1917] text-[#FAF7F2] shadow-md ring-2 ring-[#8F7347]/50'
-                      : 'bg-white border-[#8F7347]/35 text-[#1C1917] hover:border-[#1C1917] hover:bg-[#FAF7F2]'
+                      ? 'bg-gradient-to-b from-[#241E19] via-[#1B1612] to-[#120F0C] border-[#C7A971] text-[#FAF2E6] shadow-[0_6px_20px_rgba(20,17,14,0.35),0_0_12px_rgba(199,169,113,0.2)] ring-1 ring-[#DDB879]/60'
+                      : 'bg-gradient-to-b from-[#FDFBF7] via-[#F8F3EA] to-[#EFE7D8] border-[#A88B57]/45 text-[#1C1917] hover:border-[#8F7347] hover:from-white hover:to-[#F3ECE0] shadow-[0_2px_8px_rgba(47,42,38,0.06),inset_0_1px_0_rgba(255,255,255,0.9)]'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xl">{category.icon}</span>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-all ${
+                      isSelected
+                        ? 'bg-[#3A3026]/80 border-[#C7A971]/60 text-[#DDB879] shadow-inner'
+                        : 'bg-[#F2ECE1] border-[#8F7347]/30 text-[#8F7347] group-hover:bg-[#EAE1D2]'
+                    }`}>
+                      <GoogleIcon name={category.iconName} size={18} filled={isSelected} />
+                    </div>
                     {hasIngredientsInStock && category.id !== 'all' && (
-                      <span className={`text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                        isSelected ? 'bg-[#385333] text-[#FAF7F2]' : 'bg-[#E2F0DC] text-[#244220] border border-[#385333]/30'
+                      <span className={`text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full inline-flex items-center gap-0.5 border ${
+                        isSelected
+                          ? 'bg-gradient-to-r from-[#244220] to-[#34592E] text-[#FAF7F2] border-[#8F7347]/50'
+                          : 'bg-[#EBF5E7] text-[#244220] border-[#385333]/40'
                       }`}>
-                        ✓ tu despensa
+                        <span className="text-[8px]">✓</span> despensa
                       </span>
                     )}
                   </div>
@@ -447,7 +456,7 @@ export default function VaciarNeveraPage() {
                       {category.shortLabel}
                     </span>
                     <span className={`text-[11px] block mt-0.5 font-mono ${
-                      isSelected ? 'text-[#C7A971]' : 'text-[#7A5E30]'
+                      isSelected ? 'text-[#DDB879]' : 'text-[#7A5E30]'
                     }`}>
                       {stats.total} opciones
                     </span>
@@ -461,7 +470,7 @@ export default function VaciarNeveraPage() {
           {activeCategoryDef && activeCategoryDef.subcategories.length > 1 && (
             <div className="pt-2.5 border-t border-[#8F7347]/20 animate-fade-in space-y-1.5">
               <div className="flex items-center gap-1.5 text-xs text-[#7A5E30] font-menu-serif font-bold">
-                <span>✦</span>
+                <span className="text-[#8F7347]">✦</span>
                 <span>Subcategorías de {activeCategoryDef.label}:</span>
               </div>
               <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
@@ -472,14 +481,14 @@ export default function VaciarNeveraPage() {
                       key={sub.id}
                       type="button"
                       onClick={() => handleSelectSubcategory(sub.id)}
-                      className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-menu-serif font-bold transition-all duration-150 cursor-pointer tap-subtle inline-flex items-center gap-1.5 border ${
+                      className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-menu-serif font-bold transition-all duration-150 cursor-pointer tap-subtle inline-flex items-center gap-1.5 border shadow-2xs ${
                         isSubSelected
-                          ? 'bg-[#8F7347] border-[#8F7347] text-white shadow-xs font-black'
-                          : 'bg-white border-[#8F7347]/30 text-[#2E241E] hover:border-[#1C1917] hover:bg-[#FAF7F2]'
+                          ? 'bg-gradient-to-r from-[#8F7347] to-[#6E552E] border-[#8F7347] text-white shadow-xs font-black'
+                          : 'bg-gradient-to-b from-white to-[#F5EFE4] border-[#8F7347]/35 text-[#2E241E] hover:border-[#1C1917] hover:to-[#EDE3D2]'
                       }`}
                       title={sub.description}
                     >
-                      <span>{sub.icon}</span>
+                      <GoogleIcon name={sub.iconName} size={14} className={isSubSelected ? 'text-white' : 'text-[#8F7347]'} />
                       <span>{sub.label}</span>
                     </button>
                   )
@@ -491,7 +500,7 @@ export default function VaciarNeveraPage() {
           {/* Resumen inteligente según ingredientes de que disponga */}
           <div className="pt-2 border-t border-[#8F7347]/20 flex flex-wrap items-center justify-between gap-1 text-xs sm:text-sm font-menu-serif text-[#5A483D]">
             <span className="inline-flex items-center gap-1.5">
-              <span className="text-[#8F7347]">💡</span>
+              <span className="text-[#8F7347] font-bold">✦</span>
               <span>
                 {currentPreferenceMatchedText}
               </span>
@@ -750,7 +759,8 @@ export default function VaciarNeveraPage() {
                       </span>
                       {recipe.origin && (
                         <span className="text-xs sm:text-sm font-bold px-2 py-0.5 rounded-md bg-[#FAF0E6] border border-[#8F7347]/40 text-[#7A5E30] inline-flex items-center gap-1 font-menu-serif">
-                          📍 {recipe.origin}
+                          <GoogleIcon name="location_on" size={13} className="text-[#8F7347]" />
+                          <span>{recipe.origin}</span>
                         </span>
                       )}
                       <span className={`text-xs font-bold px-2 py-0.5 rounded border font-menu-serif ${

@@ -150,8 +150,8 @@ export default function HomePage() {
   }
 
   return (
-    <div className="h-full max-h-full bg-transparent flex flex-col justify-start sm:justify-center items-center px-3 sm:px-6 py-4 sm:py-8 overflow-y-auto select-none animate-fade-in text-[#2F2A26]">
-      <div className="w-full max-w-md sm:max-w-lg md:max-w-xl mx-auto text-center my-auto py-2">
+    <div className="h-full max-h-full bg-transparent flex flex-col justify-start sm:justify-center items-center px-4 sm:px-8 py-5 sm:py-10 overflow-y-auto select-none animate-fade-in text-[#2F2A26]">
+      <div className="w-full max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto text-center my-auto py-2">
         {/* Filigrana superior gourmet */}
         <div className="flex items-center justify-center gap-2 mb-2 sm:mb-2.5 opacity-90">
           <span className="h-[1.5px] w-6 sm:w-8 bg-gradient-to-r from-transparent to-[#A88B57]" />

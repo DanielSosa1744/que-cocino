@@ -22,7 +22,7 @@ import ImpactPage from './pages/impact/ImpactPage'
 function AppContent() {
   return (
     <div className="w-full h-[100dvh] max-h-[100dvh] bg-warm-canvas relative flex flex-col overflow-hidden text-stone-900">
-      <main className="flex-1 min-h-0 relative overflow-hidden flex flex-col w-full max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto px-1 sm:px-3 md:px-5">
+      <main className="flex-1 min-h-0 relative overflow-hidden flex flex-col w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
         <SwipeContainer>
           <Routes>
             {/* Public routes */}

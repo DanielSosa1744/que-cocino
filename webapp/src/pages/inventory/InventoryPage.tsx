@@ -100,49 +100,50 @@ export default function InventoryPage() {
       </div>
 
       <div className="flex-1 min-h-0 overflow-y-auto px-5 py-4">
-        {/* Formulario estilizado para añadir a la despensa */}
-        <form onSubmit={handleAddSubmit} className="flex gap-2.5 mb-6 p-2 rounded-2xl bg-[#FAF7F2]/90 border border-[#A88B57]/30 shadow-2xs">
-          <input
-            type="text"
-            value={newName}
-            onChange={e => setNewName(e.target.value)}
-            placeholder="Añadir materia prima..."
-            className="flex-1 px-4 py-3 bg-white/95 border border-[#A88B57]/30 rounded-xl text-base text-[#1C1917] placeholder:text-[#766153]/60 outline-none focus:border-[#8F7347] transition font-menu-serif font-medium"
-          />
-          <input
-            type="number"
-            min={1}
-            value={newQuantity}
-            onChange={e => setNewQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-            className="w-18 px-2 py-3 bg-white/95 border border-[#A88B57]/30 rounded-xl text-base text-[#1C1917] text-center outline-none focus:border-[#8F7347] transition font-mono font-bold"
-            title="Cantidad"
-          />
-          <button
-            type="submit"
-            disabled={!newName.trim()}
-            className="px-5 py-3 bg-[#1C1917] text-[#FAF7F2] rounded-xl text-lg font-bold hover:bg-black transition disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer border border-[#A88B57]/40 shadow-2xs"
-          >
-            +
-          </button>
-        </form>
+        <div className="max-w-4xl lg:max-w-5xl mx-auto space-y-6">
+          {/* Formulario estilizado para añadir a la despensa */}
+          <form onSubmit={handleAddSubmit} className="flex gap-2.5 mb-2 p-2 rounded-2xl bg-[#FAF7F2]/90 border border-[#A88B57]/30 shadow-2xs">
+            <input
+              type="text"
+              value={newName}
+              onChange={e => setNewName(e.target.value)}
+              placeholder="Añadir materia prima..."
+              className="flex-1 px-4 py-3 bg-white/95 border border-[#A88B57]/30 rounded-xl text-base text-[#1C1917] placeholder:text-[#766153]/60 outline-none focus:border-[#8F7347] transition font-menu-serif font-medium"
+            />
+            <input
+              type="number"
+              min={1}
+              value={newQuantity}
+              onChange={e => setNewQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+              className="w-18 px-2 py-3 bg-white/95 border border-[#A88B57]/30 rounded-xl text-base text-[#1C1917] text-center outline-none focus:border-[#8F7347] transition font-mono font-bold"
+              title="Cantidad"
+            />
+            <button
+              type="submit"
+              disabled={!newName.trim()}
+              className="px-5 py-3 bg-[#1C1917] text-[#FAF7F2] rounded-xl text-lg font-bold hover:bg-black transition disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer border border-[#A88B57]/40 shadow-2xs"
+            >
+              +
+            </button>
+          </form>
 
-        {/* Lista estilo libro de bodega / despensa de alta cocina */}
-        {isLoading ? (
-          <CookingPotAnimation inline message="Consultando despensa..." />
-        ) : inventory.length === 0 ? (
-          <div className="py-16 text-center text-[#5A483D] text-base font-menu-serif italic font-medium">
-            No hay materias primas registradas en la despensa. Añada una arriba o desde La Cocina.
-          </div>
-        ) : (
-          <div className="menu-card-frame rounded-2xl p-5 relative space-y-1">
-            {/* Esquinas ornamentales */}
-            <div className="absolute top-2 left-2 w-2 h-2 border-t border-l border-[#A88B57]/60 pointer-events-none" />
-            <div className="absolute top-2 right-2 w-2 h-2 border-t border-r border-[#A88B57]/60 pointer-events-none" />
-            <div className="absolute bottom-2 left-2 w-2 h-2 border-b border-l border-[#A88B57]/60 pointer-events-none" />
-            <div className="absolute bottom-2 right-2 w-2 h-2 border-b border-r border-[#A88B57]/60 pointer-events-none" />
+          {/* Lista estilo libro de bodega / despensa de alta cocina */}
+          {isLoading ? (
+            <CookingPotAnimation inline message="Consultando despensa..." />
+          ) : inventory.length === 0 ? (
+            <div className="py-16 text-center text-[#5A483D] text-base font-menu-serif italic font-medium">
+              No hay materias primas registradas en la despensa. Añada una arriba o desde La Cocina.
+            </div>
+          ) : (
+            <div className="menu-card-frame rounded-2xl p-5 relative space-y-1">
+              {/* Esquinas ornamentales */}
+              <div className="absolute top-2 left-2 w-2 h-2 border-t border-l border-[#A88B57]/60 pointer-events-none" />
+              <div className="absolute top-2 right-2 w-2 h-2 border-t border-r border-[#A88B57]/60 pointer-events-none" />
+              <div className="absolute bottom-2 left-2 w-2 h-2 border-b border-l border-[#A88B57]/60 pointer-events-none" />
+              <div className="absolute bottom-2 right-2 w-2 h-2 border-b border-r border-[#A88B57]/60 pointer-events-none" />
 
-            <div className="pb-2.5 mb-2 border-b border-[#A88B57]/20 flex items-center justify-between text-xs sm:text-sm font-menu-serif text-[#8F7347] uppercase tracking-wider font-bold">
-              <span>Materia Prima</span>
+              <div className="pb-2.5 mb-2 border-b border-[#A88B57]/20 flex items-center justify-between text-xs sm:text-sm font-menu-serif text-[#8F7347] uppercase tracking-wider font-bold">
+                <span>Materia Prima</span>
               <span>Existencias · Valor Est.</span>
             </div>
 
@@ -203,6 +204,7 @@ export default function InventoryPage() {
             })}
           </div>
         )}
+        </div>
       </div>
     </div>
   )

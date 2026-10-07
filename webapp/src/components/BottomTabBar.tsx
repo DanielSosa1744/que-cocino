@@ -24,7 +24,7 @@ export default function BottomTabBar() {
 
   return (
     <div className="flex-shrink-0 w-full z-40 bg-[#FAF7F2]/95 backdrop-blur-xl border-t border-[#A88B57]/30 pb-safe shadow-[0_-2px_12px_rgba(168,139,87,0.06)] select-none">
-      <nav className="flex justify-around items-center h-17 px-2 sm:px-4 max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto touch-manipulation">
+      <nav className="flex justify-around items-center h-17 px-2 sm:px-4 max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto touch-manipulation">
         {MAIN_TABS.map((tab) => {
           const isActive = location.pathname === tab.path || (tab.path === '/recetas' && location.pathname === '/vaciar-nevera')
 

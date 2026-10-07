@@ -38,6 +38,7 @@ export default function ImpactPage() {
       </div>
 
       <div className="flex-1 min-h-0 overflow-y-auto px-5 py-5 space-y-5">
+        <div className="max-w-4xl lg:max-w-5xl mx-auto space-y-6">
         {isLoading ? (
           <div className="py-12 text-center text-base text-[#5A483D] font-menu-serif italic font-medium">
             Consultando registros del chef...
@@ -133,6 +134,7 @@ export default function ImpactPage() {
             </div>
           </>
         )}
+        </div>
       </div>
     </div>
   )

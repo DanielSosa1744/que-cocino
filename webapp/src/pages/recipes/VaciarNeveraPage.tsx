@@ -385,22 +385,22 @@ export default function VaciarNeveraPage() {
             PANEL MAESTRO DE PREFERENCIAS CULINARIAS DEL COMENSAL
             (Filtro previo por Categorías, Subcategorías e Ingredientes)
             ======================================================== */}
-        <section className="w-full max-w-3xl mx-auto menu-card-frame bg-[#FAF7F2] border-2 border-[#8F7347]/50 rounded-2xl p-3.5 sm:p-5 shadow-sm space-y-3 relative text-left">
+        <section className="w-full max-w-5xl xl:max-w-6xl mx-auto menu-card-frame bg-[#FAF7F2] border-2 border-[#8F7347]/50 rounded-2xl p-4 sm:p-6 shadow-sm space-y-4 relative text-left">
           {/* Adornos en las esquinas */}
-          <div className="absolute top-2 left-2 w-2 h-2 border-t-2 border-l-2 border-[#8F7347]/60 pointer-events-none" />
-          <div className="absolute top-2 right-2 w-2 h-2 border-t-2 border-r-2 border-[#8F7347]/60 pointer-events-none" />
-          <div className="absolute bottom-2 left-2 w-2 h-2 border-b-2 border-l-2 border-[#8F7347]/60 pointer-events-none" />
-          <div className="absolute bottom-2 right-2 w-2 h-2 border-b-2 border-r-2 border-[#8F7347]/60 pointer-events-none" />
+          <div className="absolute top-2.5 left-2.5 w-2.5 h-2.5 border-t-2 border-l-2 border-[#8F7347]/60 pointer-events-none" />
+          <div className="absolute top-2.5 right-2.5 w-2.5 h-2.5 border-t-2 border-r-2 border-[#8F7347]/60 pointer-events-none" />
+          <div className="absolute bottom-2.5 left-2.5 w-2.5 h-2.5 border-b-2 border-l-2 border-[#8F7347]/60 pointer-events-none" />
+          <div className="absolute bottom-2.5 right-2.5 w-2.5 h-2.5 border-b-2 border-r-2 border-[#8F7347]/60 pointer-events-none" />
 
           {/* Encabezado del Panel */}
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#8F7347]/25 pb-2.5">
+          <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-[#8F7347]/25 pb-3">
             <div>
-              <div className="flex items-center gap-1.5 text-[#7A5E30] text-xs font-bold uppercase tracking-wider">
+              <div className="flex items-center gap-1.5 text-[#7A5E30] text-xs sm:text-sm font-bold uppercase tracking-wider">
                 <span>✦</span>
                 <span>Preferencia Culinaria del Comensal</span>
                 <span>✦</span>
               </div>
-              <h2 className="font-menu-title text-base sm:text-lg md:text-xl font-black text-[#1C1917] tracking-tight">
+              <h2 className="font-menu-title text-base sm:text-xl md:text-2xl font-black text-[#1C1917] tracking-tight">
                 Filtre por preferencia según sus ingredientes disponibles:
               </h2>
             </div>
@@ -408,7 +408,7 @@ export default function VaciarNeveraPage() {
               <button
                 type="button"
                 onClick={() => handleSelectPreference('all')}
-                className="px-2.5 py-1 text-xs font-menu-serif font-black rounded-lg border border-[#8F7347]/40 bg-white text-[#7A5E30] hover:text-[#1C1917] hover:border-[#1C1917] transition cursor-pointer shadow-2xs"
+                className="px-3 py-1.5 text-xs sm:text-sm font-menu-serif font-black rounded-xl border border-[#8F7347]/40 bg-white text-[#7A5E30] hover:text-[#1C1917] hover:border-[#1C1917] transition cursor-pointer shadow-2xs"
               >
                 ✕ Ver toda la carta
               </button>
@@ -416,7 +416,7 @@ export default function VaciarNeveraPage() {
           </div>
 
           {/* Selector de Categorías Principales y Estilos de Vida */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
             {PREFERENCE_CATEGORIES.map(category => {
               const isSelected = selectedPreference === category.id
               const stats = preferenceStats[category.id]
@@ -427,7 +427,7 @@ export default function VaciarNeveraPage() {
                   key={category.id}
                   type="button"
                   onClick={() => handleSelectPreference(category.id)}
-                  className={`p-2.5 rounded-xl border-2 transition-all duration-200 cursor-pointer select-none text-left flex flex-col justify-between tap-subtle relative overflow-hidden group ${
+                  className={`p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer select-none text-left flex flex-col justify-between tap-subtle relative overflow-hidden group min-h-[95px] ${
                     isSelected
                       ? 'bg-gradient-to-b from-[#241E19] via-[#1B1612] to-[#120F0C] border-[#C7A971] text-[#FAF2E6] shadow-[0_6px_20px_rgba(20,17,14,0.35),0_0_12px_rgba(199,169,113,0.2)] ring-1 ring-[#DDB879]/60'
                       : 'bg-gradient-to-b from-[#FDFBF7] via-[#F8F3EA] to-[#EFE7D8] border-[#A88B57]/45 text-[#1C1917] hover:border-[#8F7347] hover:from-white hover:to-[#F3ECE0] shadow-[0_2px_8px_rgba(47,42,38,0.06),inset_0_1px_0_rgba(255,255,255,0.9)]'
@@ -455,7 +455,7 @@ export default function VaciarNeveraPage() {
                     <span className="font-menu-serif text-sm sm:text-base font-black block leading-tight truncate">
                       {category.shortLabel}
                     </span>
-                    <span className={`text-[11px] block mt-0.5 font-mono ${
+                    <span className={`text-xs block mt-0.5 font-mono ${
                       isSelected ? 'text-[#DDB879]' : 'text-[#7A5E30]'
                     }`}>
                       {stats.total} opciones
@@ -468,12 +468,12 @@ export default function VaciarNeveraPage() {
 
           {/* Subcategorías refinadas según la categoría activa */}
           {activeCategoryDef && activeCategoryDef.subcategories.length > 1 && (
-            <div className="pt-2.5 border-t border-[#8F7347]/20 animate-fade-in space-y-1.5">
-              <div className="flex items-center gap-1.5 text-xs text-[#7A5E30] font-menu-serif font-bold">
+            <div className="pt-3 border-t border-[#8F7347]/20 animate-fade-in space-y-2">
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm text-[#7A5E30] font-menu-serif font-bold">
                 <span className="text-[#8F7347]">✦</span>
                 <span>Subcategorías de {activeCategoryDef.label}:</span>
               </div>
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 {activeCategoryDef.subcategories.map(sub => {
                   const isSubSelected = selectedSubcategory === sub.id
                   return (
@@ -481,14 +481,14 @@ export default function VaciarNeveraPage() {
                       key={sub.id}
                       type="button"
                       onClick={() => handleSelectSubcategory(sub.id)}
-                      className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-menu-serif font-bold transition-all duration-150 cursor-pointer tap-subtle inline-flex items-center gap-1.5 border shadow-2xs ${
+                      className={`px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-menu-serif font-bold transition-all duration-150 cursor-pointer tap-subtle inline-flex items-center gap-1.5 border shadow-2xs ${
                         isSubSelected
                           ? 'bg-gradient-to-r from-[#8F7347] to-[#6E552E] border-[#8F7347] text-white shadow-xs font-black'
                           : 'bg-gradient-to-b from-white to-[#F5EFE4] border-[#8F7347]/35 text-[#2E241E] hover:border-[#1C1917] hover:to-[#EDE3D2]'
                       }`}
                       title={sub.description}
                     >
-                      <GoogleIcon name={sub.iconName} size={14} className={isSubSelected ? 'text-white' : 'text-[#8F7347]'} />
+                      <GoogleIcon name={sub.iconName} size={15} className={isSubSelected ? 'text-white' : 'text-[#8F7347]'} />
                       <span>{sub.label}</span>
                     </button>
                   )
@@ -498,27 +498,27 @@ export default function VaciarNeveraPage() {
           )}
 
           {/* Resumen inteligente según ingredientes de que disponga */}
-          <div className="pt-2 border-t border-[#8F7347]/20 flex flex-wrap items-center justify-between gap-1 text-xs sm:text-sm font-menu-serif text-[#5A483D]">
+          <div className="pt-2.5 border-t border-[#8F7347]/20 flex flex-wrap items-center justify-between gap-1.5 text-xs sm:text-base font-menu-serif text-[#5A483D]">
             <span className="inline-flex items-center gap-1.5">
               <span className="text-[#8F7347] font-bold">✦</span>
               <span>
                 {currentPreferenceMatchedText}
               </span>
             </span>
-            <span className="font-mono text-[#7A5E30] font-bold">
+            <span className="font-mono text-[#7A5E30] font-black text-xs sm:text-sm">
               {totalInCategory} recetas filtradas
             </span>
           </div>
         </section>
 
         {/* Selector de Categorías de la Carta (SIN NÚMEROS Y CON MÁXIMO CONTRASTE) */}
-        <div className="w-full max-w-3xl mx-auto">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
+        <div className="w-full max-w-5xl xl:max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
             {/* Botón 1: Servicio Directo (sin números, alto contraste) */}
             <button
               type="button"
               onClick={() => setActiveChoice('ready')}
-              className={`px-2 sm:px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-200 tap-subtle cursor-pointer select-none text-center border-2 ${
+              className={`px-3 sm:px-5 py-3 sm:py-3.5 rounded-xl transition-all duration-200 tap-subtle cursor-pointer select-none text-center border-2 ${
                 activeChoice === 'ready'
                   ? 'bg-[#1C1917] border-[#1C1917] text-[#FAF7F2] font-black shadow-md ring-2 ring-[#8F7347]/50'
                   : 'bg-white border-[#8F7347]/45 text-[#1C1917] hover:border-[#1C1917] hover:bg-[#FAF7F2] font-bold shadow-xs'
@@ -533,7 +533,7 @@ export default function VaciarNeveraPage() {
             <button
               type="button"
               onClick={() => setActiveChoice('one_missing')}
-              className={`px-2 sm:px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-200 tap-subtle cursor-pointer select-none text-center border-2 ${
+              className={`px-3 sm:px-5 py-3 sm:py-3.5 rounded-xl transition-all duration-200 tap-subtle cursor-pointer select-none text-center border-2 ${
                 activeChoice === 'one_missing'
                   ? 'bg-[#1C1917] border-[#1C1917] text-[#FAF7F2] font-black shadow-md ring-2 ring-[#8F7347]/50'
                   : 'bg-white border-[#8F7347]/45 text-[#1C1917] hover:border-[#1C1917] hover:bg-[#FAF7F2] font-bold shadow-xs'
@@ -548,7 +548,7 @@ export default function VaciarNeveraPage() {
             <button
               type="button"
               onClick={() => setActiveChoice('special')}
-              className={`px-2 sm:px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-200 tap-subtle cursor-pointer select-none text-center border-2 ${
+              className={`px-3 sm:px-5 py-3 sm:py-3.5 rounded-xl transition-all duration-200 tap-subtle cursor-pointer select-none text-center border-2 ${
                 activeChoice === 'special'
                   ? 'bg-[#1C1917] border-[#1C1917] text-[#FAF7F2] font-black shadow-md ring-2 ring-[#8F7347]/50'
                   : 'bg-white border-[#8F7347]/45 text-[#1C1917] hover:border-[#1C1917] hover:bg-[#FAF7F2] font-bold shadow-xs'
@@ -563,7 +563,7 @@ export default function VaciarNeveraPage() {
             <button
               type="button"
               onClick={() => setActiveChoice('craving')}
-              className={`px-2 sm:px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-200 tap-subtle cursor-pointer select-none text-center border-2 ${
+              className={`px-3 sm:px-5 py-3 sm:py-3.5 rounded-xl transition-all duration-200 tap-subtle cursor-pointer select-none text-center border-2 ${
                 activeChoice === 'craving'
                   ? 'bg-[#1C1917] border-[#1C1917] text-[#FAF7F2] font-black shadow-md ring-2 ring-[#8F7347]/50'
                   : 'bg-white border-[#8F7347]/45 text-[#1C1917] hover:border-[#1C1917] hover:bg-[#FAF7F2] font-bold shadow-xs'
@@ -578,7 +578,7 @@ export default function VaciarNeveraPage() {
 
         {/* Sección interactiva de "A la Carta" */}
         {activeChoice === 'craving' && (
-          <div className="pt-1 pb-2 space-y-2.5 max-w-md mx-auto animate-fade-in text-left">
+          <div className="pt-1 pb-2 space-y-2.5 max-w-lg lg:max-w-xl mx-auto animate-fade-in text-left">
             <div className="relative">
               <input
                 type="text"
@@ -622,8 +622,8 @@ export default function VaciarNeveraPage() {
         {/* Catálogo de la Carta: Pliegos editoriales de alta cocina */}
         {isLoading ? (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 opacity-40 pointer-events-none select-none">
-              {[1, 2, 3, 4].map(idx => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5 opacity-40 pointer-events-none select-none">
+              {[1, 2, 3, 4, 5, 6].map(idx => (
                 <div key={idx} className="menu-card-frame rounded-2xl p-5 relative space-y-3 animate-pulse bg-white/70 border border-[#8F7347]/30">
                   <div className="h-4 bg-[#8F7347]/20 rounded-md w-3/4" />
                   <div className="h-3 bg-[#8F7347]/15 rounded-md w-1/2" />
@@ -637,7 +637,7 @@ export default function VaciarNeveraPage() {
             />
           </>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
             {/* Si no hay inventario registrado */}
             {inventory.length === 0 && (
               <div className="col-span-full pt-2 pb-1">

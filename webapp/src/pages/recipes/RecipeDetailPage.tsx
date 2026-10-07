@@ -252,9 +252,9 @@ export default function RecipeDetailPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-          {/* Columna Izquierda: Comanda de Ingredientes para 4 Porciones con Especias */}
-          <section className="menu-card-frame rounded-2xl p-5 sm:p-7 relative animate-stagger-1 text-left space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto">
+          {/* Columna Izquierda: Comanda de Ingredientes para 4 Porciones con Especias (5 columnas en desktop) */}
+          <section className="lg:col-span-5 lg:sticky lg:top-2 menu-card-frame rounded-2xl p-5 sm:p-7 relative animate-stagger-1 text-left space-y-4">
             {/* Esquinas ornamentales */}
             <div className="absolute top-2.5 left-2.5 w-3 h-3 border-t-2 border-l-2 border-[#8F7347] pointer-events-none" />
             <div className="absolute top-2.5 right-2.5 w-3 h-3 border-t-2 border-r-2 border-[#8F7347] pointer-events-none" />
@@ -378,8 +378,8 @@ export default function RecipeDetailPage() {
             </div>
           </section>
 
-          {/* Columna Derecha: Pasos Realistas y Detallados de Elaboración */}
-          <div className="space-y-6 animate-stagger-2 text-left">
+          {/* Columna Derecha: Pasos Realistas y Detallados de Elaboración (7 columnas en desktop) */}
+          <div className="lg:col-span-7 space-y-6 animate-stagger-2 text-left">
             {/* 1. Pasos de elaboración realistas con control de fuego y tiempos */}
             <section className="space-y-4">
               <div className="flex items-center gap-2">

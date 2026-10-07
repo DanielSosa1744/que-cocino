@@ -752,18 +752,18 @@ export default function VaciarNeveraPage() {
                   <div className="absolute bottom-2.5 right-2.5 w-2.5 h-2.5 border-b-2 border-r-2 border-[#8F7347] pointer-events-none" />
 
                   {/* Encabezado del plato: Pase, Origen, Dificultad y tiempo */}
-                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-xs sm:text-sm tracking-[0.22em] uppercase font-serif text-[#7A5E30] font-black">
+                  <div className="flex flex-wrap items-center justify-between gap-2.5 mb-2.5">
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <span className="text-sm sm:text-base tracking-[0.22em] uppercase font-serif text-[#7A5E30] font-black">
                         PASE Nº 0{((recipeOffset + index) % Math.max(1, totalInCategory)) + 1}
                       </span>
                       {recipe.origin && (
-                        <span className="text-xs sm:text-sm font-bold px-2 py-0.5 rounded-md bg-[#FAF0E6] border border-[#8F7347]/40 text-[#7A5E30] inline-flex items-center gap-1 font-menu-serif">
-                          <GoogleIcon name="location_on" size={13} className="text-[#8F7347]" />
+                        <span className="text-sm sm:text-base font-bold px-3 py-1 rounded-lg bg-[#FAF0E6] border border-[#8F7347]/40 text-[#7A5E30] inline-flex items-center gap-1.5 font-menu-serif">
+                          <GoogleIcon name="location_on" size={15} className="text-[#8F7347]" />
                           <span>{recipe.origin}</span>
                         </span>
                       )}
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded border font-menu-serif ${
+                      <span className={`text-xs sm:text-sm font-black px-2.5 py-1 rounded-md border font-menu-serif ${
                         recipe.difficulty === 'Difícil'
                           ? 'bg-red-50 border-red-300 text-red-800'
                           : recipe.difficulty === 'Media'
@@ -773,28 +773,28 @@ export default function VaciarNeveraPage() {
                         {recipe.difficulty || 'Fácil'}
                       </span>
                       {recipe.recentIngredientsUsed != null && recipe.recentIngredientsUsed > 0 && (
-                        <span className="text-xs sm:text-sm font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0DC] border-2 border-[#385333] text-[#244220] inline-flex items-center gap-1">
+                        <span className="text-xs sm:text-sm font-black px-3 py-1 rounded-full bg-[#E2F0DC] border-2 border-[#385333] text-[#244220] inline-flex items-center gap-1.5">
                           <span className="w-2 h-2 rounded-full bg-[#385333]" />
                           ✦ Cosecha prioritaria
                         </span>
                       )}
                     </div>
-                    <span className="text-sm sm:text-base font-menu-serif text-[#1C1917] font-bold tracking-wider">
+                    <span className="text-base sm:text-lg font-menu-serif text-[#1C1917] font-bold tracking-wider">
                       · {recipe.prep_time || 15} min de elaboración ·
                     </span>
                   </div>
 
                   {/* Título noble del plato */}
-                  <h2 className="font-menu-title text-2xl sm:text-3xl font-black text-[#1C1917] tracking-tight group-hover:text-[#7A5E30] transition leading-snug">
+                  <h2 className="font-menu-title text-2xl sm:text-3xl md:text-4xl font-black text-[#1C1917] tracking-tight group-hover:text-[#7A5E30] transition leading-snug">
                     {recipe.name}
                   </h2>
 
                   {/* Insignias de Categoría, Subcategoría y Estilo Nutricional */}
-                  <div className="flex flex-wrap items-center gap-1.5 mt-2.5 mb-1">
+                  <div className="flex flex-wrap items-center gap-2 mt-3 mb-1.5">
                     {classification.badgeList.map((badge, bIdx) => (
                       <span
                         key={bIdx}
-                        className={`text-xs font-bold px-2.5 py-0.5 rounded-full border font-menu-serif inline-flex items-center gap-1 shadow-2xs ${badge.colorClass}`}
+                        className={`text-xs sm:text-sm font-bold px-3 py-1 rounded-full border font-menu-serif inline-flex items-center gap-1.5 shadow-2xs ${badge.colorClass}`}
                       >
                         <span>{badge.icon}</span>
                         <span>{badge.label}</span>
@@ -803,11 +803,11 @@ export default function VaciarNeveraPage() {
                   </div>
 
                 {/* Composición del plato (Ingredientes disponibles) */}
-                <div className="mt-3.5 pt-3 border-t-2 border-[#8F7347]/20">
-                  <p className="font-menu-serif text-sm sm:text-base text-[#3A2E26] font-bold mb-1.5">
+                <div className="mt-4 pt-3.5 border-t-2 border-[#8F7347]/20">
+                  <p className="font-menu-serif text-base sm:text-lg text-[#3A2E26] font-black mb-2">
                     Composición del plato:
                   </p>
-                  <div className="flex flex-wrap gap-x-4 gap-y-2 text-base sm:text-lg">
+                  <div className="flex flex-wrap gap-x-5 gap-y-2.5 text-lg sm:text-xl">
                     {recipe.matchedIngredients.length > 0 ? (
                       [...recipe.matchedIngredients]
                         .sort((a, b) => getIngredientImportance(b) - getIngredientImportance(a))
@@ -815,10 +815,10 @@ export default function VaciarNeveraPage() {
                           const isRecent = recentIngredients.some(rec => isIngredientMatch(rec, ing) || isIngredientMatch(ing, rec))
                           return (
                             <span key={i} className="text-[#1C1917] inline-flex items-center gap-1.5 font-bold">
-                              <span className="text-[#8F7347] text-xs">✦</span>
+                              <span className="text-[#8F7347] text-sm">✦</span>
                               <span className="capitalize">{ing}</span>
                               {isRecent && (
-                                <span className="text-xs sm:text-sm text-[#244220] font-black bg-[#E2F0DC] px-2 py-0.5 rounded border border-[#385333]/40">
+                                <span className="text-xs sm:text-sm text-[#244220] font-black bg-[#E2F0DC] px-2.5 py-0.5 rounded border border-[#385333]/40">
                                   (fresco)
                                 </span>
                               )}
@@ -826,44 +826,44 @@ export default function VaciarNeveraPage() {
                           )
                         })
                     ) : (
-                      <span className="text-[#3A2E26] font-semibold text-base">Propuesta gourmet sugerida</span>
+                      <span className="text-[#3A2E26] font-semibold text-lg">Propuesta gourmet sugerida</span>
                     )}
                   </div>
                 </div>
 
                 {/* Ingredientes faltantes / suplementos sugeridos */}
                 {recipe.missingIngredients.length > 0 && (
-                  <div className="mt-3.5 pt-3 border-t-2 border-dashed border-[#8F7347]/30 text-sm sm:text-base text-[#2E241E] flex flex-wrap items-baseline justify-between gap-2">
+                  <div className="mt-4 pt-3.5 border-t-2 border-dashed border-[#8F7347]/30 text-base sm:text-lg text-[#2E241E] flex flex-wrap items-baseline justify-between gap-2.5">
                     <div>
                       <span className="font-menu-serif text-[#8F2D14] font-black">
                         {recipe.missingIngredients.length === 1 ? 'Aporte sugerido: ' : 'Aportes sugeridos: '}
                       </span>
-                      <span className="text-[#1C1917] font-bold capitalize">
+                      <span className="text-[#1C1917] font-black capitalize">
                         {[...recipe.missingIngredients]
                           .sort((a, b) => getIngredientImportance(b) - getIngredientImportance(a))
                           .join(', ')}
                       </span>
                     </div>
-                    <span className="text-xs sm:text-sm font-mono text-[#7A5E30] bg-[#FAF0E6] px-2.5 py-1 rounded-md font-black border border-[#8F7347]/30">
+                    <span className="text-sm sm:text-base font-mono text-[#7A5E30] bg-[#FAF0E6] px-3 py-1 rounded-lg font-black border border-[#8F7347]/30">
                       est. ARS {recipe.additionalCostARS.toLocaleString('es-AR')}
                     </span>
                   </div>
                 )}
 
                 {/* Indicador de guía detallada para 4 porciones disponible en la elaboración */}
-                <div className="mt-3 pt-2.5 border-t border-[#8F7347]/20 flex flex-wrap items-center justify-between gap-1.5 text-xs sm:text-sm font-menu-serif text-[#7A5E30] font-bold">
+                <div className="mt-4 pt-3 border-t border-[#8F7347]/20 flex flex-wrap items-center justify-between gap-2 text-sm sm:text-base font-menu-serif text-[#7A5E30] font-bold">
                   <span className="inline-flex items-center gap-1.5">
                     <span className="text-[#8F7347]">✦</span>
                     <span>Ingredientes estandarizados para 4 porciones con especias</span>
                   </span>
-                  <span className="font-serif italic text-xs bg-[#FAF0E6] px-2 py-0.5 rounded border border-[#8F7347]/30 text-[#8F7347]">
+                  <span className="font-serif italic text-xs sm:text-sm bg-[#FAF0E6] px-2.5 py-1 rounded-md border border-[#8F7347]/30 text-[#8F7347] font-bold">
                     🍽 4 porciones · Pasos realistas
                   </span>
                 </div>
 
                 {/* Pie del plato con adorno refinado y botón de acción */}
-                <div className="mt-3.5 pt-2.5 flex items-center justify-between text-sm sm:text-base border-t-2 border-[#8F7347]/20">
-                  <div className="flex items-center gap-1.5 text-[#8F7347] text-sm font-bold">
+                <div className="mt-4 pt-3 flex items-center justify-between text-base sm:text-lg border-t-2 border-[#8F7347]/20">
+                  <div className="flex items-center gap-1.5 text-[#8F7347] text-base font-bold">
                     <span>—</span>
                     <span>❖</span>
                     <span>—</span>
@@ -874,11 +874,11 @@ export default function VaciarNeveraPage() {
                       e.stopPropagation()
                       handleSelectRecipe(recipe)
                     }}
-                    className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-[#1C1917] text-[#FAF7F2] hover:bg-black font-menu-serif text-sm sm:text-base font-black border-2 border-[#8F7347] shadow-sm hover:shadow-md transition-all duration-150 inline-flex items-center gap-2 tap-subtle cursor-pointer select-none group-hover:border-[#C7A971]"
+                    className="px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl bg-[#1C1917] text-[#FAF7F2] hover:bg-black font-menu-serif text-base sm:text-lg font-black border-2 border-[#8F7347] shadow-sm hover:shadow-md transition-all duration-150 inline-flex items-center gap-2.5 tap-subtle cursor-pointer select-none group-hover:border-[#C7A971]"
                   >
                     {selectedRecipeId === recipe.id ? (
                       <>
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#C7A971] animate-ping" />
+                        <span className="w-3 h-3 rounded-full bg-[#C7A971] animate-ping" />
                         <span>Abriendo receta...</span>
                       </>
                     ) : (

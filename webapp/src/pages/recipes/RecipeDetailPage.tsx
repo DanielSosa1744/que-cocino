@@ -216,26 +216,27 @@ export default function RecipeDetailPage() {
         </div>
 
         {/* Título de la receta fijo */}
-        <h1 className="font-menu-title text-2xl sm:text-3xl font-black text-[#1C1917] tracking-tight leading-snug text-center">
+        <h1 className="font-menu-title text-3xl sm:text-4xl md:text-5xl font-black text-[#1C1917] tracking-tight leading-snug text-center py-1">
           {rawRecipe.name}
         </h1>
       </header>
 
       {/* Todo el resto de la página se desplaza: tiempo, ingredientes, pasos y al final la ficha detallada */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-4 pb-12 space-y-5">
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-5 pb-16 space-y-6">
         {/* Subtítulo: Tiempo, Origen y Dificultad */}
-        <div className="text-center pb-2 border-b-2 border-[#8F7347]/20 space-y-1.5">
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <span className="text-xs sm:text-sm tracking-[0.25em] uppercase font-bold text-[#7A5E30]">
+        <div className="text-center pb-3 border-b-2 border-[#8F7347]/20 space-y-2">
+          <div className="flex flex-wrap items-center justify-center gap-2.5">
+            <span className="text-sm sm:text-base tracking-[0.25em] uppercase font-black text-[#7A5E30]">
               ✦ Ficha de Elaboración Gastronómica ✦
             </span>
             {origin && (
-              <span className="text-xs sm:text-sm font-bold px-2.5 py-0.5 rounded-full bg-[#FAF0E6] border border-[#8F7347]/40 text-[#7A5E30] font-menu-serif">
-                📍 {origin}
+              <span className="text-sm sm:text-base font-bold px-3 py-1 rounded-full bg-[#FAF0E6] border border-[#8F7347]/40 text-[#7A5E30] font-menu-serif inline-flex items-center gap-1.5">
+                <GoogleIcon name="location_on" size={16} className="text-[#8F7347]" />
+                <span>{origin}</span>
               </span>
             )}
             {rawRecipe.difficulty && (
-              <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border font-menu-serif ${
+              <span className={`text-sm sm:text-base font-bold px-3 py-1 rounded-full border font-menu-serif ${
                 rawRecipe.difficulty === 'Difícil'
                   ? 'bg-red-50 border-red-300 text-red-800'
                   : rawRecipe.difficulty === 'Media'
@@ -246,41 +247,41 @@ export default function RecipeDetailPage() {
               </span>
             )}
           </div>
-          <p className="font-menu-serif text-base sm:text-lg text-[#1C1917] font-bold">
+          <p className="font-menu-serif text-lg sm:text-xl md:text-2xl text-[#1C1917] font-black tracking-wide">
             · Tiempo estimado de cocina: {rawRecipe.prep_time || 15} minutos ·
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           {/* Columna Izquierda: Comanda de Ingredientes para 4 Porciones con Especias */}
-          <section className="menu-card-frame rounded-2xl p-5 sm:p-6 relative animate-stagger-1 text-left space-y-4">
+          <section className="menu-card-frame rounded-2xl p-5 sm:p-7 relative animate-stagger-1 text-left space-y-4">
             {/* Esquinas ornamentales */}
-            <div className="absolute top-2.5 left-2.5 w-2.5 h-2.5 border-t-2 border-l-2 border-[#8F7347] pointer-events-none" />
-            <div className="absolute top-2.5 right-2.5 w-2.5 h-2.5 border-t-2 border-r-2 border-[#8F7347] pointer-events-none" />
-            <div className="absolute bottom-2.5 left-2.5 w-2.5 h-2.5 border-b-2 border-l-2 border-[#8F7347] pointer-events-none" />
-            <div className="absolute bottom-2.5 right-2.5 w-2.5 h-2.5 border-b-2 border-r-2 border-[#8F7347] pointer-events-none" />
+            <div className="absolute top-2.5 left-2.5 w-3 h-3 border-t-2 border-l-2 border-[#8F7347] pointer-events-none" />
+            <div className="absolute top-2.5 right-2.5 w-3 h-3 border-t-2 border-r-2 border-[#8F7347] pointer-events-none" />
+            <div className="absolute bottom-2.5 left-2.5 w-3 h-3 border-b-2 border-l-2 border-[#8F7347] pointer-events-none" />
+            <div className="absolute bottom-2.5 right-2.5 w-3 h-3 border-b-2 border-r-2 border-[#8F7347] pointer-events-none" />
 
             <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-[#8F7347]/20 pb-3">
               <div>
-                <span className="text-[11px] sm:text-xs tracking-[0.2em] uppercase font-bold text-[#7A5E30] block">
+                <span className="text-xs sm:text-sm tracking-[0.2em] uppercase font-black text-[#7A5E30] block">
                   ✦ Estandarización de Cocina
                 </span>
-                <h2 className="font-menu-title text-lg sm:text-xl font-black text-[#1C1917] tracking-wider uppercase flex items-center gap-2">
+                <h2 className="font-menu-title text-xl sm:text-2xl md:text-3xl font-black text-[#1C1917] tracking-wider uppercase flex items-center gap-2">
                   <span className="text-[#8F7347]">✦</span>
                   <span>Ingredientes para 4 Porciones</span>
                 </h2>
               </div>
-              <span className="text-xs font-mono font-black px-2.5 py-1 rounded-lg bg-gradient-to-r from-[#241E19] to-[#120F0C] text-[#FAF2E6] border border-[#C7A971] shadow-2xs">
+              <span className="text-sm sm:text-base font-mono font-black px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#241E19] to-[#120F0C] text-[#FAF2E6] border border-[#C7A971] shadow-2xs">
                 🍽 4 comensales
               </span>
             </div>
 
             {/* Pestañas de filtrado de ingredientes: Todos / Materias Primas / Especias */}
-            <div className="flex items-center gap-1.5 p-1 bg-[#F5EFE4] rounded-xl border border-[#8F7347]/30 text-xs font-menu-serif font-bold">
+            <div className="flex items-center gap-2 p-1.5 bg-[#F5EFE4] rounded-xl border border-[#8F7347]/30 text-sm sm:text-base font-menu-serif font-bold">
               <button
                 type="button"
                 onClick={() => setActivePortionTab('todos')}
-                className={`flex-1 py-1 px-2 rounded-lg transition-all text-center cursor-pointer ${
+                className={`flex-1 py-1.5 px-3 rounded-lg transition-all text-center cursor-pointer ${
                   activePortionTab === 'todos'
                     ? 'bg-[#1C1917] text-white shadow-xs font-black'
                     : 'text-[#5A483D] hover:text-black'
@@ -291,7 +292,7 @@ export default function RecipeDetailPage() {
               <button
                 type="button"
                 onClick={() => setActivePortionTab('principales')}
-                className={`flex-1 py-1 px-2 rounded-lg transition-all text-center cursor-pointer ${
+                className={`flex-1 py-1.5 px-3 rounded-lg transition-all text-center cursor-pointer ${
                   activePortionTab === 'principales'
                     ? 'bg-[#1C1917] text-white shadow-xs font-black'
                     : 'text-[#5A483D] hover:text-black'
@@ -302,7 +303,7 @@ export default function RecipeDetailPage() {
               <button
                 type="button"
                 onClick={() => setActivePortionTab('especias')}
-                className={`flex-1 py-1 px-2 rounded-lg transition-all text-center cursor-pointer ${
+                className={`flex-1 py-1.5 px-3 rounded-lg transition-all text-center cursor-pointer ${
                   activePortionTab === 'especias'
                     ? 'bg-[#8F7347] text-white shadow-xs font-black'
                     : 'text-[#7A5E30] hover:text-black'
@@ -313,45 +314,45 @@ export default function RecipeDetailPage() {
             </div>
 
             {/* Lista exhaustiva y realista con cantidades calculadas para 4 porciones */}
-            <ul className="text-sm sm:text-base text-[#1C1917] leading-relaxed divide-y divide-[#8F7347]/15 max-h-[580px] overflow-y-auto pr-1">
+            <ul className="text-base sm:text-lg md:text-xl text-[#1C1917] leading-relaxed divide-y divide-[#8F7347]/15 max-h-[620px] overflow-y-auto pr-1">
               {filteredIngredients4Servings.length > 0 ? (
                 filteredIngredients4Servings.map((item, i) => {
                   const isAvailable = matchedIngredients.some(m => isIngredientMatch(m, item.name))
 
                   return (
-                    <li key={i} className="py-2.5 flex items-start justify-between gap-3 group">
+                    <li key={i} className="py-3 flex items-start justify-between gap-3 group">
                       <div className="flex-1">
-                        <div className="flex items-center gap-1.5">
-                          <span className={`text-xs ${item.isSpice ? 'text-[#8F7347]' : 'text-[#7A5E30]'}`}>
+                        <div className="flex items-center gap-2">
+                          <span className={`text-sm ${item.isSpice ? 'text-[#8F7347]' : 'text-[#7A5E30]'}`}>
                             {item.isSpice ? '✦' : '●'}
                           </span>
-                          <span className="capitalize font-bold text-[#1C1917] text-sm sm:text-base">
+                          <span className="capitalize font-black text-[#1C1917] text-base sm:text-lg md:text-xl">
                             {item.name}
                           </span>
                           {item.isSpice && (
-                            <span className="text-[10px] uppercase font-mono px-1.5 py-0.2 rounded bg-[#FAF0E6] text-[#8F7347] border border-[#8F7347]/30 font-bold">
+                            <span className="text-xs uppercase font-mono px-2 py-0.5 rounded bg-[#FAF0E6] text-[#8F7347] border border-[#8F7347]/30 font-bold">
                               especia
                             </span>
                           )}
                         </div>
                         {item.note && (
-                          <p className="text-xs font-menu-serif text-[#6B5749] italic pl-3 mt-0.5">
+                          <p className="text-sm sm:text-base font-menu-serif text-[#6B5749] italic pl-4 mt-0.5">
                             {item.note}
                           </p>
                         )}
                       </div>
 
-                      <div className="text-right flex-shrink-0 flex flex-col items-end gap-1">
-                        <span className="font-mono font-bold text-xs sm:text-sm text-[#1C1917] bg-white px-2 py-0.5 rounded border border-[#8F7347]/30 shadow-2xs">
+                      <div className="text-right flex-shrink-0 flex flex-col items-end gap-1.5">
+                        <span className="font-mono font-black text-sm sm:text-base md:text-lg text-[#1C1917] bg-white px-2.5 py-1 rounded-lg border border-[#8F7347]/30 shadow-2xs">
                           {item.amount}
                         </span>
                         {!item.isSpice && (
                           isAvailable ? (
-                            <span className="text-[10px] text-[#244220] bg-[#E2F0DC] px-2 py-0.5 rounded-full border border-[#385333]/40 font-bold">
+                            <span className="text-xs sm:text-sm text-[#244220] bg-[#E2F0DC] px-2.5 py-0.5 rounded-full border border-[#385333]/40 font-bold">
                               ✓ En despensa
                             </span>
                           ) : (
-                            <span className="text-[10px] text-[#8F2D14] font-serif font-black">
+                            <span className="text-xs sm:text-sm text-[#8F2D14] font-serif font-black">
                               A completar
                             </span>
                           )
@@ -361,17 +362,17 @@ export default function RecipeDetailPage() {
                   )
                 })
               ) : (
-                <li className="text-[#3A2E26] italic py-3 text-sm">No hay ingredientes en esta sección.</li>
+                <li className="text-[#3A2E26] italic py-3 text-base">No hay ingredientes en esta sección.</li>
               )}
             </ul>
 
             {/* Recuadro de Especias y Condimentos recomendados */}
-            <div className="bg-[#FAF0E6]/80 p-3 rounded-xl border border-[#8F7347]/40 space-y-1.5">
-              <div className="flex items-center gap-1.5 text-xs text-[#7A5E30] font-black uppercase tracking-wider">
-                <GoogleIcon name="eco" size={14} className="text-[#8F7347]" />
+            <div className="bg-[#FAF0E6]/80 p-3.5 sm:p-4 rounded-xl border border-[#8F7347]/40 space-y-2">
+              <div className="flex items-center gap-2 text-sm sm:text-base text-[#7A5E30] font-black uppercase tracking-wider">
+                <GoogleIcon name="eco" size={18} className="text-[#8F7347]" />
                 <span>Paleta Aromática de Especias (4 Porciones):</span>
               </div>
-              <p className="text-xs sm:text-sm text-[#2E241E] font-menu-serif font-medium leading-relaxed">
+              <p className="text-sm sm:text-base md:text-lg text-[#2E241E] font-menu-serif font-semibold leading-relaxed">
                 {profile4Servings.spicesSummary.slice(0, 4).join(' · ')}
               </p>
             </div>
@@ -383,41 +384,41 @@ export default function RecipeDetailPage() {
             <section className="space-y-4">
               <div className="flex items-center gap-2">
                 <span className="h-[2px] w-8 bg-[#8F7347]" />
-                <h2 className="font-menu-title text-base sm:text-lg font-black text-[#1C1917] uppercase tracking-wider">
+                <h2 className="font-menu-title text-lg sm:text-xl md:text-2xl font-black text-[#1C1917] uppercase tracking-wider">
                   Instrucciones Realistas de Elaboración (4 Porciones)
                 </h2>
                 <span className="h-[2px] flex-1 bg-[#8F7347]/30" />
               </div>
 
-              <ol className="text-base text-[#1C1917] leading-relaxed space-y-3.5">
+              <ol className="text-base sm:text-lg text-[#1C1917] leading-relaxed space-y-4">
                 {profile4Servings.realisticSteps.map((step, i) => (
-                  <li key={i} className="flex gap-3.5 bg-white p-4 rounded-xl border-2 border-[#8F7347]/30 shadow-xs hover:border-[#8F7347] transition">
-                    <span className="w-8 h-8 rounded-full bg-gradient-to-b from-[#241E19] to-[#120F0C] text-[#FAF2E6] font-mono text-base font-black flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs border border-[#C7A971]">
+                  <li key={i} className="flex gap-4 bg-white p-4 sm:p-5 rounded-2xl border-2 border-[#8F7347]/30 shadow-xs hover:border-[#8F7347] transition">
+                    <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-b from-[#241E19] to-[#120F0C] text-[#FAF2E6] font-mono text-lg sm:text-xl font-black flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs border border-[#C7A971]">
                       {step.stepNumber}
                     </span>
-                    <div className="flex-1 space-y-1">
-                      <div className="flex flex-wrap items-center justify-between gap-1 border-b border-[#8F7347]/15 pb-1">
-                        <strong className="font-menu-serif text-sm sm:text-base text-[#7A5E30] font-black">
+                    <div className="flex-1 space-y-1.5">
+                      <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-[#8F7347]/15 pb-1.5">
+                        <strong className="font-menu-serif text-base sm:text-lg md:text-xl text-[#7A5E30] font-black">
                           {step.title}
                         </strong>
-                        <div className="flex items-center gap-1.5 text-xs font-mono">
+                        <div className="flex items-center gap-2 text-xs sm:text-sm font-mono">
                           {step.durationMinutes && (
-                            <span className="text-[#5A483D] font-bold">
+                            <span className="text-[#5A483D] font-black">
                               ⏱ {step.durationMinutes} min
                             </span>
                           )}
                           {step.fireLevel && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#FAF0E6] text-[#8F7347] border border-[#8F7347]/30 font-bold">
+                            <span className="text-xs px-2 py-0.5 rounded bg-[#FAF0E6] text-[#8F7347] border border-[#8F7347]/30 font-black">
                               🔥 {step.fireLevel}
                             </span>
                           )}
                         </div>
                       </div>
-                      <p className="font-medium text-[#1C1917] text-sm sm:text-base leading-relaxed pt-0.5">
+                      <p className="font-medium text-[#1C1917] text-base sm:text-lg md:text-xl leading-relaxed pt-1">
                         {step.action}
                       </p>
-                      <p className="text-xs sm:text-sm font-menu-serif text-[#6B5749] italic bg-[#FAF7F2] p-2 rounded-lg border border-[#8F7347]/20">
-                        <span className="font-bold text-[#8F7347]">Detalle técnico: </span>
+                      <p className="text-sm sm:text-base font-menu-serif text-[#523F33] italic bg-[#FAF7F2] p-2.5 rounded-xl border border-[#8F7347]/20 leading-relaxed">
+                        <span className="font-black text-[#8F7347]">Detalle técnico: </span>
                         {step.realisticDetails}
                       </p>
                     </div>
@@ -427,18 +428,18 @@ export default function RecipeDetailPage() {
 
               {/* 2. FICHA DETALLADA AL FINAL DE LOS PASOS: Guía minuciosa paso a paso con técnicas y secretos */}
               <div className="pt-4 border-t-2 border-[#8F7347]/30">
-                <div className="bg-[#FAF7F2] border-2 border-[#8F7347] rounded-2xl p-4 sm:p-5 shadow-sm space-y-4">
+                <div className="bg-[#FAF7F2] border-2 border-[#8F7347] rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
                   {/* Encabezado noble de la Ficha Detallada */}
                   <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-[#8F7347]/20 pb-3">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-9 h-9 rounded-xl bg-[#241E19] text-[#DDB879] flex items-center justify-center border border-[#C7A971] shadow-2xs">
-                        <GoogleIcon name="restaurant" size={20} />
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-[#241E19] text-[#DDB879] flex items-center justify-center border border-[#C7A971] shadow-2xs">
+                        <GoogleIcon name="restaurant" size={22} />
                       </div>
                       <div>
-                        <h3 className="font-menu-title text-base sm:text-lg font-black text-[#1C1917] uppercase tracking-wide">
+                        <h3 className="font-menu-title text-lg sm:text-xl md:text-2xl font-black text-[#1C1917] uppercase tracking-wide">
                           Ficha Detallada del Chef
                         </h3>
-                        <p className="font-menu-serif text-xs sm:text-sm text-[#7A5E30] font-bold">
+                        <p className="font-menu-serif text-sm sm:text-base text-[#7A5E30] font-bold">
                           Guía minuciosa paso a paso con técnicas y secretos de cocina
                         </p>
                       </div>
@@ -446,7 +447,7 @@ export default function RecipeDetailPage() {
                     <button
                       type="button"
                       onClick={() => setIsDetailedExpanded(prev => !prev)}
-                      className="px-3 py-1.5 rounded-lg bg-white border-2 border-[#8F7347] text-[#1C1917] font-menu-serif text-xs sm:text-sm font-black hover:bg-[#FAF7F2] transition cursor-pointer shadow-xs tap-subtle"
+                      className="px-3.5 py-2 rounded-xl bg-white border-2 border-[#8F7347] text-[#1C1917] font-menu-serif text-sm sm:text-base font-black hover:bg-[#FAF7F2] transition cursor-pointer shadow-xs tap-subtle"
                     >
                       {isDetailedExpanded ? '▲ Plegar guía detallada' : '✦ Desplegar guía paso a paso'}
                     </button>
@@ -457,18 +458,18 @@ export default function RecipeDetailPage() {
                     <div className="space-y-4 animate-fade-in text-left">
                       {/* Desglose exhaustivo de los pasos de cocina */}
                       <div>
-                        <h4 className="font-menu-title text-sm sm:text-base font-black text-[#1C1917] uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                        <h4 className="font-menu-title text-base sm:text-lg md:text-xl font-black text-[#1C1917] uppercase tracking-wider mb-3 flex items-center gap-2">
                           <span className="text-[#8F7347]">✦</span>
                           <span>Pasos de Cocina Explicados en Detalle:</span>
                         </h4>
-                        <div className="space-y-3">
+                        <div className="space-y-3.5">
                           {detailedGuideSteps.map((dStep, idx) => (
-                            <div key={idx} className="bg-white p-3.5 sm:p-4 rounded-xl border-2 border-[#8F7347]/30 shadow-xs">
-                              <div className="flex items-start gap-3">
-                                <span className="w-6 h-6 rounded-full bg-[#8F7347] text-white font-mono text-xs font-black flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs">
+                            <div key={idx} className="bg-white p-4 sm:p-5 rounded-xl border-2 border-[#8F7347]/30 shadow-xs">
+                              <div className="flex items-start gap-3.5">
+                                <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#8F7347] text-white font-mono text-sm sm:text-base font-black flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs">
                                   {idx + 1}
                                 </span>
-                                <div className="text-sm sm:text-base font-menu-serif text-[#1C1917] leading-relaxed">
+                                <div className="text-base sm:text-lg md:text-xl font-menu-serif text-[#1C1917] leading-relaxed">
                                   <strong className="text-[#7A5E30] block mb-1 font-black">
                                     {dStep.title}
                                   </strong>
@@ -484,11 +485,11 @@ export default function RecipeDetailPage() {
 
                       {/* Secretos del Chef: Control del fuego y temperatura */}
                       {chefTips && (
-                        <div className="bg-white p-3.5 sm:p-4 rounded-xl border-2 border-[#8F7347]/30 shadow-xs">
-                          <h4 className="font-menu-title text-xs sm:text-sm font-black text-[#7A5E30] uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                        <div className="bg-white p-4 sm:p-5 rounded-xl border-2 border-[#8F7347]/30 shadow-xs">
+                          <h4 className="font-menu-title text-sm sm:text-base md:text-lg font-black text-[#7A5E30] uppercase tracking-wider mb-2 flex items-center gap-2">
                             <span className="text-[#8F7347]">✦</span> Secreto de Fuego & Técnica del Chef:
                           </h4>
-                          <p className="font-menu-serif text-sm sm:text-base text-[#1C1917] font-medium leading-relaxed">
+                          <p className="font-menu-serif text-base sm:text-lg md:text-xl text-[#1C1917] font-medium leading-relaxed">
                             {chefTips}
                           </p>
                         </div>
@@ -496,14 +497,14 @@ export default function RecipeDetailPage() {
 
                       {/* Sustitutos caseros si falta algún ingrediente */}
                       {substitutes && Object.keys(substitutes).length > 0 && (
-                        <div className="bg-white p-3.5 sm:p-4 rounded-xl border-2 border-[#8F7347]/30 shadow-xs">
-                          <h4 className="font-menu-title text-xs sm:text-sm font-black text-[#7A5E30] uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <div className="bg-white p-4 sm:p-5 rounded-xl border-2 border-[#8F7347]/30 shadow-xs">
+                          <h4 className="font-menu-title text-sm sm:text-base md:text-lg font-black text-[#7A5E30] uppercase tracking-wider mb-2.5 flex items-center gap-2">
                             <span className="text-[#8F7347]">✦</span> Sustitutos en caso de faltar algún ingrediente:
                           </h4>
-                          <div className="flex flex-wrap gap-2">
+                          <div className="flex flex-wrap gap-2.5">
                             {Object.entries(substitutes).map(([orig, sub]) => (
-                              <span key={orig} className="text-xs sm:text-sm bg-[#FAF7F2] px-2.5 py-1 rounded-md border border-[#8F7347]/30 text-[#1C1917]">
-                                <strong className="capitalize text-[#7A5E30]">{orig}:</strong> {sub}
+                              <span key={orig} className="text-sm sm:text-base bg-[#FAF7F2] px-3 py-1.5 rounded-lg border border-[#8F7347]/30 text-[#1C1917]">
+                                <strong className="capitalize text-[#7A5E30] font-black">{orig}:</strong> {sub}
                               </span>
                             ))}
                           </div>
@@ -512,11 +513,11 @@ export default function RecipeDetailPage() {
 
                       {/* Maridaje y acompañamiento sugerido */}
                       {pairing && (
-                        <div className="bg-white p-3.5 sm:p-4 rounded-xl border-2 border-[#8F7347]/30 shadow-xs">
-                          <h4 className="font-menu-title text-xs sm:text-sm font-black text-[#7A5E30] uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <div className="bg-white p-4 sm:p-5 rounded-xl border-2 border-[#8F7347]/30 shadow-xs">
+                          <h4 className="font-menu-title text-sm sm:text-base md:text-lg font-black text-[#7A5E30] uppercase tracking-wider mb-1.5 flex items-center gap-2">
                             <span className="text-[#8F7347]">✦</span> Cómo servir y acompañar:
                           </h4>
-                          <p className="font-menu-serif text-sm sm:text-base text-[#1C1917] italic leading-relaxed">
+                          <p className="font-menu-serif text-base sm:text-lg md:text-xl text-[#1C1917] italic leading-relaxed">
                             {pairing}
                           </p>
                         </div>

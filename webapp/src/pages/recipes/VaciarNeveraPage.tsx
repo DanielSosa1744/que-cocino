@@ -850,14 +850,14 @@ export default function VaciarNeveraPage() {
                   </div>
                 )}
 
-                {/* Indicador de guía detallada disponible en la elaboración */}
-                <div className="mt-3 pt-2.5 border-t border-[#8F7347]/20 flex items-center justify-between text-xs sm:text-sm font-menu-serif text-[#7A5E30] font-bold">
+                {/* Indicador de guía detallada para 4 porciones disponible en la elaboración */}
+                <div className="mt-3 pt-2.5 border-t border-[#8F7347]/20 flex flex-wrap items-center justify-between gap-1.5 text-xs sm:text-sm font-menu-serif text-[#7A5E30] font-bold">
                   <span className="inline-flex items-center gap-1.5">
-                    <span>✦</span>
-                    <span>Incluye pasos detallados y técnicas de cocina</span>
+                    <span className="text-[#8F7347]">✦</span>
+                    <span>Ingredientes estandarizados para 4 porciones con especias</span>
                   </span>
-                  <span className="font-serif italic hidden sm:inline">
-                    Secretos del chef en la elaboración
+                  <span className="font-serif italic text-xs bg-[#FAF0E6] px-2 py-0.5 rounded border border-[#8F7347]/30 text-[#8F7347]">
+                    🍽 4 porciones · Pasos realistas
                   </span>
                 </div>
 

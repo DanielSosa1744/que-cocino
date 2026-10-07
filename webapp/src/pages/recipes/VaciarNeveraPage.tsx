@@ -6,6 +6,13 @@ import { estimateItemValueARS, isIngredientMatch, getIngredientImportance } from
 import { matchCravingRecipes, type RecipeWithCost } from '../../lib/cravingMatcher'
 import { registerAbortAction } from '../../lib/actionAbort'
 import CookingPotAnimation from '../../components/CookingPotAnimation'
+import {
+  PREFERENCE_CATEGORIES,
+  classifyRecipe,
+  filterRecipesByPreference,
+  calculatePreferenceStats,
+  type MainCategory,
+} from '../../lib/recipeTaxonomy'
 
 type CategoryChoice = 'ready' | 'one_missing' | 'special' | 'craving'
 
@@ -168,23 +175,107 @@ export default function VaciarNeveraPage() {
     return matchCravingRecipes(cravingQuery, allRawRecipes, inventory, recentIngredients)
   }, [cravingQuery, allRawRecipes, inventory, recentIngredients])
 
-  // Estados para rotación de propuestas y animación de transición a la elaboración
-  const [recipeOffset, setRecipeOffset] = useState(0)
-  const [isRotating, setIsRotating] = useState(false)
-  const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null)
+  // Estados para preferencia culinaria del comensal y subcategorías
+  const [selectedPreference, setSelectedPreference] = useState<MainCategory>('all')
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>('all')
 
-  // Lista actual según categoría seleccionada (siempre garantiza resultados)
-  const currentCategoryRecipes = useMemo(() => {
+  const handleSelectPreference = (pref: MainCategory) => {
+    setSelectedPreference(pref)
+    setSelectedSubcategory('all')
+    setRecipeOffset(0)
+  }
+
+  const handleSelectSubcategory = (subId: string) => {
+    setSelectedSubcategory(subId)
+    setRecipeOffset(0)
+  }
+
+  const activeCategoryDef = useMemo(() => {
+    return PREFERENCE_CATEGORIES.find(c => c.id === selectedPreference) || PREFERENCE_CATEGORIES[0]
+  }, [selectedPreference])
+
+  // Estadísticas en tiempo real de disponibilidad por categoría según los ingredientes del usuario
+  const preferenceStats = useMemo(() => {
+    return calculatePreferenceStats(scoredRecipes, inventory)
+  }, [scoredRecipes, inventory])
+
+  // Lista base según categoría de disponibilidad seleccionada
+  const baseRecipesForChoice = useMemo(() => {
     if (activeChoice === 'ready') return readyRecipes
     if (activeChoice === 'one_missing') return oneMissingRecipes
     if (activeChoice === 'special') return specialRecipes
     return cravingResult.recipes
   }, [activeChoice, readyRecipes, oneMissingRecipes, specialRecipes, cravingResult.recipes])
 
+  // Filtrado final aplicando la Preferencia Culinaria y su Subcategoría
+  const { currentCategoryRecipes, isPreferenceFallback } = useMemo(() => {
+    // 1. Filtrar dentro de la disponibilidad actual
+    const directFiltered = filterRecipesByPreference(baseRecipesForChoice, selectedPreference, selectedSubcategory)
+    if (directFiltered.length > 0) {
+      return { currentCategoryRecipes: directFiltered, isPreferenceFallback: false }
+    }
+
+    // 2. Si no hay en Servicio Directo, buscar con gracia en Toque del Chef o recetas de Autor
+    if (selectedPreference !== 'all') {
+      const fallbackOne = filterRecipesByPreference(oneMissingRecipes, selectedPreference, selectedSubcategory)
+      if (fallbackOne.length > 0) {
+        return { currentCategoryRecipes: fallbackOne, isPreferenceFallback: true }
+      }
+      const fallbackSpec = filterRecipesByPreference(specialRecipes, selectedPreference, selectedSubcategory)
+      if (fallbackSpec.length > 0) {
+        return { currentCategoryRecipes: fallbackSpec, isPreferenceFallback: true }
+      }
+    }
+
+    return { currentCategoryRecipes: directFiltered, isPreferenceFallback: false }
+  }, [baseRecipesForChoice, selectedPreference, selectedSubcategory, oneMissingRecipes, specialRecipes])
+
+  // Texto dinámico con análisis de la despensa del comensal
+  const currentPreferenceMatchedText = useMemo(() => {
+    if (inventory.length === 0) {
+      return 'Despensa libre de materias primas: explorando propuestas de inspiración.'
+    }
+    const stat = preferenceStats[selectedPreference]
+    if (selectedPreference === 'all') {
+      const sample = inventory.slice(0, 4).map(i => i.name).join(', ')
+      return `Analizado con tu despensa (${sample}${inventory.length > 4 ? '...' : ''}): ${stat.readyCount} platos con 100% de ingredientes listos.`
+    }
+    if (selectedPreference === 'carnes') {
+      return stat.matchedIngredients.length > 0
+        ? `Aprovechando tus materias primas: ${stat.matchedIngredients.join(', ')}. ${stat.total} recetas cárnicas disponibles.`
+        : `Sin carnes registradas en tu despensa: propuestas del Chef con proteínas sugeridas (${stat.total} opciones).`
+    }
+    if (selectedPreference === 'verduras') {
+      return stat.matchedIngredients.length > 0
+        ? `Aprovechando tu huerta: ${stat.matchedIngredients.join(', ')}. ${stat.total} recetas de huerta disponibles.`
+        : `Propuestas frescas de huerta sugeridas por el Chef (${stat.total} opciones).`
+    }
+    if (selectedPreference === 'pastas') {
+      return stat.matchedIngredients.length > 0
+        ? `Aprovechando tu despensa: ${stat.matchedIngredients.join(', ')}. ${stat.total} recetas de pastas y masas.`
+        : `Propuestas de pastas y horneados del Chef (${stat.total} opciones).`
+    }
+    if (selectedPreference === 'veggie') {
+      return `100% libre de carnes. ${stat.total} recetas vegetarianas calculadas con tus vegetales y materias primas.`
+    }
+    if (selectedPreference === 'low_cal') {
+      return `Baja densidad calórica y platos livianos para digestión ágil (${stat.total} opciones disponibles).`
+    }
+    if (selectedPreference === 'fitness') {
+      return `Alta proteína y energía limpia para entrenamiento o nutrición activa (${stat.total} opciones disponibles).`
+    }
+    return `${stat.total} opciones calculadas con tus ingredientes.`
+  }, [inventory, preferenceStats, selectedPreference])
+
+  // Estados para rotación de propuestas y animación de transición a la elaboración
+  const [recipeOffset, setRecipeOffset] = useState(0)
+  const [isRotating, setIsRotating] = useState(false)
+  const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null)
+
   // Reiniciar offset cuando el usuario cambia de categoría o busca un antojo
   useEffect(() => {
     setRecipeOffset(0)
-  }, [activeChoice, cravingQuery])
+  }, [activeChoice, cravingQuery, selectedPreference, selectedSubcategory])
 
   const pageSize = 4
   const totalInCategory = currentCategoryRecipes.length
@@ -288,6 +379,128 @@ export default function VaciarNeveraPage() {
         <p className="font-menu-serif text-base sm:text-lg text-[#3A2E26] text-center font-semibold max-w-md mx-auto">
           Propuestas de alta cocina elaboradas con los ingredientes de tu despensa
         </p>
+
+        {/* ========================================================
+            PANEL MAESTRO DE PREFERENCIAS CULINARIAS DEL COMENSAL
+            (Filtro previo por Categorías, Subcategorías e Ingredientes)
+            ======================================================== */}
+        <section className="w-full max-w-3xl mx-auto menu-card-frame bg-[#FAF7F2] border-2 border-[#8F7347]/50 rounded-2xl p-3.5 sm:p-5 shadow-sm space-y-3 relative text-left">
+          {/* Adornos en las esquinas */}
+          <div className="absolute top-2 left-2 w-2 h-2 border-t-2 border-l-2 border-[#8F7347]/60 pointer-events-none" />
+          <div className="absolute top-2 right-2 w-2 h-2 border-t-2 border-r-2 border-[#8F7347]/60 pointer-events-none" />
+          <div className="absolute bottom-2 left-2 w-2 h-2 border-b-2 border-l-2 border-[#8F7347]/60 pointer-events-none" />
+          <div className="absolute bottom-2 right-2 w-2 h-2 border-b-2 border-r-2 border-[#8F7347]/60 pointer-events-none" />
+
+          {/* Encabezado del Panel */}
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#8F7347]/25 pb-2.5">
+            <div>
+              <div className="flex items-center gap-1.5 text-[#7A5E30] text-xs font-bold uppercase tracking-wider">
+                <span>✦</span>
+                <span>Preferencia Culinaria del Comensal</span>
+                <span>✦</span>
+              </div>
+              <h2 className="font-menu-title text-base sm:text-lg md:text-xl font-black text-[#1C1917] tracking-tight">
+                Filtre por preferencia según sus ingredientes disponibles:
+              </h2>
+            </div>
+            {selectedPreference !== 'all' && (
+              <button
+                type="button"
+                onClick={() => handleSelectPreference('all')}
+                className="px-2.5 py-1 text-xs font-menu-serif font-black rounded-lg border border-[#8F7347]/40 bg-white text-[#7A5E30] hover:text-[#1C1917] hover:border-[#1C1917] transition cursor-pointer shadow-2xs"
+              >
+                ✕ Ver toda la carta
+              </button>
+            )}
+          </div>
+
+          {/* Selector de Categorías Principales y Estilos de Vida */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
+            {PREFERENCE_CATEGORIES.map(category => {
+              const isSelected = selectedPreference === category.id
+              const stats = preferenceStats[category.id]
+              const hasIngredientsInStock = stats.matchedIngredients.length > 0
+
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  onClick={() => handleSelectPreference(category.id)}
+                  className={`p-2.5 rounded-xl border-2 transition-all duration-200 cursor-pointer select-none text-left flex flex-col justify-between tap-subtle ${
+                    isSelected
+                      ? 'bg-[#1C1917] border-[#1C1917] text-[#FAF7F2] shadow-md ring-2 ring-[#8F7347]/50'
+                      : 'bg-white border-[#8F7347]/35 text-[#1C1917] hover:border-[#1C1917] hover:bg-[#FAF7F2]'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xl">{category.icon}</span>
+                    {hasIngredientsInStock && category.id !== 'all' && (
+                      <span className={`text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                        isSelected ? 'bg-[#385333] text-[#FAF7F2]' : 'bg-[#E2F0DC] text-[#244220] border border-[#385333]/30'
+                      }`}>
+                        ✓ tu despensa
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <span className="font-menu-serif text-sm sm:text-base font-black block leading-tight truncate">
+                      {category.shortLabel}
+                    </span>
+                    <span className={`text-[11px] block mt-0.5 font-mono ${
+                      isSelected ? 'text-[#C7A971]' : 'text-[#7A5E30]'
+                    }`}>
+                      {stats.total} opciones
+                    </span>
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Subcategorías refinadas según la categoría activa */}
+          {activeCategoryDef && activeCategoryDef.subcategories.length > 1 && (
+            <div className="pt-2.5 border-t border-[#8F7347]/20 animate-fade-in space-y-1.5">
+              <div className="flex items-center gap-1.5 text-xs text-[#7A5E30] font-menu-serif font-bold">
+                <span>✦</span>
+                <span>Subcategorías de {activeCategoryDef.label}:</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                {activeCategoryDef.subcategories.map(sub => {
+                  const isSubSelected = selectedSubcategory === sub.id
+                  return (
+                    <button
+                      key={sub.id}
+                      type="button"
+                      onClick={() => handleSelectSubcategory(sub.id)}
+                      className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-menu-serif font-bold transition-all duration-150 cursor-pointer tap-subtle inline-flex items-center gap-1.5 border ${
+                        isSubSelected
+                          ? 'bg-[#8F7347] border-[#8F7347] text-white shadow-xs font-black'
+                          : 'bg-white border-[#8F7347]/30 text-[#2E241E] hover:border-[#1C1917] hover:bg-[#FAF7F2]'
+                      }`}
+                      title={sub.description}
+                    >
+                      <span>{sub.icon}</span>
+                      <span>{sub.label}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Resumen inteligente según ingredientes de que disponga */}
+          <div className="pt-2 border-t border-[#8F7347]/20 flex flex-wrap items-center justify-between gap-1 text-xs sm:text-sm font-menu-serif text-[#5A483D]">
+            <span className="inline-flex items-center gap-1.5">
+              <span className="text-[#8F7347]">💡</span>
+              <span>
+                {currentPreferenceMatchedText}
+              </span>
+            </span>
+            <span className="font-mono text-[#7A5E30] font-bold">
+              {totalInCategory} recetas filtradas
+            </span>
+          </div>
+        </section>
 
         {/* Selector de Categorías de la Carta (SIN NÚMEROS Y CON MÁXIMO CONTRASTE) */}
         <div className="w-full max-w-3xl mx-auto">
@@ -475,59 +688,109 @@ export default function VaciarNeveraPage() {
               </div>
             )}
 
-            {/* Lista de Platos tipo Carta de Restaurante Gourmet */}
-            {visibleRecipes.map((recipe, index) => (
-              <article
-                key={recipe.id}
-                onClick={() => handleSelectRecipe(recipe)}
-                className={`relative menu-card-frame rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-xl cursor-pointer select-none group flex flex-col justify-between ${
-                  selectedRecipeId === recipe.id
-                    ? 'ring-4 ring-[#8F7347] scale-[0.985] bg-[#FAF7F2]'
-                    : ''
-                }`}
-              >
-                {/* Esquinas ornamentales discretas tipo carta de lujo */}
-                <div className="absolute top-2.5 left-2.5 w-2.5 h-2.5 border-t-2 border-l-2 border-[#8F7347] pointer-events-none" />
-                <div className="absolute top-2.5 right-2.5 w-2.5 h-2.5 border-t-2 border-r-2 border-[#8F7347] pointer-events-none" />
-                <div className="absolute bottom-2.5 left-2.5 w-2.5 h-2.5 border-b-2 border-l-2 border-[#8F7347] pointer-events-none" />
-                <div className="absolute bottom-2.5 right-2.5 w-2.5 h-2.5 border-b-2 border-r-2 border-[#8F7347] pointer-events-none" />
-
-                {/* Encabezado del plato: Pase, Origen, Dificultad y tiempo */}
-                <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs sm:text-sm tracking-[0.22em] uppercase font-serif text-[#7A5E30] font-black">
-                      PASE Nº 0{((recipeOffset + index) % Math.max(1, totalInCategory)) + 1}
-                    </span>
-                    {recipe.origin && (
-                      <span className="text-xs sm:text-sm font-bold px-2 py-0.5 rounded-md bg-[#FAF0E6] border border-[#8F7347]/40 text-[#7A5E30] inline-flex items-center gap-1 font-menu-serif">
-                        📍 {recipe.origin}
-                      </span>
-                    )}
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded border font-menu-serif ${
-                      recipe.difficulty === 'Difícil'
-                        ? 'bg-red-50 border-red-300 text-red-800'
-                        : recipe.difficulty === 'Media'
-                        ? 'bg-amber-50 border-amber-300 text-amber-800'
-                        : 'bg-emerald-50 border-emerald-300 text-emerald-800'
-                    }`}>
-                      {recipe.difficulty || 'Fácil'}
-                    </span>
-                    {recipe.recentIngredientsUsed != null && recipe.recentIngredientsUsed > 0 && (
-                      <span className="text-xs sm:text-sm font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0DC] border-2 border-[#385333] text-[#244220] inline-flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-[#385333]" />
-                        ✦ Cosecha prioritaria
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-sm sm:text-base font-menu-serif text-[#1C1917] font-bold tracking-wider">
-                    · {recipe.prep_time || 15} min de elaboración ·
-                  </span>
+            {/* Aviso cuando se presentan alternativas del Chef para la preferencia seleccionada */}
+            {isPreferenceFallback && selectedPreference !== 'all' && (
+              <div className="col-span-full pt-1 pb-1 animate-fade-in">
+                <div className="p-4 rounded-2xl bg-[#FAF0E6] border-2 border-[#8F7347]/40 text-[#7A5E30] text-left shadow-xs space-y-1">
+                  <p className="font-menu-title font-bold text-[#1C1917] text-base flex items-center gap-1.5">
+                    <span>✦</span>
+                    <span>Sugerencias del Chef para {activeCategoryDef.label}:</span>
+                  </p>
+                  <p className="font-menu-serif text-sm sm:text-base text-[#3A2E26] leading-relaxed">
+                    Para los ingredientes actuales de su despensa no encontramos opciones con 0 faltantes en esta subcategoría exacta, pero aquí tiene propuestas del Chef con un aporte menor.
+                  </p>
                 </div>
+              </div>
+            )}
 
-                {/* Título noble del plato */}
-                <h2 className="font-menu-title text-2xl sm:text-3xl font-black text-[#1C1917] tracking-tight group-hover:text-[#7A5E30] transition leading-snug">
-                  {recipe.name}
-                </h2>
+            {/* Aviso si la combinación de filtros no arroja recetas */}
+            {visibleRecipes.length === 0 && !isLoading && (
+              <div className="col-span-full py-12 px-4 text-center menu-card-frame rounded-2xl bg-white space-y-3 animate-fade-in">
+                <p className="font-menu-title text-xl font-bold text-[#1C1917]">
+                  No se encontraron platos para la subcategoría seleccionada
+                </p>
+                <p className="font-menu-serif text-base text-[#5A483D] max-w-md mx-auto">
+                  Pruebe seleccionando otra subcategoría o vuelva a explorar todas las propuestas de {activeCategoryDef.label}.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => handleSelectSubcategory('all')}
+                  className="px-5 py-2.5 rounded-xl bg-[#1C1917] text-[#FAF7F2] font-menu-serif font-black text-sm border-2 border-[#8F7347] shadow-sm hover:bg-black cursor-pointer tap-subtle"
+                >
+                  Ver todas las opciones de {activeCategoryDef.label}
+                </button>
+              </div>
+            )}
+
+            {/* Lista de Platos tipo Carta de Restaurante Gourmet */}
+            {visibleRecipes.map((recipe, index) => {
+              const classification = classifyRecipe(recipe)
+
+              return (
+                <article
+                  key={recipe.id}
+                  onClick={() => handleSelectRecipe(recipe)}
+                  className={`relative menu-card-frame rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:shadow-xl cursor-pointer select-none group flex flex-col justify-between ${
+                    selectedRecipeId === recipe.id
+                      ? 'ring-4 ring-[#8F7347] scale-[0.985] bg-[#FAF7F2]'
+                      : ''
+                  }`}
+                >
+                  {/* Esquinas ornamentales discretas tipo carta de lujo */}
+                  <div className="absolute top-2.5 left-2.5 w-2.5 h-2.5 border-t-2 border-l-2 border-[#8F7347] pointer-events-none" />
+                  <div className="absolute top-2.5 right-2.5 w-2.5 h-2.5 border-t-2 border-r-2 border-[#8F7347] pointer-events-none" />
+                  <div className="absolute bottom-2.5 left-2.5 w-2.5 h-2.5 border-b-2 border-l-2 border-[#8F7347] pointer-events-none" />
+                  <div className="absolute bottom-2.5 right-2.5 w-2.5 h-2.5 border-b-2 border-r-2 border-[#8F7347] pointer-events-none" />
+
+                  {/* Encabezado del plato: Pase, Origen, Dificultad y tiempo */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-xs sm:text-sm tracking-[0.22em] uppercase font-serif text-[#7A5E30] font-black">
+                        PASE Nº 0{((recipeOffset + index) % Math.max(1, totalInCategory)) + 1}
+                      </span>
+                      {recipe.origin && (
+                        <span className="text-xs sm:text-sm font-bold px-2 py-0.5 rounded-md bg-[#FAF0E6] border border-[#8F7347]/40 text-[#7A5E30] inline-flex items-center gap-1 font-menu-serif">
+                          📍 {recipe.origin}
+                        </span>
+                      )}
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded border font-menu-serif ${
+                        recipe.difficulty === 'Difícil'
+                          ? 'bg-red-50 border-red-300 text-red-800'
+                          : recipe.difficulty === 'Media'
+                          ? 'bg-amber-50 border-amber-300 text-amber-800'
+                          : 'bg-emerald-50 border-emerald-300 text-emerald-800'
+                      }`}>
+                        {recipe.difficulty || 'Fácil'}
+                      </span>
+                      {recipe.recentIngredientsUsed != null && recipe.recentIngredientsUsed > 0 && (
+                        <span className="text-xs sm:text-sm font-bold px-2.5 py-0.5 rounded-full bg-[#E2F0DC] border-2 border-[#385333] text-[#244220] inline-flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-[#385333]" />
+                          ✦ Cosecha prioritaria
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-sm sm:text-base font-menu-serif text-[#1C1917] font-bold tracking-wider">
+                      · {recipe.prep_time || 15} min de elaboración ·
+                    </span>
+                  </div>
+
+                  {/* Título noble del plato */}
+                  <h2 className="font-menu-title text-2xl sm:text-3xl font-black text-[#1C1917] tracking-tight group-hover:text-[#7A5E30] transition leading-snug">
+                    {recipe.name}
+                  </h2>
+
+                  {/* Insignias de Categoría, Subcategoría y Estilo Nutricional */}
+                  <div className="flex flex-wrap items-center gap-1.5 mt-2.5 mb-1">
+                    {classification.badgeList.map((badge, bIdx) => (
+                      <span
+                        key={bIdx}
+                        className={`text-xs font-bold px-2.5 py-0.5 rounded-full border font-menu-serif inline-flex items-center gap-1 shadow-2xs ${badge.colorClass}`}
+                      >
+                        <span>{badge.icon}</span>
+                        <span>{badge.label}</span>
+                      </span>
+                    ))}
+                  </div>
 
                 {/* Composición del plato (Ingredientes disponibles) */}
                 <div className="mt-3.5 pt-3 border-t-2 border-[#8F7347]/20">
@@ -618,7 +881,8 @@ export default function VaciarNeveraPage() {
                   </button>
                 </div>
               </article>
-            ))}
+            )
+          })}
 
             {/* Botón de Otras Opciones de la Carta al final de las recetas */}
             {visibleRecipes.length > 0 && (
